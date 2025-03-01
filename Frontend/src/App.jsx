@@ -1,22 +1,28 @@
 import React from 'react'
-import { BrowserRouter as Router } from "react-router-dom"
+import { BrowserRouter, Routes, Route } from "react-router-dom"
 import { ThemeProvider } from "./components/theme-provider"
 import { Navbar } from "./components/Navbar"
 import { Home } from "./pages/Home"
 import { Footer } from "./components/Footer"
+import Questions from "./pages/Assessments/Questions"
+import RoadmapPage from './pages/Assessments/Roadmap'
 
 function App() {
   return (
-    <ThemeProvider>
-      <Router>
-        <div className="min-h-screen">
+    <BrowserRouter>
+      <ThemeProvider>
+        <div className="min-h-screen bg-background text-foreground">
           <Navbar />
-          <Home />
-          <Footer/>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/assessment" element={<Questions />} />
+            <Route path="/roadmap" element={<RoadmapPage />} />
+          </Routes>
+          <Footer />
         </div>
-      </Router>
-    </ThemeProvider>
-  )
+      </ThemeProvider>
+    </BrowserRouter>
+  );
 }
 
 export default App
