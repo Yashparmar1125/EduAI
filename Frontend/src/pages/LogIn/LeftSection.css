@@ -1,0 +1,97 @@
+.left-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 240px; /* Reduced by 20% */
+  max-width: 560px; /* Reduced by 20% */
+  padding: 1.6rem; /* Reduced by 20% */
+  color: white;
+  background: linear-gradient(135deg, #3a0ca3, #1a1a1a, #3a0ca3, #2c2c2c); /* Dark multi-color gradient background */
+  background-size: 400% 400%;
+  animation: gradientAnimation 2.5s ease infinite;
+  font-family: 'Urbanist', sans-serif;
+  border: none; /* Ensure no border is applied */
+  border-radius: 20px;
+}
+
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.image-container {
+  width: 100%;
+  max-width: 280px; /* Reduced by 20% */
+  height: auto;
+  margin-bottom: 1.6rem; /* Reduced by 20% */
+  display: flex;
+  justify-content: center;
+  border: none; /* Ensure no border is applied */
+}
+
+.main-image {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  border: none; /* Ensure no border is applied */
+  border-radius: 20px; /* Add border-radius to make the image corners rounded */
+}
+
+.text-content {
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Urbanist', sans-serif;
+  border: none; /* Ensure no border is applied */
+}
+
+.title {
+  font-family: 'Urbanist', sans-serif;
+  font-size: 2rem; /* Reduced by 20% */
+  font-weight: 700;
+  margin-bottom: 1.2rem; /* Reduced by 20% */
+  line-height: 1.25;
+  max-width: 451px; /* Reduced by 20% */
+  border: none; /* Ensure no border is applied */
+}
+
+.description {
+  font-family: 'Urbanist', sans-serif;
+  font-size: 1rem; /* Reduced by 20% */
+  font-weight: 400;
+  line-height: 1.5;
+  max-width: 351px; /* Reduced by 20% */
+  border: none; /* Ensure no border is applied */
+}
+
+@media (min-width: 768px) {
+  .left-section {
+    flex-direction: column; /* Ensure column direction on larger screens */
+    text-align: center;
+  }
+
+  .text-content {
+    padding-left: 0;
+    align-items: center;
+  }
+}
+
+@media (max-width: 767px) {
+  .title {
+    font-size: 1.6rem; /* Reduced by 20% */
+  }
+
+  .description {
+    font-size: 0.8rem; /* Reduced by 20% */
+  }
+}

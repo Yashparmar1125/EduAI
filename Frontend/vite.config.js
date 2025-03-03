@@ -10,6 +10,7 @@ export default defineConfig({
   server: {
     allowedHosts: ['5824-103-71-19-206.ngrok-free.app']
   },
+
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
@@ -20,4 +21,7 @@ export default defineConfig({
       'hooks': path.resolve(__dirname, 'src/hooks'),
     },
   },
+  server: {
+    port: 3030 // Change this to your desired port
+  }
 })
