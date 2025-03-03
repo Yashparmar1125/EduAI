@@ -54,7 +54,7 @@ const RightSection = ({ defaultData = {} }) => {
             />
           </div>
 
-          <button type="submit" className="signup-button">SIGN UP</button>
+          <button type="submit" className="signup-button">LOG IN</button>
           </div>
         </form>
 
