@@ -6,7 +6,7 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(),tailwindcss()],
+  plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
@@ -17,4 +17,7 @@ export default defineConfig({
       'hooks': path.resolve(__dirname, 'src/hooks'),
     },
   },
+  server: {
+    port: 3030 // Change this to your desired port
+  }
 })

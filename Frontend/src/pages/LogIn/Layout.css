@@ -1,0 +1,67 @@
+body {
+  margin: 0;
+  font-family: 'Urbanist', sans-serif;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.md\:flex-row {
+  flex-direction: row;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.min-h-screen {
+  min-height: 100vh;
+}
+
+/* Static background color */
+.bg-\[\#3a0ca3\] {
+  background-color: black;
+}
+
+.flex-grow {
+  flex-grow: 1;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.layoutContainer {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--background); /* Update background color */
+}
+
+.layoutSection {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@media (max-width: 767px) {
+  .flex-col {
+    flex-direction: column;
+  }
+
+  .md\:flex-row {
+    flex-direction: column;
+  }
+}
+
