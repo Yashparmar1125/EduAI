@@ -8,7 +8,7 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
   plugins: [react(),tailwindcss()],
   server: {
-    allowedHosts: ['a5fb-103-71-19-206.ngrok-free.app']
+    allowedHosts: ['5824-103-71-19-206.ngrok-free.app']
   },
   resolve: {
     alias: {
