@@ -31,8 +31,9 @@ function App() {
           </Routes>
           <Footer />
         </div>
+        </Router>
       </ThemeProvider>
-    </BrowserRouter>
+    
   );
 }
 
