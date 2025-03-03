@@ -11,6 +11,7 @@ import {
 //controllers imports
 import {
   register,
+  googleLogin,
   login,
   logout,
   updateProfile,
@@ -23,6 +24,7 @@ import authMiddleware from "../middlewares/auth.middleware.js";
 
 //routes
 router.post("/register", singleUpload, validateRegistration, register);
+router.post("/google/login", googleLogin);
 router.post("/login", validateLogin, login);
 router.get("/logout", logout);
 router.get("/profile", authMiddleware, profile);

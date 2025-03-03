@@ -3,12 +3,19 @@ import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
+import firebaseAdmin from "firebase-admin"; // Import Firebase Admin SDK
 
 //utilities imports
 import connectDB from "./utils/connection.util.js";
 
 //routes imports
 import healthRoutes from "./routes/health.routes.js";
+
+import serviceAccount from "../service-account.json" assert { type: "json" };
+
+firebaseAdmin.initializeApp({
+  credential: firebaseAdmin.credential.cert(serviceAccount), // Initialize using the service account key
+});
 
 //constants
 const CORS_OPTIONS = {

@@ -1,6 +1,7 @@
 import { User } from "../models/user.model.js";
 import fs from "fs";
 import path from "path";
+import firebaseAdmin from 'firebase-admin';
 
 import { fileURLToPath } from "url";
 
@@ -194,3 +195,22 @@ export const profile = async (req, res) => {
       .json({ message: "Internal Server Error", success: false });
   }
 };
+
+export const googleLogin = async (req, res) => {
+
+  const { token } = req.body;
+  try {
+    // Verify the Firebase ID token
+    const decodedToken = await firebaseAdmin.auth().verifyIdToken(token);
+    const uid = decodedToken.uid;  // Firebase user UID
+
+    // Get user details from Firebase (optional)
+    const userRecord = await firebaseAdmin.auth().getUser(uid);
+
+    // Respond with user data or JWT, etc.
+    res.status(200).json({ user: userRecord });
+  } catch (error) {
+    console.error('Error verifying Firebase ID token:', error);
+    res.status(401).json({ message: 'Unauthorized', error: error.message });
+  }
+}
