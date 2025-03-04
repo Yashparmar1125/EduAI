@@ -15,6 +15,7 @@ import SignUpLayout from "./pages/SignUp/Layout"
 import LogInLayout from "./pages/LogIn/Layout"
 import SignUp from "./modals/SignUp"
 import Login from "./modals/Login"
+import InstructorDashboardpage from './pages/Instructor'
 import { Navbar } from './components/navbar'
 import CourseLearning from './pages/Dashboard/CourseLearning'
 
@@ -62,6 +63,8 @@ function App() {
 
 
             <Route path="/dashboard" element={<Dashboard />} />
+
+            <Route path="/instructor" element={<InstructorDashboardpage />} />
             <Route path="/achievements" element={<Achievements />} />
             <Route path="/course" element={<CourseOverview />} />
             <Route path='learning' element={<CourseLearning/>}/>

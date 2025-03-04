@@ -15,7 +15,8 @@ import { hashPassword, comparePassword } from "../utils/password.util.js";
 
 export const register = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, role } = req.body;
+    const Urole = role || "student";
 
     // Check if the user already exists
     const existingUser = await User.findOne({ email });
@@ -50,6 +51,7 @@ export const register = async (req, res) => {
     const newUser = new User({
       name,
       email,
+      role: Urole,
       password: hashedPassword,
       uid: firebaseUid, // Store Firebase UID
     });
@@ -60,11 +62,18 @@ export const register = async (req, res) => {
     const token = createToken(newUser._id);
 
     // Send token in the response (optional: you can send it as a cookie too)
-    return res.status(200).json({
-      message: "User registered successfully",
-      success: true,
-      token, // You can return the token in the response body or set as a cookie
-    });
+    return res
+      .status(200)
+      .cookie("token", token, {
+        maxAge: 1 * 24 * 60 * 60 * 1000, // 1 day
+        httpOnly: true, // Prevents access to cookie via JavaScript
+        sameSite: "strict", // Ensures cookies are sent only in same-origin requests
+      })
+      .json({
+        message: "Registered in successfully",
+        newUser,
+        success: true,
+      });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Server Error", success: false });

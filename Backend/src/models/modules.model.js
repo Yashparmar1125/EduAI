@@ -13,8 +13,7 @@ const moduleSchema = new mongoose.Schema(
         answer: String,
       },
     ], // Optional quizzes associated with the module
-  },
-  { timestamps: true }
+  }
 );
 
 const Module = mongoose.model('Module', moduleSchema);
