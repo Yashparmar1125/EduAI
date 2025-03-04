@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema(
     name: { type: String, required: true },
     uid: { type: String },
     email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
+    password: { type: String },
     role: { type: String, enum: ["student", "instructor"], default: "student" },
     profilePicture: { type: String }, // URL to Firebase Storage
     skills: [{ type: String }], // Skills for AI learning path

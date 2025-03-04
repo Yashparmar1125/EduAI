@@ -1,7 +1,8 @@
 import User from "../models/user.model.js";
 import path from "path";
 import firebaseAdmin from "firebase-admin";
-
+import { createUserWithEmailAndPassword } from "firebase/auth"; // Firebase Auth method for user creation
+// Import Firebase auth instance
 import { fileURLToPath } from "url";
 
 // Get the current directory of the module
@@ -24,36 +25,49 @@ export const register = async (req, res) => {
         .json({ message: "User already registered", success: false });
     }
 
-    // Hash the password
+    // Create the user in Firebase Authentication
+    let firebaseUser;
+    try {
+      firebaseUser = await firebaseAdmin.auth().createUser({
+        email,
+        password,
+        displayName: name, // Optional: Store displayName in Firebase
+      });
+    } catch (error) {
+      return res.status(400).json({
+        message: "Error registering user with Firebase: " + error.message,
+        success: false,
+      });
+    }
+
+    // Get Firebase UID
+    const firebaseUid = firebaseUser.uid;
+
+    // Hash password for MongoDB
     const hashedPassword = await hashPassword(password);
 
-    // Create a new user
-    const user = new User({
+    // Save the user to MongoDB
+    const newUser = new User({
       name,
       email,
       password: hashedPassword,
+      uid: firebaseUid, // Store Firebase UID
     });
 
-    await user.save();
+    await newUser.save();
 
-    // Create a JWT token
-    const token = createToken(user._id);
+    // Create JWT token for the user
+    const token = createToken(newUser._id);
 
-    // Send the token in the cookie with proper settings
-    return res
-      .status(200)
-      .cookie("token", token, {
-        maxAge: 1 * 24 * 60 * 60 * 1000, // 1 day
-        httpOnly: true, // Prevents access to cookie via JavaScript
-        sameSite: "strict", // Ensures cookies are sent only in same-origin requests
-      })
-      .json({
-        message: "User registered successfully",
-        success: true,
-      });
+    // Send token in the response (optional: you can send it as a cookie too)
+    return res.status(200).json({
+      message: "User registered successfully",
+      success: true,
+      token, // You can return the token in the response body or set as a cookie
+    });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "Server Error", success: false });
+    console.error(error);
+    return res.status(500).json({ message: "Server Error", success: false });
   }
 };
 
@@ -178,7 +192,7 @@ export const googleLogin = async (req, res) => {
     const uid = decodedToken.uid; // Firebase user UID
 
     // Get user details from Firebase (optional)
-    const user = await User.findById(uid).select("-password");
+    const user = await User.findOne({ uid: uid }).select("-password");
     const token = createToken(user._id);
 
     // Respond with user data or JWT, etc.

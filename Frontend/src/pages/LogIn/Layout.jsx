@@ -1,4 +1,4 @@
-import React from 'react';
+import React ,{useState}from 'react';
 import LeftSection from './LeftSection';
 import RightSection from './RightSection';
 import './Layout.css';
@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';  // Use useNavigate instead of u
 
 const Layout = () => {
   const navigate = useNavigate();  // Use useNavigate for navigation
+  const [error, setError] = useState('');
 
   const onGoggleSignIn = async () => {
     try {
@@ -32,6 +33,33 @@ const Layout = () => {
       console.error("Error during login", error);
     }
   };
+  const onLogin = async (email, password) => {
+    if (!email || !password) {
+      setError("Please enter both email and password.");
+      return;
+    }
+
+    try {
+
+      // Send user information to your backend to create a session
+      const response = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (response.ok) {
+        navigate('/dashboard'); // Redirect to a protected route
+      } else {
+        setError("Invalid email or password.");
+      }
+    } catch (error) {
+      console.error("Error during login", error);
+      setError("Login failed. Please check your credentials.");
+    }
+  };
 
   return (
     <div className="flex flex-col md:flex-row w-full min-h-screen bg-background/95">
@@ -39,7 +67,7 @@ const Layout = () => {
         <LeftSection />
       </div>
       <div className="flex-grow flex justify-center items-center">
-        <RightSection onGoggleSignIn={onGoggleSignIn} />
+        <RightSection onGoggleSignIn={onGoggleSignIn} onLogin={onLogin} />
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './RightSection.css';
 
-const RightSection = ({ defaultData = {}, onGoggleSignIn }) => {
+const RightSection = ({ defaultData = {}, onGoogleSignIn, onLogin }) => {
   const [formData, setFormData] = useState({
     email: defaultData.email || '',
     password: defaultData.password || ''
@@ -38,11 +38,9 @@ const RightSection = ({ defaultData = {}, onGoggleSignIn }) => {
 
     if (Object.keys(newErrors).length === 0) {
       setLoading(true);
-      // Simulate API call (replace this with actual logic)
-      setTimeout(() => {
-        console.log('Form submitted:', formData);
-        setLoading(false);
-      }, 2000);
+      // Call the onLogin function passed from the parent (Layout)
+      await onLogin(formData.email, formData.password);
+      setLoading(false);
     }
   };
 
@@ -93,7 +91,7 @@ const RightSection = ({ defaultData = {}, onGoggleSignIn }) => {
         <div className="social-login">
           <p>OR</p>
           <div className="social-buttons">
-            <button className="social-btn" aria-label="Login with Google" onClick={onGoggleSignIn}>
+            <button className="social-btn" aria-label="Login with Google" onClick={onGoogleSignIn}>
               <img src="https://dashboard.codeparrot.ai/api/image/Z8KGqG37P2WCQpKV/google.png" alt="Google" />
             </button>
             <button className="social-btn" aria-label="Login with Facebook">
