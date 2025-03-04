@@ -22,12 +22,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useNavigate } from "react-router-dom";
 
 
-
 export function Navbar({ openModal ,openLoginModal}) {
   const navigate = useNavigate();
-
-  const user=0;
-  //const user = useSelector((state) => state.auth.user)
+  
+  const authState = useSelector((state) => state.auth);
+  const user = authState.userData;
+  
   const menuItems = [
     { path: "/", label: "Home" },
     { path: "/community", label: "Community" },

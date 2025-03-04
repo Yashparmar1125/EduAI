@@ -35,7 +35,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-
+import { useRef } from 'react';
+import { useReward } from 'react-rewards';
 
 const Dashboard = () => {
   const { theme } = useTheme();
@@ -222,7 +223,7 @@ const Dashboard = () => {
               : 'bg-card border-border'
           )}
         >
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-start sm:items-center justify-between gap-4">
             <div>
               <h1 className={cn(
                 "text-xl sm:text-2xl font-bold",
