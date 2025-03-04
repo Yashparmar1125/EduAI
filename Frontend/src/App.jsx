@@ -12,7 +12,7 @@ import SignUpLayout from "./pages/SignUp/Layout"
 import LogInLayout from "./pages/LogIn/Layout"
 import SignUp from "./modals/SignUp"
 import Login from "./modals/Login"
-
+import InstructorDashboardpage from './pages/Instructor'
 function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -49,6 +49,7 @@ function App() {
             <Route path="/assessment" element={<Questions />} />
             <Route path="/roadmap" element={<RoadmapPage />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/instructor" element={<InstructorDashboardpage />} />
           </Routes>
           <Footer />
         </div>
