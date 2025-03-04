@@ -5,6 +5,7 @@ import confetti from 'canvas-confetti';
 import { cn } from "@/lib/utils";
 import { Image, Loader2, Rocket, Database, Code2, Blocks, Trophy } from 'lucide-react';
 import { useTheme } from "../../components/theme-provider";
+import Recommends from './Recommends';
 
 const RoadmapPage = () => {
   const { theme } = useTheme();
@@ -267,6 +268,7 @@ const RoadmapPage = () => {
           </button>
         </div>
       </div>
+      <Recommends/>
     </div>
   );
 };

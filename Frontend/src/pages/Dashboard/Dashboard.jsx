@@ -35,7 +35,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-
+import { useRef } from 'react';
+import { useReward } from 'react-rewards';
 
 const Dashboard = () => {
   const { theme } = useTheme();
