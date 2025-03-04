@@ -10,6 +10,7 @@ import connectDB from "./utils/connection.util.js";
 
 //routes imports
 import healthRoutes from "./routes/health.routes.js";
+import authRoutes from "./routes/auth.routes.js";
 
 import serviceAccount from "../service-account.json" assert { type: "json" };
 
@@ -21,8 +22,8 @@ firebaseAdmin.initializeApp({
 const CORS_OPTIONS = {
   origin: (origin, callback) => {
     const allowedOrigins = [
-      "http://192.168.0.104:5173", // Your React app's IP and port
-      "http://localhost:5173",
+      "http://192.168.0.104:3030", // Your React app's IP and port
+      "http://localhost:3030",
     ];
 
     if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
@@ -48,6 +49,7 @@ app.use(cors(CORS_OPTIONS));
 
 //routes
 app.use(healthRoutes);
+app.use("/api/auth", authRoutes);
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);

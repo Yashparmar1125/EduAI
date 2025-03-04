@@ -17,12 +17,12 @@ const Layout = () => {
       console.log(user);
 
       // Send user information to your backend to create a session
-      const response = await fetch('http://localhost:5000/api/auth/google', {
+      const response = await fetch('http://localhost:5000/api/auth/google/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ token: await user.getIdToken() }), // Send Firebase token to the backend
+        body: JSON.stringify({ auth_token: await user.getIdToken() }), // Send Firebase token to the backend
       });
 
       if (response.ok) {

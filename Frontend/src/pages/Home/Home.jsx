@@ -3,7 +3,9 @@ import { FaBook, FaChartLine, FaUsers } from "react-icons/fa" // Importing icons
 
 export function Home() {
   return (
+
     <div className="min-h-screen">
+      
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row items-center justify-between py-16 md:py-24 gap-8">
           {/* Left side - Content */}

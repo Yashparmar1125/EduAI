@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
-export function Navbar() {
+export function Navbar({ openModal ,openLoginModal}) {
   const user=0;
   //const user = useSelector((state) => state.auth.user)
   const menuItems = [
@@ -37,12 +37,14 @@ export function Navbar() {
             variant="ghost" 
             size="sm" 
             className="text-gray-600 dark:text-gray-300 hover:text-[#6938EF] dark:hover:text-[#9D7BFF] hover:bg-purple-50 dark:hover:bg-purple-900/20"
+            onclick={openLoginModal}
           >
             Sign In
           </Button>
           <Button 
             size="sm" 
             className="bg-[#6938EF] dark:bg-[#9D7BFF] text-white hover:bg-[#5B2FD1] dark:hover:bg-[#8B63FF] transition-colors"
+            onClick={openModal}
           >
             Get Started
           </Button>

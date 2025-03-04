@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 const Layout = () => {
+  
   return (
     <div className="flex flex-col md:flex-row w-full min-h-screen bg-gray-100 bg-opacity-95">
       <div className="flex-grow flex justify-center items-center">

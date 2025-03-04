@@ -1,5 +1,5 @@
 import { verifyToken } from "../utils/jwt.util.js";
-import { User } from "../models/user.model.js";
+import User from "../models/user.model.js";
 const authMiddleware = async (req, res, next) => {
   try {
     const token = req.cookies.token;

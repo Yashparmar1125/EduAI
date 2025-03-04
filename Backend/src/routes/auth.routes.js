@@ -16,15 +16,17 @@ import {
   logout,
   updateProfile,
   profile,
+  googleRegister,
 } from "../controllers/auth.controller.js";
 const router = express.Router();
 
 //middlewares imports
-import authMiddleware from "../middlewares/auth.middleware.js";
+import authMiddleware from "../middleware/auth.middleware.js";
 
 //routes
-router.post("/register", singleUpload, validateRegistration, register);
+router.post("/register", validateRegistration, register);
 router.post("/google/login", googleLogin);
+router.post("/google/register", googleRegister);
 router.post("/login", validateLogin, login);
 router.get("/logout", logout);
 router.get("/profile", authMiddleware, profile);
