@@ -18,7 +18,8 @@ import Login from './modals/Login';
 import { Navbar } from './components/navbar';
 import CourseLearning from './pages/Dashboard/CourseLearning';
 import ProtectedRoute from './components/ProtectedRoute';
-
+import CreateCourse from './pages/Instructor/CreateCourse';
+import ManageCourses from './pages/Instructor/ManageCourses';
 
 function App() {
   return (
@@ -32,7 +33,8 @@ function App() {
             <Route path="/login" element={<LogInLayout />} />
             <Route path="/internships" element={<Internships />} />
             
-            
+            <Route path="/instructor/courses" element={<ManageCourses />} />
+            <Route path="/instructor/courses/create" element={<CreateCourse />} />
             
 
             {/* Protected Routes */}
