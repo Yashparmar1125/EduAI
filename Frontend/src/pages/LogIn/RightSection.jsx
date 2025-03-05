@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
 import './RightSection.css';
 
-const RightSection = ({ defaultData = {} }) => {
+const RightSection = ({ defaultData = {}, onGoogleSignIn, onLogin }) => {
   const [formData, setFormData] = useState({
-    firstName: defaultData.firstName || '',
-    lastName: defaultData.lastName || '',
     email: defaultData.email || '',
-    password: defaultData.password || '',
-    occupation: defaultData.occupation || '',
-    interests: defaultData.interests || ''
+    password: defaultData.password || ''
   });
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
 
+  // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prevState => ({
@@ -19,9 +18,30 @@ const RightSection = ({ defaultData = {} }) => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  // Validate form inputs
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.email) newErrors.email = 'Email is required';
+    if (!formData.password) newErrors.password = 'Password is required';
+    if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Please enter a valid email';
+    }
+    return newErrors;
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
+
+    const newErrors = validateForm();
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length === 0) {
+      setLoading(true);
+      // Call the onLogin function passed from the parent (Layout)
+      await onLogin(formData.email, formData.password);
+      setLoading(false);
+    }
   };
 
   return (
@@ -32,42 +52,56 @@ const RightSection = ({ defaultData = {} }) => {
         
         <form onSubmit={handleSubmit} className="signup-form">
           <div className="input-group-all">
-          <div className="input-group1">
-            <label>Email address*</label>
-            <input
-              type="email"
-              name="email"
-              placeholder="Email"
-              value={formData.email}
-              onChange={handleChange}
-            />
-          </div>
+            <div className="input-group1">
+              <label htmlFor="email">Email address*</label>
+              <input
+                id="email"
+                type="email"
+                name="email"
+                placeholder="Email"
+                value={formData.email}
+                onChange={handleChange}
+                aria-describedby="emailError"
+                aria-invalid={errors.email ? 'true' : 'false'}
+              />
+              {errors.email && <span id="emailError" className="error-message">{errors.email}</span>}
+            </div>
 
-          <div className="input-group1">
-            <label>Password*</label>
-            <input
-              type="password"
-              name="password"
-              placeholder="********"
-              value={formData.password}
-              onChange={handleChange}
-            />
-          </div>
+            <div className="input-group1">
+              <label htmlFor="password">Password*</label>
+              <input
+                id="password"
+                type="password"
+                name="password"
+                placeholder="********"
+                value={formData.password}
+                onChange={handleChange}
+                aria-describedby="passwordError"
+                aria-invalid={errors.password ? 'true' : 'false'}
+              />
+              {errors.password && <span id="passwordError" className="error-message">{errors.password}</span>}
+            </div>
 
-          <button type="submit" className="signup-button">SIGN UP</button>
+            <button type="submit" className="signup-button" disabled={loading}>
+              {loading ? 'Logging In...' : 'LOG IN'}
+            </button>
           </div>
         </form>
 
         <div className="social-login">
           <p>OR</p>
           <div className="social-buttons">
-            <button className="social-btn">
+            <button className="social-btn" aria-label="Login with Google" onClick={onGoogleSignIn}>
               <img src="https://dashboard.codeparrot.ai/api/image/Z8KGqG37P2WCQpKV/google.png" alt="Google" />
             </button>
-            <button className="social-btn">
+            <button className="social-btn" aria-label="Login with Facebook">
               <img src="https://dashboard.codeparrot.ai/api/image/Z8KGqG37P2WCQpKV/facebook.png" alt="Facebook" />
             </button>
           </div>
+        </div>
+
+        <div className="signup-prompt">
+          <p>New here? <button className="signup-link" >Sign up</button></p>
         </div>
       </div>
     </div>

@@ -1,3 +1,4 @@
+/* Global Styles */
 body {
   margin: 0;
   font-family: 'Urbanist', sans-serif;
@@ -23,7 +24,6 @@ body {
   min-height: 100vh;
 }
 
-/* Static background color */
 .bg-\[\#3a0ca3\] {
   background-color: black;
 }
@@ -55,13 +55,235 @@ body {
   align-items: center;
 }
 
-@media (max-width: 767px) {
-  .flex-col {
-    flex-direction: column;
-  }
+/* Left Section Styles */
+.left-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 240px;
+  max-width: 560px;
+  padding: 1.6rem;
+  color: white;
+  background: linear-gradient(135deg, #3a0ca3, #1a1a1a, #3a0ca3, #2c2c2c);
+  background-size: 400% 400%;
+  animation: gradientAnimation 2.5s ease infinite;
+  border-radius: 20px;
+}
 
-  .md\:flex-row {
-    flex-direction: column;
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
   }
 }
 
+.image-container {
+  width: 100%;
+  max-width: 280px;
+  height: auto;
+  margin-bottom: 1.6rem;
+  display: flex;
+  justify-content: center;
+}
+
+.main-image {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  border-radius: 20px;
+}
+
+.text-content {
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1.2rem;
+  line-height: 1.25;
+  max-width: 451px;
+}
+
+.description {
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  max-width: 351px;
+}
+
+@media (min-width: 768px) {
+  .left-section {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+@media (max-width: 767px) {
+  .title {
+    font-size: 1.6rem;
+  }
+
+  .description {
+    font-size: 0.8rem;
+  }
+}
+
+/* Right Section Styles */
+.right-section {
+  min-width: 256px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1.6rem;
+}
+
+.signup-container {
+  background: #ffffff;
+  border-radius: 12.37px;
+  padding: 2.4rem;
+  width: 80%;
+  max-width: calc(624px - 10px);
+}
+
+.signup-title {
+  font-weight: 600;
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 0.4rem;
+}
+
+.signup-subtitle {
+  font-size: 0.9rem;
+  text-align: center;
+  margin-bottom: 1.6rem;
+}
+
+.signup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.name-row {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+@media (min-width: 768px) {
+  .name-row {
+    flex-direction: row;
+    gap: 2.4rem;
+  }
+}
+
+.input-group1 {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 95%;
+}
+
+.input-group1 label {
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 125%;
+  padding-left: 70px;
+}
+
+.input-group label {
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+
+.input-group input,
+.input-group select {
+  padding: 0.68rem;
+  border-radius: 6.8px;
+  background: #caf0f8;
+  border: none;
+  font-size: 0.8rem;
+  color: #0077b6;
+  width: 100%;
+}
+
+.signup-button {
+  background: #4361ee;
+  color: #caf0f8;
+  padding: 10.86px;
+  border-radius: 10.86px;
+  border: none;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.signup-button:hover {
+  background: #3651d4;
+}
+
+.social-login {
+  margin-top: 1.6rem;
+  text-align: center;
+}
+
+.social-login p {
+  font-size: 1rem;
+  margin: 0.8rem 0;
+}
+
+.social-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 0.8rem;
+}
+
+.social-btn {
+  background: #03045e;
+  border: none;
+  border-radius: 15.14px;
+  padding: 9.09px 11.36px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.social-btn:hover {
+  background: #020348;
+}
+
+.social-btn img {
+  width: 29.53px;
+  height: 29.53px;
+}
+
+@media (max-width: 767px) {
+  .signup-title {
+    font-size: 1.6rem;
+  }
+
+  .signup-subtitle {
+    font-size: 0.8rem;
+  }
+
+  .signup-button {
+    font-size: 0.9rem;
+  }
+}
