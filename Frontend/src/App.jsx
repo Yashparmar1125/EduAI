@@ -18,7 +18,7 @@ import Login from './modals/Login';
 import { Navbar } from './components/navbar';
 import CourseLearning from './pages/Dashboard/CourseLearning';
 import ProtectedRoute from './components/ProtectedRoute';
-import  InstructorDashboard  from './pages/Instructor/InstructorDashboard';
+
 
 function App() {
   return (
@@ -31,7 +31,7 @@ function App() {
             <Route path="/signup" element={<SignUpLayout />} />
             <Route path="/login" element={<LogInLayout />} />
             <Route path="/internships" element={<Internships />} />
-            <Route path="/instructor" element={<InstructorDashboard />} />
+            
             
             
 

@@ -7,6 +7,7 @@ import { googleProvider } from '../../firebase/firebase';
 import { useNavigate } from 'react-router-dom'; 
 import { useDispatch } from 'react-redux';  // Import useDispatch from react-redux
 import { login } from '../../redux/slices/authSlice';  // Import login action from your slice
+import { googleLogin,emailLogin } from '../../api/axios.api';
 
 const Layout = () => {
   const dispatch = useDispatch();  // Create dispatch function to send actions to Redux
@@ -19,19 +20,13 @@ const Layout = () => {
       const auth = getAuth();  
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
+      const auth_token = await user.getIdToken();
 
       // Send user information to your backend to create a session
-      const response = await fetch('http://localhost:5000/api/auth/google/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ auth_token: await user.getIdToken() }), 
-      });
-
-      if (response.ok) {
-        const responseData = await response.json();  // Parse the JSON here
-        // Dispatch login action to Redux store
+      const response = await googleLogin(auth_token);
+      
+      if (response.status === 200) {
+        const responseData = await response.data  // Parse the JSON here
         dispatch(login({
           name: user.displayName,
           email: user.email,
@@ -55,17 +50,11 @@ const Layout = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      const response = await emailLogin(email, password);
 
-      if (response.ok) {
+      if (response.status === 200) {
         // Dispatch login action to Redux store after successful response
-        const res = await response.json();
+        const res = await response.data;
         dispatch(login({
           name: res.user.name,
           email: res.user.email,

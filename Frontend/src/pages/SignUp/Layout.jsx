@@ -6,6 +6,7 @@ import {  googleProvider } from '../../firebase/firebase';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';  // Import useDispatch from react-redux
 import { login } from '../../redux/slices/authSlice';
+import { emailSignup,googleSignup } from '../../api/axios.api';
 
 const Layout = () => {
   const navigate = useNavigate();
@@ -15,19 +16,13 @@ const Layout = () => {
         const auth = getAuth();  // Initialize Firebase Auth
         const result = await signInWithPopup(auth, googleProvider);  // Use signInWithPopup from the modular API
         const user = result.user;
-        console.log(user);
+        const auth_token = await user.getIdToken();
   
         // Send user information to your backend to create a session
-        const response = await fetch('http://localhost:5000/api/auth/google/register', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ auth_token: await user.getIdToken() }), // Send Firebase token to the backend
-        });
+        const response = await googleSignup(auth_token);
   
-        if (response.ok) {
-                const responseData = await response.json();  // Parse the JSON here
+        if (response.status === 200) {
+                const responseData = await response.data();  // Parse the JSON here
                 // Dispatch login action to Redux store
                 dispatch(login({
                   name: user.displayName,
