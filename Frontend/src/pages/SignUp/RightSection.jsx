@@ -1,14 +1,23 @@
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { FaGoogle, FaFacebook } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
+import { cn } from "@/lib/utils";
+import { useTheme } from "../../components/theme-provider";
+import { Mail, Lock, User, Briefcase, Heart } from 'lucide-react';
 
-const RightSection = ({ defaultData = {}, onGoggleSignIn }) => {
+const RightSection = ({ defaultData = {}, onGoggleSignIn, onSignUp }) => {
+  const { theme } = useTheme();
   const [formData, setFormData] = useState({
     firstName: defaultData.firstName || '',
     lastName: defaultData.lastName || '',
     email: defaultData.email || '',
     password: defaultData.password || '',
-    occupation: defaultData.occupation || '',
     interests: defaultData.interests || ''
   });
+
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -16,149 +25,280 @@ const RightSection = ({ defaultData = {}, onGoggleSignIn }) => {
       ...prevState,
       [name]: value
     }));
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.firstName) newErrors.firstName = 'First name is required';
+    if (!formData.lastName) newErrors.lastName = 'Last name is required';
+    if (!formData.email) newErrors.email = 'Email is required';
+    if (!formData.password) newErrors.password = 'Password is required';
+    if (!formData.interests) newErrors.interests = 'Interests are required';
+    if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = 'Please enter a valid email';
+    }
+    return newErrors;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
-    // Concatenate firstName and lastName into a single 'name' field
-    const fullName = `${formData.firstName} ${formData.lastName}`;
-  
-    // Prepare data to send to the backend
-    const dataToSend = {
-      name: fullName, // Send concatenated name
-      email: formData.email,
-      password: formData.password,
-      occupation: formData.occupation,
-      interests: formData.interests
-    };
-  
-    console.log('Form submitted:', dataToSend); // Optionally, log to verify
-  
-    try {
-      // Send user registration data to the backend API
-      const response = await fetch('http://localhost:5000/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(dataToSend),  // Send the concatenated name and form data to backend
-      });
-  
-      if (response.ok) {
-        console.log('User registered successfully');
-        // Optionally, redirect to another page or show a success message
-      } else {
-        console.error('Registration failed');
+    const newErrors = validateForm();
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length === 0) {
+      setLoading(true);
+      try {
+        await onSignUp(formData);
+      } catch (error) {
+        setErrors({ submit: error.message });
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Error during registration:', error);
     }
   };
+
   return (
-    <div className="flex justify-center items-center w-full h-full p-6">
-      <div className="w-full max-w-md p-8 bg-white shadow-lg rounded-lg">
-        <h1 className="text-3xl font-semibold mb-1 text-center text-gray-800">Sign Up</h1>
-        <p className="text-lg text-center text-gray-600 mb-6">Create Your Account</p>
+    <motion.div 
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: 0.5 }}
+      className="w-full max-w-[480px] flex justify-center items-center"
+    >
+      <div className={cn(
+        "bg-card rounded-2xl p-8 sm:p-12 w-full shadow-lg border",
+        theme === 'dark' ? 'bg-[#110C1D] border-[#6938EF]/20' : 'bg-white border-border'
+      )}>
+        <motion.h1 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className={cn(
+            "text-4xl font-bold text-center mb-2",
+            theme === 'dark' ? 'text-white' : 'text-foreground'
+          )}
+        >
+          Create Account
+        </motion.h1>
+        <motion.p 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="text-base text-center mb-8 text-muted-foreground"
+        >
+          Join our learning community today
+        </motion.p>
         
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="flex flex-col sm:flex-row sm:space-x-6">
-            <div className="flex-1 space-y-2">
-              <label className="text-sm font-medium text-gray-600">First Name*</label>
-              <input
-                type="text"
-                name="firstName"
-                placeholder="First Name"
-                value={formData.firstName}
-                onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400"
-              />
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="space-y-6"
+          >
+            <div className="flex gap-4">
+              <div className="flex-1 space-y-2">
+                <label htmlFor="firstName" className="text-sm font-medium text-foreground">First Name</label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <input
+                    id="firstName"
+                    type="text"
+                    name="firstName"
+                    placeholder="Enter your first name"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    className={cn(
+                      "w-full pl-10 pr-4 py-3 rounded-xl bg-background border-2 transition-all duration-200",
+                      "focus:outline-none focus:border-[#6938EF] focus:ring-2 focus:ring-[#6938EF]/20",
+                      errors.firstName ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" : "border-input",
+                      theme === 'dark' ? 'bg-[#1A1425] text-white' : 'bg-white text-foreground'
+                    )}
+                  />
+                </div>
+                {errors.firstName && (
+                  <span className="text-sm text-red-500">{errors.firstName}</span>
+                )}
+              </div>
+
+              <div className="flex-1 space-y-2">
+                <label htmlFor="lastName" className="text-sm font-medium text-foreground">Last Name</label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <input
+                    id="lastName"
+                    type="text"
+                    name="lastName"
+                    placeholder="Enter your last name"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    className={cn(
+                      "w-full pl-10 pr-4 py-3 rounded-xl bg-background border-2 transition-all duration-200",
+                      "focus:outline-none focus:border-[#6938EF] focus:ring-2 focus:ring-[#6938EF]/20",
+                      errors.lastName ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" : "border-input",
+                      theme === 'dark' ? 'bg-[#1A1425] text-white' : 'bg-white text-foreground'
+                    )}
+                  />
+                </div>
+                {errors.lastName && (
+                  <span className="text-sm text-red-500">{errors.lastName}</span>
+                )}
+              </div>
             </div>
-            <div className="flex-1 space-y-2">
-              <label className="text-sm font-medium text-gray-600">Last Name*</label>
-              <input
-                type="text"
-                name="lastName"
-                placeholder="Last Name"
-                value={formData.lastName}
-                onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400"
-              />
+
+            <div className="space-y-2">
+              <label htmlFor="email" className="text-sm font-medium text-foreground">Email Address</label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <input
+                  id="email"
+                  type="email"
+                  name="email"
+                  placeholder="Enter your email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className={cn(
+                    "w-full pl-10 pr-4 py-3 rounded-xl bg-background border-2 transition-all duration-200",
+                    "focus:outline-none focus:border-[#6938EF] focus:ring-2 focus:ring-[#6938EF]/20",
+                    errors.email ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" : "border-input",
+                    theme === 'dark' ? 'bg-[#1A1425] text-white' : 'bg-white text-foreground'
+                  )}
+                />
+              </div>
+              {errors.email && (
+                <span className="text-sm text-red-500">{errors.email}</span>
+              )}
             </div>
-          </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-600">Email*</label>
-            <input
-              type="email"
-              name="email"
-              placeholder="Email"
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400"
-            />
-          </div>
+            <div className="space-y-2">
+              <label htmlFor="password" className="text-sm font-medium text-foreground">Password</label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <input
+                  id="password"
+                  type="password"
+                  name="password"
+                  placeholder="Create a password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className={cn(
+                    "w-full pl-10 pr-4 py-3 rounded-xl bg-background border-2 transition-all duration-200",
+                    "focus:outline-none focus:border-[#6938EF] focus:ring-2 focus:ring-[#6938EF]/20",
+                    errors.password ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" : "border-input",
+                    theme === 'dark' ? 'bg-[#1A1425] text-white' : 'bg-white text-foreground'
+                  )}
+                />
+              </div>
+              {errors.password && (
+                <span className="text-sm text-red-500">{errors.password}</span>
+              )}
+            </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-600">Password*</label>
-            <input
-              type="password"
-              name="password"
-              placeholder="********"
-              value={formData.password}
-              onChange={handleChange}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400"
-            />
-          </div>
+            <div className="space-y-2">
+              <label htmlFor="interests" className="text-sm font-medium text-foreground">Interests</label>
+              <div className="relative">
+                <Heart className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <input
+                  id="interests"
+                  type="text"
+                  name="interests"
+                  placeholder="What interests you?"
+                  value={formData.interests}
+                  onChange={handleChange}
+                  className={cn(
+                    "w-full pl-10 pr-4 py-3 rounded-xl bg-background border-2 transition-all duration-200",
+                    "focus:outline-none focus:border-[#6938EF] focus:ring-2 focus:ring-[#6938EF]/20",
+                    errors.interests ? "border-red-500 focus:border-red-500 focus:ring-red-500/20" : "border-input",
+                    theme === 'dark' ? 'bg-[#1A1425] text-white' : 'bg-white text-foreground'
+                  )}
+                />
+              </div>
+              {errors.interests && (
+                <span className="text-sm text-red-500">{errors.interests}</span>
+              )}
+            </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-600">Occupation</label>
-            <select
-              name="occupation"
-              value={formData.occupation}
-              onChange={handleChange}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400"
+            <motion.button 
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              type="submit" 
+              className={cn(
+                "w-full py-3 px-4 rounded-xl font-semibold text-white transition-all duration-200",
+                "bg-[#6938EF] hover:bg-[#5B2FD1] focus:outline-none focus:ring-2 focus:ring-[#6938EF]/20",
+                "disabled:opacity-70 disabled:cursor-not-allowed",
+                loading ? "flex items-center justify-center" : ""
+              )}
+              disabled={loading}
             >
-              <option value="">eg. Student</option>
-              <option value="student">Student</option>
-              <option value="professional">Professional</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-600">Interests/Skills</label>
-            <select
-              name="interests"
-              value={formData.interests}
-              onChange={handleChange}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400"
-            >
-              <option value="">eg. Video Editing</option>
-              <option value="videoEditing">Video Editing</option>
-              <option value="programming">Programming</option>
-              <option value="design">Design</option>
-            </select>
-          </div>
-
-          <button type="submit" className="w-full p-3 mt-4 bg-gradient-to-r from-purple-500 to-blue-500 text-white font-semibold rounded-lg hover:bg-gradient-to-l focus:ring-2 focus:ring-blue-400">
-            REGISTER
-          </button>
+              {loading ? (
+                <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+              ) : (
+                'Create Account'
+              )}
+            </motion.button>
+          </motion.div>
         </form>
 
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">OR</p>
-          <div className="flex justify-center space-x-4 mt-4">
-            <button className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300" onClick={onGoggleSignIn}>
-              <img src="https://dashboard.codeparrot.ai/api/image/Z8KGqG37P2WCQpKV/google.png" alt="Google" />
-            </button>
-            <button className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center hover:bg-gray-300">
-              <img src="https://dashboard.codeparrot.ai/api/image/Z8KGqG37P2WCQpKV/facebook.png" alt="Facebook" />
-            </button>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="mt-8 text-center"
+        >
+          <div className="relative flex items-center justify-center my-6">
+            <div className="absolute inset-0 border-t border-border"></div>
+            <span className="relative px-4 text-sm text-muted-foreground bg-card">
+              Or sign up with
+            </span>
           </div>
-        </div>
+          <div className="flex justify-center gap-4">
+            <motion.button 
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className={cn(
+                "flex items-center gap-2 px-6 py-3 rounded-xl border transition-all duration-200",
+                "hover:bg-accent/50",
+                theme === 'dark' ? 'border-[#6938EF]/20' : 'border-border'
+              )}
+              onClick={onGoggleSignIn}
+              aria-label="Sign up with Google"
+            >
+              <FaGoogle className="text-xl text-[#ea4335]" />
+              <span className="text-sm font-medium">Google</span>
+            </motion.button>
+            <motion.button 
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className={cn(
+                "flex items-center gap-2 px-6 py-3 rounded-xl border transition-all duration-200",
+                "hover:bg-accent/50",
+                theme === 'dark' ? 'border-[#6938EF]/20' : 'border-border'
+              )}
+              aria-label="Sign up with Facebook"
+            >
+              <FaFacebook className="text-xl text-[#1877f2]" />
+              <span className="text-sm font-medium">Facebook</span>
+            </motion.button>
+          </div>
+        </motion.div>
+
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6 }}
+          className="mt-8 text-center text-muted-foreground"
+        >
+          <p>
+            Already have an account?{' '}
+            <Link to="/login" className="text-[#6938EF] font-semibold hover:underline">
+              Sign in
+            </Link>
+          </p>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
