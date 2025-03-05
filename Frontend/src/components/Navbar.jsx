@@ -1,8 +1,8 @@
-import { Link } from "react-router-dom"
-import { ThemeToggle } from "./theme-toggle"
-import { Button } from "./ui/button"
-import { GraduationCap, Menu, User } from "lucide-react"
-import { useSelector } from "react-redux"
+import { Link } from "react-router-dom";
+import { ThemeToggle } from "./theme-toggle";
+import { Button } from "./ui/button";
+import { GraduationCap, Menu, User } from "lucide-react";
+import { useSelector, useDispatch } from "react-redux"; // Add useDispatch
 import {
   Sheet,
   SheetContent,
@@ -10,53 +10,84 @@ import {
   SheetTitle,
   SheetTrigger,
   SheetClose,
-} from "@/components/ui/sheet"
+} from "@/components/ui/sheet";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
+import { signOut as firebaseSignOut, getAuth } from "firebase/auth"; // Import Firebase's signOut
 
+// Your action to update Redux auth state (reset user)
+import { logout } from "../redux/slices/authSlice"; // Adjust import path as necessary
 
-export function Navbar({ openModal ,openLoginModal}) {
+export function Navbar({ openModal, openLoginModal }) {
   const navigate = useNavigate();
-  
+  const dispatch = useDispatch(); // Initialize dispatch
   const authState = useSelector((state) => state.auth);
   const user = authState.userData;
-  
+
+  // Sign out function
+  const handleSignOut = async () => {
+    try {
+      // Call the API to log out the user
+      const response = await fetch("http://localhost:5000/api/auth/logout", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        // Remove JWT token from localStorage (or sessionStorage)
+        localStorage.removeItem("auth_token");
+        
+        // Dispatch the logout action to reset the Redux state
+        dispatch(logout());
+
+        // Redirect the user to homepage or login page after sign out
+        navigate("/"); // or navigate("/"); depending on your flow
+      } else {
+        console.error("Logout failed:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error during sign-out:", error);
+    }
+  };
+
+
   const menuItems = [
     { path: "/", label: "Home" },
     { path: "/community", label: "Community" },
     { path: "/internships", label: "Internships" },
     { path: "/dashboard", label: "Dashboard" },
-  ]
+  ];
+
   const UserActions = () => {
-    if (!user) {
+    if (authState.status === false) {
       return (
         <>
-          <Button 
-            variant="ghost" 
-            size="sm" 
+          <Button
+            variant="ghost"
+            size="sm"
             className="text-gray-600 dark:text-gray-300 hover:text-[#6938EF] dark:hover:text-[#9D7BFF] hover:bg-purple-50 dark:hover:bg-purple-900/20"
             onClick={() => navigate("/login")}
-
           >
             Sign In
           </Button>
-          <Button 
-            size="sm" 
+          <Button
+            size="sm"
             className="bg-[#6938EF] dark:bg-[#9D7BFF] text-white hover:bg-[#5B2FD1] dark:hover:bg-[#8B63FF] transition-colors"
             onClick={() => navigate("/signup")}
-
           >
             Get Started
           </Button>
         </>
-      )
+      );
     }
 
     return (
@@ -80,35 +111,38 @@ export function Navbar({ openModal ,openLoginModal}) {
             <Link to="/settings" className="w-full">Settings</Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem className="text-red-600 dark:text-red-400">
+          <DropdownMenuItem
+            className="text-red-600 dark:text-red-400"
+            onClick={handleSignOut} // Call the sign out function
+          >
             Sign Out
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-    )
-  }
+    );
+  };
 
   const MobileUserActions = () => {
-    if (!user) {
+    if (authState.status === false) {
       return (
         <div className="flex flex-col space-y-3">
           <SheetClose asChild>
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               className="w-full justify-center text-gray-600 dark:text-gray-300 hover:text-[#6938EF] dark:hover:text-[#9D7BFF] hover:bg-purple-50 dark:hover:bg-purple-900/20"
             >
               Sign In
             </Button>
           </SheetClose>
           <SheetClose asChild>
-            <Button 
+            <Button
               className="w-full justify-center bg-[#6938EF] dark:bg-[#9D7BFF] text-white hover:bg-[#5B2FD1] dark:hover:bg-[#8B63FF]"
             >
               Get Started
             </Button>
           </SheetClose>
         </div>
-      )
+      );
     }
 
     return (
@@ -126,16 +160,17 @@ export function Navbar({ openModal ,openLoginModal}) {
           </div>
         </div>
         <SheetClose asChild>
-          <Button 
+          <Button
             variant="ghost"
             className="w-full justify-center text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+            onClick={handleSignOut} // Call the sign out function
           >
             Sign Out
           </Button>
         </SheetClose>
       </div>
-    )
-  }
+    );
+  };
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-purple-100 dark:border-purple-900/40 bg-white dark:bg-gray-900">
@@ -171,17 +206,17 @@ export function Navbar({ openModal ,openLoginModal}) {
           {/* Mobile Menu */}
           <Sheet>
             <SheetTrigger asChild className="md:hidden">
-              <Button 
-                variant="ghost" 
-                size="icon" 
+              <Button
+                variant="ghost"
+                size="icon"
                 className="mr-2 text-gray-600 dark:text-gray-300 hover:text-[#6938EF] dark:hover:text-[#9D7BFF] hover:bg-purple-50 dark:hover:bg-purple-900/20"
               >
                 <Menu className="h-5 w-5" />
                 <span className="sr-only">Toggle menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent 
-              side="left" 
+            <SheetContent
+              side="left"
               className="w-[300px] sm:w-[400px] p-0 border-purple-100 dark:border-purple-900/40 bg-white dark:bg-gray-900"
             >
               <SheetHeader className="p-6 border-b border-purple-100 dark:border-purple-900/40">
@@ -208,17 +243,15 @@ export function Navbar({ openModal ,openLoginModal}) {
                 <div className="p-6 border-t border-purple-100 dark:border-purple-900/40">
                   <div className="flex flex-col space-y-3">
                     <SheetClose asChild>
-                      <Button 
-                        variant="ghost" 
+                      <Button
+                        variant="ghost"
                         className="w-full justify-center text-gray-600 dark:text-gray-300 hover:text-[#6938EF] dark:hover:text-[#9D7BFF] hover:bg-purple-50 dark:hover:bg-purple-900/20"
                       >
                         Sign In
                       </Button>
                     </SheetClose>
                     <SheetClose asChild>
-                      <Button 
-                        className="w-full justify-center bg-[#6938EF] dark:bg-[#9D7BFF] text-white hover:bg-[#5B2FD1] dark:hover:bg-[#8B63FF]"
-                      >
+                      <Button className="w-full justify-center bg-[#6938EF] dark:bg-[#9D7BFF] text-white hover:bg-[#5B2FD1] dark:hover:bg-[#8B63FF]">
                         Get Started
                       </Button>
                     </SheetClose>
@@ -230,5 +263,5 @@ export function Navbar({ openModal ,openLoginModal}) {
         </div>
       </div>
     </nav>
-  )
+  );
 }

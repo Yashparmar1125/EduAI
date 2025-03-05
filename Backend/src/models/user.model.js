@@ -10,9 +10,14 @@ const userSchema = new mongoose.Schema(
     profilePicture: { type: String }, // URL to Firebase Storage
     skills: [{ type: String }], // Skills for AI learning path
     badges: [{ type: mongoose.Schema.Types.ObjectId, ref: "Badge" }],
-    enrolledCourses: [
-      { type: mongoose.Schema.Types.ObjectId, ref: "Enrollment" },
-    ],
+    enrolledCourses: [{ 
+      courseId: { type: mongoose.Schema.Types.ObjectId, ref: "Course" },
+      progress: { type: Number, default: 0 }, // Percentage
+      currentModule: { type: mongoose.Schema.Types.ObjectId }, // The module they're watching
+      videoProgress: { type: Number, default: 0 }, // Percentage of video watched
+      completedModules: [{ type: mongoose.Schema.Types.ObjectId, ref: "Module" }],
+      certificateUrl: { type: String, default: null },
+    }],
     completedCourses: [
       { type: mongoose.Schema.Types.ObjectId, ref: "Certificate" },
     ],

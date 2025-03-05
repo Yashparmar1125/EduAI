@@ -1,21 +1,24 @@
-import React ,{useState}from 'react';
+import React, { useState } from 'react';
 import LeftSection from './LeftSection';
 import RightSection from './RightSection';
 import './Layout.css';
 import { getAuth, signInWithPopup } from 'firebase/auth';
-import {  googleProvider } from '../../firebase/firebase';
-import { useNavigate } from 'react-router-dom';  // Use useNavigate instead of useHistory
+import { googleProvider } from '../../firebase/firebase';
+import { useNavigate } from 'react-router-dom'; 
+import { useDispatch } from 'react-redux';  // Import useDispatch from react-redux
+import { login } from '../../redux/slices/authSlice';  // Import login action from your slice
 
 const Layout = () => {
-  const navigate = useNavigate();  // Use useNavigate for navigation
-  const [error, setError] = useState('');
+  const dispatch = useDispatch();  // Create dispatch function to send actions to Redux
+  const navigate = useNavigate(); 
+  const [error, setError] = useState('');  // Handling login error state
 
-  const onGoggleSignIn = async () => {
+  // Google sign-in handler
+  const onGoogleSignIn = async () => {
     try {
-      const auth = getAuth();  // Initialize Firebase Auth
-      const result = await signInWithPopup(auth, googleProvider);  // Use signInWithPopup from the modular API
+      const auth = getAuth();  
+      const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
-      console.log(user);
 
       // Send user information to your backend to create a session
       const response = await fetch('http://localhost:5000/api/auth/google/login', {
@@ -23,16 +26,28 @@ const Layout = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ auth_token: await user.getIdToken() }), // Send Firebase token to the backend
+        body: JSON.stringify({ auth_token: await user.getIdToken() }), 
       });
 
       if (response.ok) {
-        navigate('/dashboard'); // Redirect to a protected route
+        const responseData = await response.json();  // Parse the JSON here
+        // Dispatch login action to Redux store
+        dispatch(login({
+          name: user.displayName,
+          email: user.email,
+          avatar: user.photoURL,
+          role: responseData.user.role,  // Set role from backend
+        }));
+        navigate('/dashboard');  // Redirect to dashboard after successful login
       }
+      
     } catch (error) {
-      console.error("Error during login", error);
+      console.error("Error during Google login", error);
+      setError("Error during Google login.");
     }
   };
+
+  // Email/password login handler
   const onLogin = async (email, password) => {
     if (!email || !password) {
       setError("Please enter both email and password.");
@@ -40,8 +55,6 @@ const Layout = () => {
     }
 
     try {
-
-      // Send user information to your backend to create a session
       const response = await fetch('http://localhost:5000/api/auth/login', {
         method: 'POST',
         headers: {
@@ -51,7 +64,15 @@ const Layout = () => {
       });
 
       if (response.ok) {
-        navigate('/dashboard'); // Redirect to a protected route
+        // Dispatch login action to Redux store after successful response
+        const res = await response.json();
+        dispatch(login({
+          name: res.user.name,
+          email: res.user.email,
+          avatar: res.user.profilePicture,
+          role: res.user.role,
+        }));
+        navigate('/dashboard');  // Redirect to dashboard after successful login
       } else {
         setError("Invalid email or password.");
       }
@@ -67,7 +88,12 @@ const Layout = () => {
         <LeftSection />
       </div>
       <div className="flex-grow flex justify-center items-center">
-        <RightSection onGoggleSignIn={onGoggleSignIn} onLogin={onLogin} />
+        {/* Pass Google Sign-In handler and login handler to RightSection */}
+        <RightSection 
+          onGoogleSignIn={onGoogleSignIn} 
+          onLogin={onLogin} 
+          error={error}  // Pass error message for display
+        />
       </div>
     </div>
   );
