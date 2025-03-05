@@ -21,7 +21,7 @@ import {
 const router = express.Router();
 
 //middlewares imports
-import authMiddleware from "../middleware/auth.middleware.js";
+import { authMiddleware } from "../middleware/auth.middleware.js";
 
 //routes
 router.post("/register", validateRegistration, register);

@@ -4,9 +4,12 @@ import RightSection from './RightSection';
 import { getAuth, signInWithPopup } from 'firebase/auth';
 import {  googleProvider } from '../../firebase/firebase';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';  // Import useDispatch from react-redux
+import { login } from '../../redux/slices/authSlice';
 
 const Layout = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();  // Create dispatch function to send actions to Redux 
   const onGoggleSignUp = async () => {
       try {
         const auth = getAuth();  // Initialize Firebase Auth
@@ -24,8 +27,16 @@ const Layout = () => {
         });
   
         if (response.ok) {
-          navigate('/dashboard'); // Redirect to a protected route
-        }
+                const responseData = await response.json();  // Parse the JSON here
+                // Dispatch login action to Redux store
+                dispatch(login({
+                  name: user.displayName,
+                  email: user.email,
+                  avatar: user.photoURL,
+                  role: responseData.user.role,  // Set role from backend
+                }));
+                navigate('/dashboard');  // Redirect to dashboard after successful login
+              }
       } catch (error) {
         console.error("Error during register", error);
       }

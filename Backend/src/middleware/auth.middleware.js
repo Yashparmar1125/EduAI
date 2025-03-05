@@ -1,6 +1,6 @@
 import { verifyToken } from "../utils/jwt.util.js";
 import User from "../models/user.model.js";
-const authMiddleware = async (req, res, next) => {
+export const authMiddleware = async (req, res, next) => {
   try {
     const token = req.cookies.token;
     if (!token) {
@@ -21,4 +21,10 @@ const authMiddleware = async (req, res, next) => {
   }
 };
 
-export default authMiddleware;
+export const isInstructor = async (req, res, next) => {
+  if (req.user.role !== "instructor") {
+    return res.status(403).json({ message: "Unauthorized", success: false });
+  }
+  next();
+};
+

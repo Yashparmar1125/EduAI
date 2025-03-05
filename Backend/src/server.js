@@ -11,6 +11,8 @@ import connectDB from "./utils/connection.util.js";
 //routes imports
 import healthRoutes from "./routes/health.routes.js";
 import authRoutes from "./routes/auth.routes.js";
+import courseRoutes from "./routes/course.routes.js"; 
+import progressRoutes from "./routes/progress.routes.js";
 
 import serviceAccount from "../service-account.json" assert { type: "json" };
 
