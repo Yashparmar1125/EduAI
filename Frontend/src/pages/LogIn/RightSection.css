@@ -148,3 +148,23 @@
   }
 }
 
+.signup-prompt {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.signup-prompt p {
+  color: black; /* Set text color to black */
+}
+
+.signup-link {
+  color: #007bff; /* Blue color for the signup link */
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.signup-link:hover {
+  text-decoration: underline;
+}

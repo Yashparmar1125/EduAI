@@ -1,8 +1,11 @@
 import { Button } from "@/components/ui/button"
+import { FaBook, FaChartLine, FaUsers } from "react-icons/fa" // Importing icons
 
 export function Home() {
   return (
+
     <div className="min-h-screen">
+      
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row items-center justify-between py-16 md:py-24 gap-8">
           {/* Left side - Content */}
@@ -37,19 +40,28 @@ export function Home() {
         {/* Features Section */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 py-16">
           <div className="space-y-4 p-6 rounded-lg border">
-            <h3 className="text-xl font-semibold">Personalized Learning</h3>
+            <div className="flex items-center gap-2">
+              <FaBook className="text-primary" size={24} />
+              <h3 className="text-xl font-semibold">Personalized Learning</h3>
+            </div>
             <p className="text-muted-foreground">
               AI-driven paths tailored to your goals and current skill level
             </p>
           </div>
           <div className="space-y-4 p-6 rounded-lg border">
-            <h3 className="text-xl font-semibold">Skill Tracking</h3>
+            <div className="flex items-center gap-2">
+              <FaChartLine className="text-primary" size={24} />
+              <h3 className="text-xl font-semibold">Skill Tracking</h3>
+            </div>
             <p className="text-muted-foreground">
               Monitor your progress and identify areas for improvement
             </p>
           </div>
           <div className="space-y-4 p-6 rounded-lg border">
-            <h3 className="text-xl font-semibold">Community Support</h3>
+            <div className="flex items-center gap-2">
+              <FaUsers className="text-primary" size={24} />
+              <h3 className="text-xl font-semibold">Community Support</h3>
+            </div>
             <p className="text-muted-foreground">
               Learn and grow together with like-minded professionals
             </p>

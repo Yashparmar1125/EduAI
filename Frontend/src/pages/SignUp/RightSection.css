@@ -10,8 +10,8 @@
   background: #ffffff;
   border-radius: 12.37px; /* Reduced by 20% */
   padding: 2.4rem; /* Reduced by 20% */
-  width: 100%;
-  max-width: 624px; /* Reduced by 20% */
+  width: 80%;
+  max-width: calc(624px - 10px); /* Reduce max-width by 10px */
 }
 
 .signup-title {
@@ -20,7 +20,6 @@
   font-size: 2rem; /* Reduced by 20% */
   text-align: center;
   margin-bottom: 0.4rem; /* Reduced by 20% */
-  color: black  ;
 }
 
 .signup-subtitle {
@@ -28,14 +27,12 @@
   font-size: 0.9rem; /* Reduced by 20% */
   text-align: center;
   margin-bottom: 1.6rem; /* Reduced by 20% */
-  color: black;
 }
 
 .signup-form {
   display: flex;
   flex-direction: column;
   gap: 1rem; /* Reduced by 20% */
-  color: black;
 }
 
 .name-row {
@@ -55,15 +52,39 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem; /* Reduced by 20% */
-  width: 100%; /* Set max-width to align with other fields */
-  padding-right: 20px;
-  padding-left: 10px;
+  width: 95%; /* Set max-width to align with other fields */
 }
 
 .input-group1 label {
   font-family: 'Urbanist', sans-serif;
   font-size: 0.9rem; /* Reduced by 20% */
   font-weight: 400;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem; /* Reduced by 20% */
+  width: 125%; /* Ensure consistent input box lengths */
+  padding-left: 70px;
+}
+
+.input-group label {
+  font-family: 'Urbanist', sans-serif;
+  font-size: 0.9rem; /* Reduced by 20% */
+  font-weight: 400;
+}
+
+.input-group input,
+.input-group select {
+  padding: 0.68rem; /* Reduced by 20% */
+  border-radius: 6.8px; /* Reduced by 20% */
+  background: #caf0f8;
+  border: none;
+  font-family: 'Urbanist', sans-serif;
+  font-size: 0.8rem; /* Reduced by 20% */
+  color: #0077b6;
+  width: 100%;
 }
 
 .input-group1 input,
@@ -83,6 +104,17 @@
   width: 100%; /* Ensure consistent input box widths */
 }
 
+.select-wrapper select {
+  width: 100%; /* Ensure select elements take full width */
+  padding: 0.68rem; /* Ensure padding is consistent */
+  border-radius: 6.8px; /* Ensure border-radius is consistent */
+  background: #caf0f8; /* Ensure background is consistent */
+  border: none; /* Ensure no border is applied */
+  font-family: 'Urbanist', sans-serif; /* Ensure font-family is consistent */
+  font-size: 0.8rem; /* Ensure font-size is consistent */
+  color: #0077b6; /* Ensure color is consistent */
+}
+
 .signup-button {
   background: #4361ee;
   color: #caf0f8;
@@ -94,8 +126,6 @@
   font-size: 0.9rem; /* Reduced by 20% */
   cursor: pointer;
   transition: background-color 0.2s;
-  width: 95%; /* Ensure consistent input box lengths */
-  margin-top: 10px;
 }
 
 .signup-button:hover {
@@ -103,14 +133,13 @@
 }
 
 .social-login {
-  margin-top: 5px; /* Reduced by 20% */
+  margin-top: 1.6rem; /* Reduced by 20% */
   text-align: center;
 }
 
 .social-login p {
   font-family: 'Urbanist', sans-serif;
   font-size: 1rem; /* Reduced by 20% */
-  color: black;
   margin: 0.8rem 0; /* Reduced by 20% */
 }
 
