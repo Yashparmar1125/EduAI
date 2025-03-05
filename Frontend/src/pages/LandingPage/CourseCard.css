@@ -1,0 +1,98 @@
+.course-card {
+  width: 100%;
+  max-width: 394px;
+  height: auto;
+  background: #FFFFFF;
+  border-radius: 12px;
+  border: 1px solid #f3f4f6;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.course-card:hover {
+  transform: translateY(-5px);
+}
+
+.course-image {
+  width: 100%;
+  height: 192px;
+  object-fit: cover;
+}
+
+.course-content {
+  padding: 16px;
+}
+
+.level-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.level-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.level-badge span {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  line-height: 14px;
+  font-weight: 400;
+}
+
+.course-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 700;
+  color: #000000;
+  margin: 12px 0;
+}
+
+.instructor-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.instructor-image {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+
+.instructor-name {
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  line-height: 16px;
+  color: #4b5563;
+}
+
+.rating-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.star-icon {
+  width: 18px;
+  height: 16px;
+}
+
+.rating-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  line-height: 16px;
+  color: #000000;
+}
+
+@media (max-width: 768px) {
+  .course-card {
+    margin: 10px;
+  }
+}
+
