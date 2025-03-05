@@ -7,6 +7,7 @@ import { googleProvider } from '../../firebase/firebase';
 import { useNavigate } from 'react-router-dom'; 
 import { useDispatch } from 'react-redux';  // Import useDispatch from react-redux
 import { login } from '../../redux/slices/authSlice';  // Import login action from your slice
+import { updateUserProfile } from '../../redux/slices/userSlice';
 import { googleLogin,emailLogin } from '../../api/axios.api';
 
 const Layout = () => {
@@ -31,6 +32,10 @@ const Layout = () => {
           name: user.displayName,
           email: user.email,
           avatar: user.photoURL,
+          role: responseData.user.role,  // Set role from backend
+        }));
+        dispatch(updateUserProfile({
+          name: user.displayName,
           role: responseData.user.role,  // Set role from backend
         }));
         navigate('/dashboard');  // Redirect to dashboard after successful login

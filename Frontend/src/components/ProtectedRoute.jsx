@@ -4,14 +4,26 @@ import { useSelector } from 'react-redux';
 
 // ProtectedRoute component that checks the authentication status
 const ProtectedRoute = ({ element }) => {
-  const { status } = useSelector((state) => state.auth); // Accessing authentication status from Redux
+  const auth = useSelector((state) => state.auth);
+  
+  // Add loading state check
+  if (!auth) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#6938EF]"></div>
+      </div>
+    );
+  }
 
-  // If the user is not authenticated, redirect to the login page
-  if (!status) {
+  // Check if user is authenticated
+  const isAuthenticated = auth.status && auth.userData && auth.userData.email;
+  
+  if (!isAuthenticated) {
+    console.log('Auth state:', auth); // Debug log
     return <Navigate to="/login" />;
   }
 
-  return element; // Render the protected element if the user is authenticated
+  return element;
 };
 
 export default ProtectedRoute;
