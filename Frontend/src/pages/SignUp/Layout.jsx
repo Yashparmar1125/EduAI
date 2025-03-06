@@ -24,13 +24,13 @@ const Layout = () => {
 
       const response = await googleSignup(auth_token);
 
-      if (response.status === 200) {
-        const responseData = await response.data;
+      if (response.success==true) {
+        
         dispatch(login({
           name: user.displayName,
           email: user.email,
           avatar: user.photoURL,
-          role: responseData.user.role,
+          role: response.user.role,
         }));
         navigate('/dashboard');
       }
@@ -56,7 +56,7 @@ const Layout = () => {
 
       console.log('Signup response:', response);
 
-      if (response.status === 200) {
+      if (response.success==true) {
         dispatch(login({
           name: `${formData.firstName} ${formData.lastName}`,
           email: formData.email,

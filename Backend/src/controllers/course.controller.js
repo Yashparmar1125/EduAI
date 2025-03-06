@@ -2,14 +2,12 @@ import Course from "../models/course.model.js";
 import User from "../models/user.model.js";
 import { validationResult } from "express-validator";
 import { deleteImage } from "../utils/cloudinary.js";
-
+import mongoose from "mongoose";
 // Get course details
 export const getCourseDetails = async (req, res) => {
   try {
-    const { courseId } = req.params;
-
-    const course = await Course.findById(courseId)
-      .populate("instructor", "name email")
+    const course = await Course.findById(req.params.courseId)
+      .populate("instructor", "name")
       .lean();
 
     if (!course) {
@@ -18,24 +16,23 @@ export const getCourseDetails = async (req, res) => {
       });
     }
 
-    // Check if user is instructor or enrolled student
-    const isInstructor = course.instructor._id.toString() === req.user.userId;
-    const isEnrolled = course.studentsEnrolled.includes(req.user.userId);
-
-    if (!isInstructor && !isEnrolled) {
-      return res.status(403).json({
-        message: "You don't have access to this course",
-      });
-    }
+    // Check if the user is enrolled in this course
+    const isEnrolled = course.studentsEnrolled.some(
+      (studentId) => studentId.toString() === req.user.userId
+    );
 
     res.json({
-      message: "Course details retrieved successfully",
-      course,
+      success: true,
+      course: {
+        ...course,
+        isEnrolled,
+      },
     });
   } catch (error) {
-    console.error("Error getting course details:", error);
+    console.error("Error fetching course details:", error);
     res.status(500).json({
-      message: "Error getting course details",
+      success: false,
+      message: "Error fetching course details",
       error: error.message,
     });
   }
@@ -248,6 +245,7 @@ export const updateCourse = async (req, res) => {
 // Enroll a user in a course
 export const enrollCourse = async (req, res) => {
   try {
+    // Validate incoming request
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -256,6 +254,7 @@ export const enrollCourse = async (req, res) => {
     const { courseId } = req.params;
     const userId = req.user.userId;
 
+    // Find the course
     const course = await Course.findById(courseId);
     if (!course) {
       return res.status(404).json({
@@ -263,29 +262,69 @@ export const enrollCourse = async (req, res) => {
       });
     }
 
-    // Check if user is already enrolled
-    if (course.studentsEnrolled.includes(userId)) {
+    // Find the user
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    // Check if user is already enrolled in the course
+    const isEnrolled = user.enrolledCourses.some(
+      (enrollment) => enrollment.courseId.toString() === courseId
+    );
+
+    if (isEnrolled) {
       return res.status(400).json({
         message: "You are already enrolled in this course",
       });
     }
 
-    course.studentsEnrolled.push(userId);
-    await course.save();
+    // Get the first module of the course, or null if no modules exist
+    const firstModule =
+      course.modules.length > 0 ? course.modules[0]._id : null;
 
+    // Add course to user's enrolled courses with the updated structure
+    user.enrolledCourses.push({
+      courseId: courseId,
+      progress: 0, // Initialize progress to 0
+      currentModule: firstModule, // Set the first module's ID (or null if no modules)
+      videoProgress: {}, // Initialize an empty object to track video progress for each module
+      completedModules: [], // Empty array to track completed modules (as ObjectIds)
+    });
+
+    // Add user to the course's enrolled students if not already added
+    if (!course.studentsEnrolled.includes(userId)) {
+      course.studentsEnrolled.push(userId);
+    }
+
+    // Save both user and course documents
+    await Promise.all([user.save(), course.save()]);
+
+    // Send response to client
     res.json({
+      success: true,
       message: "Successfully enrolled in the course",
-      course,
+      course: {
+        id: course._id,
+        title: course.title,
+        description: course.description,
+        instructor: course.instructor,
+        poster: course.poster,
+        level: course.level,
+        price: course.price,
+      },
     });
   } catch (error) {
     console.error("Error enrolling in course:", error);
     res.status(500).json({
+      success: false,
       message: "Error enrolling in course",
       error: error.message,
     });
   }
 };
-
 // Track the user's progress in a course
 export const trackProgress = async (req, res) => {
   try {

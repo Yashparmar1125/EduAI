@@ -120,6 +120,9 @@ const Dashboard = () => {
       const response = await enrollCourse(id);
       if (response.success) {
         dispatch(enrollInCourse(id));
+        // Refresh dashboard data after successful enrollment
+        const updatedData = await getDashboardData();
+        setDashboardData(updatedData);
         toast({
           title: "Success",
           description: "Course enrolled successfully",
@@ -491,9 +494,11 @@ const Dashboard = () => {
               <div className="space-y-4">
                 {dashboardData.trendingCourses.map((course) => (
                   <div key={course.id} className={cn(
-                    "p-4 rounded-lg border",
+                    "p-4 rounded-lg border cursor-pointer",
                     theme === 'dark' ? 'bg-[#1A1425] border-[#6938EF]/10' : 'bg-accent/50 border-border'
-                  )}>
+                  )}
+                  onClick={() => navigate(`/dashboard/course/${course.id}`)}
+                  >
                     <div className="flex gap-4">
                       <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
                         <img 
@@ -534,7 +539,10 @@ const Dashboard = () => {
                               size="sm" 
                               variant="ghost" 
                               className="h-7 px-2 text-xs text-[#6938EF]"
-                              onClick={() => handleEnroll(course.id)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleEnroll(course.id);
+                              }}
                             >
                               Enroll Now
                             </Button>
@@ -557,6 +565,107 @@ const Dashboard = () => {
         ) : (
           // Existing User Dashboard
           <>
+            {/* Quick Actions Section */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="mb-8"
+            >
+              <div className={cn(
+                "p-6 rounded-xl border shadow-sm",
+                theme === 'dark' ? 'bg-[#110C1D] border-[#6938EF]/20' : 'bg-card border-border'
+              )}>
+                <h2 className={cn(
+                  "text-lg font-semibold mb-4",
+                  theme === 'dark' ? 'text-white' : 'text-foreground'
+                )}>
+                  Quick Actions
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {/* Explore Courses Card */}
+                  <motion.div
+                    whileHover={{ scale: 1.02 }}
+                    className={cn(
+                      "p-4 rounded-xl border cursor-pointer transition-all",
+                      theme === 'dark' 
+                        ? 'bg-[#1A1425] border-[#6938EF]/10 hover:border-[#6938EF]/30' 
+                        : 'bg-accent/50 border-border hover:border-[#6938EF]/30'
+                    )}
+                    onClick={() => navigate('/explore')}
+                  >
+                    <div className="flex flex-col items-center text-center">
+                      <div className="p-3 rounded-lg bg-[#6938EF]/10 mb-3">
+                        <BookOpen className="h-6 w-6 text-[#6938EF]" />
+                      </div>
+                      <h3 className="font-medium text-sm mb-1">Explore Courses</h3>
+                      <p className="text-xs text-muted-foreground">Discover new courses to enhance your skills</p>
+                    </div>
+                  </motion.div>
+
+                  {/* Skill Assessment Card */}
+                  <motion.div
+                    whileHover={{ scale: 1.02 }}
+                    className={cn(
+                      "p-4 rounded-xl border cursor-pointer transition-all",
+                      theme === 'dark' 
+                        ? 'bg-[#1A1425] border-[#6938EF]/10 hover:border-[#6938EF]/30' 
+                        : 'bg-accent/50 border-border hover:border-[#6938EF]/30'
+                    )}
+                    onClick={() => navigate('/assessment')}
+                  >
+                    <div className="flex flex-col items-center text-center">
+                      <div className="p-3 rounded-lg bg-[#6938EF]/10 mb-3">
+                        <Trophy className="h-6 w-6 text-[#6938EF]" />
+                      </div>
+                      <h3 className="font-medium text-sm mb-1">Skill Assessment</h3>
+                      <p className="text-xs text-muted-foreground">Evaluate your current skill level</p>
+                    </div>
+                  </motion.div>
+
+                  {/* Learning Path Card */}
+                  <motion.div
+                    whileHover={{ scale: 1.02 }}
+                    className={cn(
+                      "p-4 rounded-xl border cursor-pointer transition-all",
+                      theme === 'dark' 
+                        ? 'bg-[#1A1425] border-[#6938EF]/10 hover:border-[#6938EF]/30' 
+                        : 'bg-accent/50 border-border hover:border-[#6938EF]/30'
+                    )}
+                    onClick={() => navigate('/learning-paths')}
+                  >
+                    <div className="flex flex-col items-center text-center">
+                      <div className="p-3 rounded-lg bg-[#6938EF]/10 mb-3">
+                        <BookMarked className="h-6 w-6 text-[#6938EF]" />
+                      </div>
+                      <h3 className="font-medium text-sm mb-1">Learning Paths</h3>
+                      <p className="text-xs text-muted-foreground">Follow structured learning paths</p>
+                    </div>
+                  </motion.div>
+
+                  {/* Community Card */}
+                  <motion.div
+                    whileHover={{ scale: 1.02 }}
+                    className={cn(
+                      "p-4 rounded-xl border cursor-pointer transition-all",
+                      theme === 'dark' 
+                        ? 'bg-[#1A1425] border-[#6938EF]/10 hover:border-[#6938EF]/30' 
+                        : 'bg-accent/50 border-border hover:border-[#6938EF]/30'
+                    )}
+                    onClick={() => navigate('/community')}
+                  >
+                    <div className="flex flex-col items-center text-center">
+                      <div className="p-3 rounded-lg bg-[#6938EF]/10 mb-3">
+                        <MessageSquare className="h-6 w-6 text-[#6938EF]" />
+                      </div>
+                      <h3 className="font-medium text-sm mb-1">Community</h3>
+                      <p className="text-xs text-muted-foreground">Connect with other learners</p>
+                    </div>
+                  </motion.div>
+                </div>
+              </div>
+            </motion.div>
+
             {/* Learning Paths Section */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -689,11 +798,12 @@ const Dashboard = () => {
                           key={course.id}
                           whileHover={{ scale: 1.03 }}
                           className={cn(
-                            "p-4 rounded-xl border",
+                            "p-4 rounded-xl border cursor-pointer",
                             theme === 'dark' 
                               ? 'bg-[#1A1425]/50 border-[#6938EF]/10' 
                               : 'bg-accent/50 border-border'
                           )}
+                          onClick={() => navigate(`/dashboard/course/${course.id}`)}
                         >
                           <div className="flex flex-col h-full">
                             <h3 className="font-medium text-sm mb-2">{course.title}</h3>
@@ -714,7 +824,10 @@ const Dashboard = () => {
                                   size="sm" 
                                   variant="ghost" 
                                   className="h-7 px-2 text-xs text-[#6938EF]"
-                                  onClick={() => handleEnroll(course.id)}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleEnroll(course.id);
+                                  }}
                                 >
                                   {course.enrolled ? 'Enrolled' : 'Enroll'}
                                 </Button>

@@ -51,9 +51,13 @@ const userSlice = createSlice({
       state.avatarUrl = action.payload;
     },
     enrollInCourse: (state, action) => {
-      const courseId = action.payload;
-      if (!state.enrolledCourses.includes(courseId)) {
-        state.enrolledCourses.push(courseId);
+      const courseData = action.payload;
+      // Check if user is already enrolled
+      const isEnrolled = state.enrolledCourses.some(
+        (course) => course.courseId === courseData.courseId
+      );
+      if (!isEnrolled) {
+        state.enrolledCourses.push(courseData);
       }
     },
     completeCourse: (state, action) => {

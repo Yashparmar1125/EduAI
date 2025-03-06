@@ -11,7 +11,8 @@ export const getDashboardData = async (req, res) => {
     const user = await User.findById(userId)
       .populate({
         path: "enrolledCourses.courseId",
-        select: "title description instructor poster level",
+        select:
+          "title description instructor poster level price studentsEnrolled",
         populate: {
           path: "instructor",
           select: "name",
@@ -31,6 +32,10 @@ export const getDashboardData = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
+
+    // Debug log to check user data
+    console.log("User data:", JSON.stringify(user, null, 2));
+    console.log("Enrolled courses length:", user.enrolledCourses?.length);
 
     // Get trending courses (just get latest 3 courses for now)
     const trendingCourses = await Course.find()
@@ -52,46 +57,80 @@ export const getDashboardData = async (req, res) => {
       },
       isNewUser: !hasEnrolledCourses,
       enrolledCourses: hasEnrolledCourses
-        ? user.enrolledCourses.map((course) => ({
-            id: course.courseId._id,
-            title: course.courseId.title,
-            description: course.courseId.description,
-            instructor: course.courseId.instructor.name,
-            progress: course.progress,
-            poster: course.courseId.poster,
-            level: course.courseId.level,
-          }))
+        ? user.enrolledCourses
+            .map((enrollment) => {
+              // Ensure courseId exists and is populated correctly
+              if (!enrollment.courseId) {
+                console.error(
+                  "Course data missing for enrolled course:",
+                  enrollment
+                );
+                return null;
+              }
+
+              const courseData = {
+                id: enrollment.courseId._id,
+                title: enrollment.courseId.title || "Untitled Course",
+                description:
+                  enrollment.courseId.description || "No description available",
+                instructor:
+                  enrollment.courseId.instructor?.name || "Unknown Instructor",
+                progress: enrollment.progress || 0,
+                poster: enrollment.courseId.poster || "",
+                level: enrollment.courseId.level || "beginner",
+                currentModule: enrollment.currentModule,
+                videoProgress: enrollment.videoProgress,
+                completedModules: enrollment.completedModules || [],
+              };
+
+              return courseData;
+            })
+            .filter(Boolean) // Filter out any nulls from missing course data
         : [],
       completedCourses:
         user.completedCourses?.map((cert) => ({
           id: cert._id,
-          courseTitle: cert.course?.title,
+          courseTitle: cert.course?.title || "Untitled Course",
           issueDate: cert.issueDate,
           blockchainHash: cert.blockchainHash,
         })) || [],
       badges:
         user.badges?.map((badge) => ({
           id: badge._id,
-          name: badge.name,
-          description: badge.description,
-          image: badge.image,
-          unlocked: true,
+          name: badge.name || "Unnamed Badge",
+          description: badge.description || "No description available",
+          image: badge.image || "",
+          unlocked: badge.unlocked || false, // Assuming `unlocked` is a boolean indicating whether the user earned it
         })) || [],
       trendingCourses: trendingCourses.map((course) => ({
         id: course._id,
-        title: course.title,
-        description: course.description,
-        instructor: course.instructor.name,
-        poster: course.poster,
-        level: course.level,
-        price: course.price,
-        studentsCount: course.studentsEnrolled.length,
+        title: course.title || "Untitled Course",
+        description: course.description || "No description available",
+        instructor: course.instructor?.name || "Unknown Instructor",
+        poster: course.poster || "",
+        level: course.level || "beginner",
+        price: course.price || 0,
+        studentsCount: course.studentsEnrolled?.length || 0,
       })),
     };
 
+    // Debug log for final response
+    console.log("Final response:", JSON.stringify(response, null, 2));
+
     res.status(200).json(response);
   } catch (error) {
-    console.error("Error fetching dashboard data:", error);
-    res.status(500).json({ message: "Error fetching dashboard data" });
+    console.error(
+      "Error fetching dashboard data for user ID:",
+      req.user.userId
+    );
+    console.error("Error details:", {
+      message: error.message,
+      stack: error.stack,
+    });
+
+    res.status(500).json({
+      message: "Error fetching dashboard data",
+      error: error.message,
+    });
   }
 };

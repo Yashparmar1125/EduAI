@@ -176,6 +176,7 @@ function App() {
                   <Route path="/assessment" element={<ProtectedRoute element={<Questions />} />} />
                   <Route path="/roadmap" element={<ProtectedRoute element={<RoadmapPage />} />} />
                   <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard />} />} />
+                  <Route path="/dashboard/course/:courseId" element={<CourseOverview />} />
                   <Route path="/achievements" element={<ProtectedRoute element={<Achievements />} />} />
                   <Route path="/course" element={<ProtectedRoute element={<CourseOverview />} />} />
                   <Route path="/learning" element={<ProtectedRoute element={<CourseLearning />} />} />

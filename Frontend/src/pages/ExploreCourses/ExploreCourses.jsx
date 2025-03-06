@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion as Motion } from 'framer-motion';
 import { cn } from "@/lib/utils";
 import { useTheme } from "../../components/theme-provider";
-import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { 
   Search,
   Filter,
@@ -14,16 +14,15 @@ import {
   ArrowRight,
   Frown
 } from 'lucide-react';
-import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../components/ui/select";
-import { enrollInCourse } from '../../redux/slices/userSlice';
+} from "@/components/ui/select";
 import { getAllCourses } from '../../api/axios.api';
 import { Skeleton } from "../../components/ui/skeleton";
 
@@ -54,14 +53,14 @@ const CourseCardSkeleton = () => {
 };
 
 const ExploreCourses = () => {
+  const navigate = useNavigate();
   const { theme } = useTheme();
-  const dispatch = useDispatch();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [selectedLevel, setSelectedLevel] = useState('all');
   const [courses, setCourses] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedLevel, setSelectedLevel] = useState("all");
 
   // Mock categories and levels for filtering
   const categories = [
@@ -82,7 +81,7 @@ const ExploreCourses = () => {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        setLoading(true);
+        setIsLoading(true);
         setError(null);
         const filters = {
           search: searchQuery,
@@ -95,7 +94,7 @@ const ExploreCourses = () => {
         console.error('Error fetching courses:', error);
         setError(error.message);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
 
@@ -199,7 +198,7 @@ const ExploreCourses = () => {
 
         {/* Courses Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {loading ? (
+          {isLoading ? (
             // Show skeleton loading state
             Array(6).fill(null).map((_, index) => (
               <CourseCardSkeleton key={index} />
@@ -233,9 +232,11 @@ const ExploreCourses = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
                 className={cn(
-                  "rounded-xl border shadow-sm overflow-hidden",
-                  theme === 'dark' ? 'bg-[#110C1D] border-[#6938EF]/20' : 'bg-card border-border'
+                  "rounded-xl border shadow-sm overflow-hidden cursor-pointer transition-all",
+                  theme === 'dark' ? 'bg-[#110C1D] border-[#6938EF]/20' : 'bg-card border-border',
+                  'hover:shadow-md'
                 )}
+                onClick={() => navigate(`/dashboard/course/${course.id}`)}
               >
                 <div className="aspect-video relative overflow-hidden">
                   <img 
@@ -252,11 +253,8 @@ const ExploreCourses = () => {
                     {course.level.charAt(0).toUpperCase() + course.level.slice(1)}
                   </div>
                 </div>
-                
                 <div className="p-5">
                   <h3 className="font-semibold mb-2 line-clamp-2">{course.title}</h3>
-                 
-                  
                   <div className="flex items-center gap-4 mb-4">
                     <div className="flex items-center gap-1">
                       <Star className="h-4 w-4 fill-[#6938EF] text-[#6938EF]" />
@@ -271,18 +269,10 @@ const ExploreCourses = () => {
                       <span className="text-sm">{course.duration}</span>
                     </div>
                   </div>
-
                   <div className="flex items-center justify-between">
                     <div className="text-sm font-medium text-[#6938EF]">
                       ${course.price}
                     </div>
-                    <Button 
-                      size="sm"
-                      className="bg-[#6938EF] hover:bg-[#5B2FD1] text-white"
-                      onClick={() => dispatch(enrollInCourse(course.id))}
-                    >
-                      Enroll Now
-                    </Button>
                   </div>
                 </div>
               </Motion.div>
