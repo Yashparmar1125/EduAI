@@ -20,7 +20,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { createAvatar } from '@dicebear/core';
 import { adventurer } from '@dicebear/collection';
 import { lorelei } from '@dicebear/collection';
@@ -40,18 +40,17 @@ import {
   updateAvatarUrl,
   enrollInCourse 
 } from '../../redux/slices/userSlice';
-
+import { getDashboardData } from '../../api/axios.api';
 const Dashboard = () => {
   const { theme } = useTheme();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [dashboardData, setDashboardData] = useState(null);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   // Redux state
   const user = useSelector((state) => state.user);
-  const learning = useSelector((state) => state.learning);
-  const achievements = useSelector((state) => state.achievements);
-  const popular = useSelector((state) => state.popular) || { courses: [] };
-
-  // Redux dispatch
   const dispatch = useDispatch();
 
   const avatarStyles = [
@@ -95,8 +94,24 @@ const Dashboard = () => {
     }
   }, [user?.avatarStyle, user?.avatarSeed, dispatch]);
 
-  // Check if user data is loaded
-  if (!user) {
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const data = await getDashboardData();
+        setDashboardData(data);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+        setError(error.message || "Failed to fetch dashboard data");
+        setIsLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
+  // Check if data is loading
+  if (isLoading) {
     return (
       <div className={cn(
         "min-h-[calc(100vh-4rem)] p-4 sm:p-8 flex items-center justify-center",
@@ -110,8 +125,28 @@ const Dashboard = () => {
     );
   }
 
-  // Check if user is new (no enrolled or completed courses)
-  const isNewUser = !user.enrolledCourses?.length && !user.completedCourses?.length;
+  // Check if there was an error
+  if (error) {
+    return (
+      <div className={cn(
+        "min-h-[calc(100vh-4rem)] p-4 sm:p-8 flex items-center justify-center",
+        theme === 'dark' ? 'bg-[#0A0118]' : 'bg-background'
+      )}>
+        <div className="text-center">
+          <p className="text-red-500">Error: {error}</p>
+          <Button 
+            onClick={() => window.location.reload()}
+            className="mt-4 bg-[#6938EF] hover:bg-[#5B2FD1] text-white"
+          >
+            Retry
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Check if user is new (no enrolled courses)
+  const isNewUser = dashboardData?.isNewUser;
 
   // Mock data for community discussions
   const communityDiscussions = [
@@ -330,6 +365,7 @@ const Dashboard = () => {
                           size="sm" 
                           variant="ghost" 
                           className="h-7 px-2 text-xs text-[#6938EF]"
+                          onClick={() => navigate('/explore')}
                         >
                           Browse Now <ArrowRight className="h-3 w-3 ml-1" />
                         </Button>
@@ -353,6 +389,7 @@ const Dashboard = () => {
                           size="sm" 
                           variant="ghost" 
                           className="h-7 px-2 text-xs text-[#6938EF]"
+                          onClick={() => navigate('/assessment')}
                         >
                           Start Assessment <ArrowRight className="h-3 w-3 ml-1" />
                         </Button>
@@ -421,7 +458,7 @@ const Dashboard = () => {
             >
               <h2 className="text-lg font-semibold mb-4">Popular Courses</h2>
               <div className="space-y-4">
-                {popular.courses.map((course) => (
+                {dashboardData.trendingCourses.map((course) => (
                   <div key={course.id} className={cn(
                     "p-4 rounded-lg border",
                     theme === 'dark' ? 'bg-[#1A1425] border-[#6938EF]/10' : 'bg-accent/50 border-border'
@@ -429,7 +466,7 @@ const Dashboard = () => {
                     <div className="flex gap-4">
                       <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
                         <img 
-                          src={course.image} 
+                          src={course.poster} 
                           alt={course.title}
                           className="w-full h-full object-cover"
                         />
@@ -479,6 +516,7 @@ const Dashboard = () => {
                 <Button 
                   variant="outline" 
                   className="w-full text-xs border-[#6938EF]/20 text-[#6938EF] hover:bg-[#6938EF]/10"
+                  onClick={() => navigate('/explore')}
                 >
                   View All Courses
                 </Button>
@@ -511,12 +549,10 @@ const Dashboard = () => {
                 </div>
               </div>
 
-              <div className={cn(
-                "grid grid-cols-1 md:grid-cols-3 gap-4",
-              )}>
-                {learning.learningPaths.map((path) => (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {dashboardData.enrolledCourses.map((course) => (
                   <motion.div
-                    key={path.id}
+                    key={course.id}
                     whileHover={{ scale: 1.02 }}
                     className={cn(
                       "p-5 rounded-xl border shadow-sm",
@@ -533,11 +569,11 @@ const Dashboard = () => {
                         )}>
                           <BookMarked className="h-4 w-4" />
                         </div>
-                        <h3 className="font-medium">{path.title}</h3>
+                        <h3 className="font-medium">{course.title}</h3>
                       </div>
-                      <span className="text-xs text-muted-foreground">{path.progress}%</span>
+                      <span className="text-xs text-muted-foreground">{course.progress}%</span>
                     </div>
-                    <Progress value={path.progress} className="h-2" 
+                    <Progress value={course.progress} className="h-2" 
                       indicatorClassName="bg-gradient-to-r from-[#6938EF] to-[#9D7BFF]" />
                   </motion.div>
                 ))}
@@ -567,7 +603,7 @@ const Dashboard = () => {
                       </h2>
                     </div>
                     <div className="divide-y divide-border">
-                      {learning.continueLearning.map((course) => (
+                      {dashboardData.enrolledCourses.map((course) => (
                         <div key={course.id} className={cn(
                           "flex gap-4 p-5 transition-all",
                           theme === 'dark' 
@@ -585,7 +621,7 @@ const Dashboard = () => {
                               <h3 className="font-medium text-sm">{course.title}</h3>
                               <span className="text-xs flex items-center gap-1 text-muted-foreground">
                                 <Clock className="h-3 w-3" />
-                                {course.duration}
+                                {course.duration || 'In Progress'}
                               </span>
                             </div>
                             <p className="text-xs text-muted-foreground mt-1">{course.description}</p>
@@ -617,7 +653,7 @@ const Dashboard = () => {
                       </h2>
                     </div>
                     <div className="p-5 grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {learning.trendingCourses.map((course) => (
+                      {dashboardData.trendingCourses.map((course) => (
                         <motion.div
                           key={course.id}
                           whileHover={{ scale: 1.03 }}
@@ -631,7 +667,7 @@ const Dashboard = () => {
                           <div className="flex flex-col h-full">
                             <h3 className="font-medium text-sm mb-2">{course.title}</h3>
                             <div className="flex items-center gap-1 mb-3">
-                              <span className="text-xs font-medium text-[#6938EF]">{course.rating}</span>
+                              <span className="text-xs font-medium text-[#6938EF]">{course.rating || '4.5'}</span>
                               <Star className="h-3 w-3 fill-[#6938EF] text-[#6938EF]" />
                             </div>
                             <div className="mt-auto">
@@ -641,7 +677,7 @@ const Dashboard = () => {
                               </span>
                               <div className="flex justify-between items-center mt-2">
                                 <span className="text-xs text-muted-foreground">
-                                  {course.students} students
+                                  {course.studentsCount} students
                                 </span>
                                 <Button 
                                   size="sm" 
@@ -745,7 +781,7 @@ const Dashboard = () => {
                       </Link>
                     </div>
                     <div className="p-5 space-y-4">
-                      {achievements.achievements.map((achievement) => (
+                      {dashboardData.badges.map((achievement) => (
                         <div key={achievement.id} className={cn(
                           "p-3 rounded-xl transition-all",
                           theme === 'dark' 

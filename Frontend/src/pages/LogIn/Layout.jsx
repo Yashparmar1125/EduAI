@@ -58,15 +58,29 @@ const Layout = () => {
       const response = await emailLogin(email, password);
 
       if (response.status === 200) {
-        // Dispatch login action to Redux store after successful response
-        const res = await response.data;
+        const userData = response.data.user;
+        // Dispatch login action to Redux store
         dispatch(login({
-          name: res.user.name,
-          email: res.user.email,
-          avatar: res.user.profilePicture,
-          role: res.user.role,
+          name: userData.name,
+          email: userData.email,
+          avatar: userData.profilePicture,
+          role: userData.role,
         }));
-        navigate('/dashboard');  // Redirect to dashboard after successful login
+        
+        // Update user profile
+        dispatch(updateUserProfile({
+          name: userData.name,
+          email: userData.email,
+          role: userData.role,
+          // Add any other user data from the response
+        }));
+
+        // Navigate based on role
+        if (userData.role === "instructor") {
+          navigate('/instructor/dashboard');
+        } else {
+          navigate('/dashboard');
+        }
       } else {
         setError("Invalid email or password.");
       }

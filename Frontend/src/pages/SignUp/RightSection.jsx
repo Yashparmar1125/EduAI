@@ -45,6 +45,8 @@ const RightSection = ({ defaultData = {}, onGoggleSignIn, onSignUp }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('Form submitted with data:', formData);
+    
     const newErrors = validateForm();
     setErrors(newErrors);
 
@@ -53,10 +55,16 @@ const RightSection = ({ defaultData = {}, onGoggleSignIn, onSignUp }) => {
       try {
         await onSignUp(formData);
       } catch (error) {
-        setErrors({ submit: error.message });
+        console.error('Signup error:', error);
+        setErrors(prev => ({
+          ...prev,
+          submit: error.message || 'Failed to create account'
+        }));
       } finally {
         setLoading(false);
       }
+    } else {
+      console.log('Validation errors:', newErrors);
     }
   };
 
@@ -220,14 +228,20 @@ const RightSection = ({ defaultData = {}, onGoggleSignIn, onSignUp }) => {
               )}
             </div>
 
-            <motion.button 
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+            {errors.submit && (
+              <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20">
+                <p className="text-sm text-red-500">{errors.submit}</p>
+              </div>
+            )}
+
+            <button 
               type="submit" 
               className={cn(
-                "w-full py-3 px-4 rounded-xl font-semibold text-white transition-all duration-200",
-                "bg-[#6938EF] hover:bg-[#5B2FD1] focus:outline-none focus:ring-2 focus:ring-[#6938EF]/20",
+                "relative w-full py-3 px-4 rounded-xl font-semibold text-white",
+                "bg-[#6938EF] hover:bg-[#5B2FD1] active:bg-[#4B24B3]",
+                "focus:outline-none focus:ring-2 focus:ring-[#6938EF]/20",
                 "disabled:opacity-70 disabled:cursor-not-allowed",
+                "transition-colors duration-200 ease-in-out z-10",
                 loading ? "flex items-center justify-center" : ""
               )}
               disabled={loading}
@@ -237,16 +251,11 @@ const RightSection = ({ defaultData = {}, onGoggleSignIn, onSignUp }) => {
               ) : (
                 'Create Account'
               )}
-            </motion.button>
+            </button>
           </motion.div>
         </form>
 
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="mt-8 text-center"
-        >
+        <div className="mt-8 text-center">
           <div className="relative flex items-center justify-center my-6">
             <div className="absolute inset-0 border-t border-border"></div>
             <span className="relative px-4 text-sm text-muted-foreground bg-card">
@@ -254,12 +263,13 @@ const RightSection = ({ defaultData = {}, onGoggleSignIn, onSignUp }) => {
             </span>
           </div>
           <div className="flex justify-center gap-4">
-            <motion.button 
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+            <button 
+              type="button"
               className={cn(
-                "flex items-center gap-2 px-6 py-3 rounded-xl border transition-all duration-200",
-                "hover:bg-accent/50",
+                "relative flex items-center gap-2 px-6 py-3 rounded-xl border",
+                "hover:bg-accent hover:border-[#6938EF]/40",
+                "active:bg-accent/70",
+                "transition-all duration-200 ease-in-out z-10",
                 theme === 'dark' ? 'border-[#6938EF]/20' : 'border-border'
               )}
               onClick={onGoggleSignIn}
@@ -267,36 +277,32 @@ const RightSection = ({ defaultData = {}, onGoggleSignIn, onSignUp }) => {
             >
               <FaGoogle className="text-xl text-[#ea4335]" />
               <span className="text-sm font-medium">Google</span>
-            </motion.button>
-            <motion.button 
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+            </button>
+            <button 
+              type="button"
               className={cn(
-                "flex items-center gap-2 px-6 py-3 rounded-xl border transition-all duration-200",
-                "hover:bg-accent/50",
+                "relative flex items-center gap-2 px-6 py-3 rounded-xl border",
+                "hover:bg-accent hover:border-[#6938EF]/40",
+                "active:bg-accent/70",
+                "transition-all duration-200 ease-in-out z-10",
                 theme === 'dark' ? 'border-[#6938EF]/20' : 'border-border'
               )}
               aria-label="Sign up with Facebook"
             >
               <FaFacebook className="text-xl text-[#1877f2]" />
               <span className="text-sm font-medium">Facebook</span>
-            </motion.button>
+            </button>
           </div>
-        </motion.div>
+        </div>
 
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
-          className="mt-8 text-center text-muted-foreground"
-        >
+        <div className="mt-8 text-center text-muted-foreground">
           <p>
             Already have an account?{' '}
             <Link to="/login" className="text-[#6938EF] font-semibold hover:underline">
               Sign in
             </Link>
           </p>
-        </motion.div>
+        </div>
       </div>
     </motion.div>
   );

@@ -25,7 +25,7 @@ const Layout = () => {
       const response = await googleSignup(auth_token);
 
       if (response.status === 200) {
-        const responseData = await response.data();
+        const responseData = await response.data;
         dispatch(login({
           name: user.displayName,
           email: user.email,
@@ -41,24 +41,40 @@ const Layout = () => {
 
   const handleEmailSignUp = async (formData) => {
     try {
+      console.log('Attempting signup with data:', {
+        name: `${formData.firstName} ${formData.lastName}`,
+        email: formData.email,
+        interests: formData.interests
+      });
+
       const response = await emailSignup(
         `${formData.firstName} ${formData.lastName}`,
         formData.email,
-        formData.password
+        formData.password,
+        formData.interests
       );
 
+      console.log('Signup response:', response);
+
       if (response.status === 200) {
-        const responseData = await response.data();
         dispatch(login({
           name: `${formData.firstName} ${formData.lastName}`,
           email: formData.email,
-          role: responseData.newUser.role,
+          role: response.data.newUser.role || 'student',
         }));
         navigate('/dashboard');
+      } else {
+        throw new Error(response.data?.message || 'Failed to create account');
       }
     } catch (error) {
       console.error("Error during email signup:", error);
-      throw new Error(error.response?.data?.message || "Failed to create account");
+      if (error.response?.data?.message) {
+        throw new Error(error.response.data.message);
+      } else if (error.response?.data?.errors) {
+        throw new Error(error.response.data.errors[0]?.msg || "Validation failed");
+      } else {
+        throw new Error(error.message || "Failed to create account");
+      }
     }
   };
 

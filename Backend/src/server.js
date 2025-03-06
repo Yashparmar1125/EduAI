@@ -11,8 +11,11 @@ import connectDB from "./utils/connection.util.js";
 //routes imports
 import healthRoutes from "./routes/health.routes.js";
 import authRoutes from "./routes/auth.routes.js";
-import courseRoutes from "./routes/course.routes.js"; 
+import courseRoutes from "./routes/course.routes.js";
 import progressRoutes from "./routes/progress.routes.js";
+import instructorRoutes from "./routes/instructor.routes.js";
+import assessmentRoutes from "./routes/assessment.routes.js";
+import dashboardRoutes from "./routes/dashboard.routes.js";
 
 import serviceAccount from "../service-account.json" assert { type: "json" };
 
@@ -52,6 +55,10 @@ app.use(cors(CORS_OPTIONS));
 //routes
 app.use(healthRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/course", courseRoutes);
+app.use("/api/instructor", instructorRoutes);
+app.use("/api/assessment", assessmentRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);

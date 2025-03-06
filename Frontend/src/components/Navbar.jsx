@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 import { ThemeToggle } from "./theme-toggle";
 import { Button } from "./ui/button";
-import { GraduationCap, Menu, User } from "lucide-react";
-import { useSelector, useDispatch } from "react-redux"; // Add useDispatch
+import { GraduationCap, Menu, User, LayoutDashboard, BookOpen, FileQuestion, Settings } from "lucide-react";
+import { useSelector } from "react-redux";
 import {
   Sheet,
   SheetContent,
@@ -19,53 +19,69 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useNavigate } from "react-router-dom";
-import { signOut as firebaseSignOut, getAuth } from "firebase/auth"; // Import Firebase's signOut
+import { useNavigate, useLocation } from "react-router-dom";
+import { resetStore } from "../redux/store/store";
+import { cn } from "@/lib/utils";
 
-// Your action to update Redux auth state (reset user)
-import { logout } from "../redux/slices/authSlice"; // Adjust import path as necessary
-
-export function Navbar({ openModal, openLoginModal }) {
+export function Navbar() {
   const navigate = useNavigate();
-  const dispatch = useDispatch(); // Initialize dispatch
   const authState = useSelector((state) => state.auth);
+  const { role } = useSelector((state) => state.user);
   const user = authState.userData;
+  const location = useLocation();
 
-  // Sign out function
   const handleSignOut = async () => {
     try {
-      // Call the API to log out the user
+      const token = localStorage.getItem("auth_token");
       const response = await fetch("http://localhost:5000/api/auth/logout", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
         },
+        credentials: 'include'
       });
 
-      if (response.ok) {
-        // Remove JWT token from localStorage (or sessionStorage)
-        localStorage.removeItem("auth_token");
-        
-        // Dispatch the logout action to reset the Redux state
-        dispatch(logout());
+      // Clear auth token first
+      localStorage.removeItem("auth_token");
+      
+      // Reset Redux store
+      resetStore();
 
-        // Redirect the user to homepage or login page after sign out
-        navigate("/"); // or navigate("/"); depending on your flow
-      } else {
+      // Navigate to home page
+      navigate("/");
+
+      if (!response.ok) {
         console.error("Logout failed:", response.statusText);
       }
     } catch (error) {
       console.error("Error during sign-out:", error);
+      // Even if there's an error, ensure the local state is cleared
+      localStorage.removeItem("auth_token");
+      resetStore();
+      navigate("/");
     }
   };
 
+  const getMenuItems = () => {
+    if (role === 'instructor') {
+      return [
+        { path: "/instructor/dashboard", label: "Dashboard", icon: LayoutDashboard },
+        { path: "/instructor/courses", label: "Courses", icon: BookOpen },
+        { path: "/instructor/assessments", label: "Assessments", icon: FileQuestion },
+        { path: "/instructor/settings", label: "Settings", icon: Settings }
+      ];
+    }
+    
+    return [
+      { path: "/", label: "Home" },
+      { path: "/community", label: "Community" },
+      { path: "/internships", label: "Internships" },
+      { path: "/dashboard", label: "Dashboard" },
+    ];
+  };
 
-  const menuItems = [
-    { path: "/", label: "Home" },
-    { path: "/community", label: "Community" },
-    { path: "/internships", label: "Internships" },
-    { path: "/dashboard", label: "Dashboard" },
-  ];
+  const menuItems = getMenuItems();
 
   const UserActions = () => {
     if (authState.status === false) {
@@ -113,7 +129,7 @@ export function Navbar({ openModal, openLoginModal }) {
           <DropdownMenuSeparator />
           <DropdownMenuItem
             className="text-red-600 dark:text-red-400"
-            onClick={handleSignOut} // Call the sign out function
+            onClick={handleSignOut}
           >
             Sign Out
           </DropdownMenuItem>
@@ -163,7 +179,7 @@ export function Navbar({ openModal, openLoginModal }) {
           <Button
             variant="ghost"
             className="w-full justify-center text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
-            onClick={handleSignOut} // Call the sign out function
+            onClick={handleSignOut}
           >
             Sign Out
           </Button>
@@ -175,35 +191,45 @@ export function Navbar({ openModal, openLoginModal }) {
   return (
     <nav className="sticky top-0 z-50 w-full border-b border-purple-100 dark:border-purple-900/40 bg-white dark:bg-gray-900">
       <div className="container mx-auto px-4 sm:px-8 flex h-16 items-center justify-between">
-        {/* Logo Section */}
         <div className="flex items-center space-x-3">
           <GraduationCap className="h-6 w-6 text-[#6938EF] dark:text-[#9D7BFF]" />
-          <Link to="/" className="text-xl font-bold text-[#6938EF] dark:text-[#9D7BFF]">
+          <Link 
+            to={role === 'instructor' ? "/instructor/dashboard" : "/"} 
+            className="text-xl font-bold text-[#6938EF] dark:text-[#9D7BFF]"
+          >
             EduAI
           </Link>
         </div>
 
-        {/* Desktop Navigation Links */}
-        <div className="hidden md:flex items-center justify-center space-x-8 absolute left-1/2 transform -translate-x-1/2">
-          {menuItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className="text-sm font-medium text-gray-600 dark:text-gray-300 transition-colors hover:text-[#6938EF] dark:hover:text-[#9D7BFF]"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </div>
+        {authState.status && (
+          <div className="hidden md:flex items-center justify-center space-x-6 absolute left-1/2 transform -translate-x-1/2">
+            {menuItems.map((item) => {
+              const isActive = location.pathname === item.path;
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={cn(
+                    "flex items-center gap-2 px-4 py-2 rounded-lg transition-colors duration-200",
+                    isActive
+                      ? "bg-[#6938EF] text-white"
+                      : "text-gray-600 dark:text-gray-300 hover:text-[#6938EF] dark:hover:text-[#9D7BFF] hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                  )}
+                >
+                  {item.icon && <item.icon className="w-4 h-4" />}
+                  <span className="text-sm font-medium">{item.label}</span>
+                </Link>
+              );
+            })}
+          </div>
+        )}
 
-        {/* Actions Section */}
         <div className="flex items-center space-x-4">
           <ThemeToggle />
           <div className="hidden md:flex items-center space-x-3">
             <UserActions />
           </div>
 
-          {/* Mobile Menu */}
           <Sheet>
             <SheetTrigger asChild className="md:hidden">
               <Button
@@ -227,36 +253,55 @@ export function Navbar({ openModal, openLoginModal }) {
               </SheetHeader>
               <div className="flex flex-col h-full">
                 <div className="flex-1 px-6">
-                  <div className="mt-6 space-y-1">
-                    {menuItems.map((item) => (
-                      <SheetClose asChild key={item.path}>
-                        <Link
-                          to={item.path}
-                          className="flex w-full items-center py-3 text-sm font-medium text-gray-600 dark:text-gray-300 transition-colors hover:text-[#6938EF] dark:hover:text-[#9D7BFF] hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                  {authState.status ? (
+                    <div className="mt-6 space-y-1">
+                      {menuItems.map((item) => {
+                        const isActive = location.pathname === item.path;
+                        return (
+                          <SheetClose asChild key={item.path}>
+                            <Link
+                              to={item.path}
+                              className={cn(
+                                "flex w-full items-center py-3 px-4 rounded-lg text-sm font-medium transition-colors",
+                                isActive
+                                  ? "bg-[#6938EF] text-white"
+                                  : "text-gray-600 dark:text-gray-300 hover:text-[#6938EF] dark:hover:text-[#9D7BFF] hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                              )}
+                            >
+                              {item.icon && <item.icon className="w-4 h-4 mr-2" />}
+                              {item.label}
+                            </Link>
+                          </SheetClose>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="mt-6 space-y-3">
+                      <SheetClose asChild>
+                        <Button
+                          variant="ghost"
+                          className="w-full justify-center text-gray-600 dark:text-gray-300 hover:text-[#6938EF] dark:hover:text-[#9D7BFF] hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                          onClick={() => navigate("/login")}
                         >
-                          {item.label}
-                        </Link>
+                          Sign In
+                        </Button>
                       </SheetClose>
-                    ))}
-                  </div>
+                      <SheetClose asChild>
+                        <Button 
+                          className="w-full justify-center bg-[#6938EF] dark:bg-[#9D7BFF] text-white hover:bg-[#5B2FD1] dark:hover:bg-[#8B63FF]"
+                          onClick={() => navigate("/signup")}
+                        >
+                          Get Started
+                        </Button>
+                      </SheetClose>
+                    </div>
+                  )}
                 </div>
-                <div className="p-6 border-t border-purple-100 dark:border-purple-900/40">
-                  <div className="flex flex-col space-y-3">
-                    <SheetClose asChild>
-                      <Button
-                        variant="ghost"
-                        className="w-full justify-center text-gray-600 dark:text-gray-300 hover:text-[#6938EF] dark:hover:text-[#9D7BFF] hover:bg-purple-50 dark:hover:bg-purple-900/20"
-                      >
-                        Sign In
-                      </Button>
-                    </SheetClose>
-                    <SheetClose asChild>
-                      <Button className="w-full justify-center bg-[#6938EF] dark:bg-[#9D7BFF] text-white hover:bg-[#5B2FD1] dark:hover:bg-[#8B63FF]">
-                        Get Started
-                      </Button>
-                    </SheetClose>
+                {authState.status && (
+                  <div className="p-6 border-t border-purple-100 dark:border-purple-900/40">
+                    <MobileUserActions />
                   </div>
-                </div>
+                )}
               </div>
             </SheetContent>
           </Sheet>
