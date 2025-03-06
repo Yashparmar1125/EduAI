@@ -20,22 +20,22 @@ router.use(authMiddleware);
 router.post("/next-questions", getNextQuestions);
 
 // Create a new assessment
-router.post("/", createAssessment);
+router.post("/create", createAssessment);
 
 // Get all assessments for an instructor
-router.get("/instructor", getInstructorAssessments);
+router.get("/get", getInstructorAssessments);
 
 // Get a single assessment
-router.get("/:assessmentId", getAssessment);
+router.get("/get/:assessmentId", getAssessment);
 
 // Update an assessment
-router.put("/:assessmentId", updateAssessment);
+router.put("/update/:assessmentId", updateAssessment);
 
 // Delete an assessment
-router.delete("/:assessmentId", deleteAssessment);
+router.delete("/delete/:assessmentId", deleteAssessment);
 
 // Get assessment statistics
-router.get("/:assessmentId/stats", getAssessmentStats);
+router.get("/get/:assessmentId/stats", getAssessmentStats);
 
 router.post("/submit", submitAssessment);
 

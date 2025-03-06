@@ -294,8 +294,11 @@ const InstructorDashboard = () => {
 
   const fetchDashboardStats = async () => {
     try {
-      const { data } = await getInstructorStats();
-      setStats(data.stats);
+      const response = await getInstructorStats(); 
+      
+      if (response.success===true) {
+        setStats(response.stats);
+      }
     } catch (error) {
       console.error('Error fetching dashboard stats:', error);
       toast({

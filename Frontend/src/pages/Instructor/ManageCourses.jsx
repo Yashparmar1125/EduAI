@@ -54,8 +54,8 @@ const ManageCourses = () => {
 
   const fetchCourses = async () => {
     try {
-      const { data } = await getInstructorCourses();
-      setCourses(data.courses);
+      const response = await getInstructorCourses();
+      setCourses(response.courses);
     } catch (error) {
       console.error('Error fetching courses:', error);
       toast({

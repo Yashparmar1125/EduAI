@@ -35,7 +35,7 @@ const EditAssessment = () => {
 
   const fetchAssessment = async () => {
     try {
-      const { data } = await getAssessmentDetails(assessmentId);
+      const data = await getAssessmentDetails(assessmentId);
       setAssessment(data.assessment);
     } catch (error) {
       console.error('Error fetching assessment:', error);

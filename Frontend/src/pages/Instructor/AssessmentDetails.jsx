@@ -63,8 +63,8 @@ const AssessmentDetails = () => {
         getAssessmentDetails(assessmentId),
         getAssessmentStats(assessmentId)
       ]);
-      setAssessment(assessmentRes.data.assessment);
-      setStats(statsRes.data.stats);
+      setAssessment(assessmentRes.assessment);
+      setStats(statsRes.stats);
     } catch (error) {
       console.error('Error fetching assessment data:', error);
       toast({

@@ -160,7 +160,7 @@ export const deleteAssessment = (assessmentId) => {
 };
 
 export const getAssessmentStats = (assessmentId) => {
-  return api.get(`/api/assessment/${assessmentId}/stats`, {
+  return api.get(`/api/assessment/get/${assessmentId}/stats`, {
     withCredentials: true,
   });
 };

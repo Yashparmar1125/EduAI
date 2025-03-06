@@ -29,7 +29,7 @@ export function Navbar() {
   const { role } = useSelector((state) => state.user);
   const user = authState.userData;
   const location = useLocation();
-
+  
   const handleSignOut = async () => {
     try {
       const token = localStorage.getItem("auth_token");
@@ -64,6 +64,7 @@ export function Navbar() {
   };
 
   const getMenuItems = () => {
+    
     if (role === 'instructor') {
       return [
         { path: "/instructor/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -110,7 +111,7 @@ export function Navbar() {
       <DropdownMenu>
         <DropdownMenuTrigger className="flex items-center space-x-2 focus:outline-none">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={user.avatar} />
+            <AvatarImage src={user.avatarUrl} />
             <AvatarFallback className="bg-purple-100 dark:bg-purple-900/40 text-[#6938EF] dark:text-[#9D7BFF]">
               {user.name?.charAt(0).toUpperCase()}
             </AvatarFallback>
@@ -120,15 +121,15 @@ export function Navbar() {
           </span>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
-          <DropdownMenuItem>
+          <DropdownMenuItem asChild>
             <Link to="/profile" className="w-full">Profile</Link>
           </DropdownMenuItem>
-          <DropdownMenuItem>
+          <DropdownMenuItem asChild>
             <Link to="/settings" className="w-full">Settings</Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
-            className="text-red-600 dark:text-red-400"
+            className="text-red-600 dark:text-red-400 cursor-pointer"
             onClick={handleSignOut}
           >
             Sign Out
@@ -146,6 +147,7 @@ export function Navbar() {
             <Button
               variant="ghost"
               className="w-full justify-center text-gray-600 dark:text-gray-300 hover:text-[#6938EF] dark:hover:text-[#9D7BFF] hover:bg-purple-50 dark:hover:bg-purple-900/20"
+              onClick={() => navigate("/login")}
             >
               Sign In
             </Button>
@@ -153,6 +155,7 @@ export function Navbar() {
           <SheetClose asChild>
             <Button
               className="w-full justify-center bg-[#6938EF] dark:bg-[#9D7BFF] text-white hover:bg-[#5B2FD1] dark:hover:bg-[#8B63FF]"
+              onClick={() => navigate("/signup")}
             >
               Get Started
             </Button>
@@ -165,7 +168,7 @@ export function Navbar() {
       <div className="flex flex-col space-y-3">
         <div className="flex items-center space-x-3 px-3 py-2">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={user.avatar} />
+            <AvatarImage src={user.avatarUrl} />
             <AvatarFallback className="bg-purple-100 dark:bg-purple-900/40 text-[#6938EF] dark:text-[#9D7BFF]">
               {user.name?.charAt(0).toUpperCase()}
             </AvatarFallback>
@@ -176,14 +179,32 @@ export function Navbar() {
           </div>
         </div>
         <SheetClose asChild>
-          <Button
-            variant="ghost"
-            className="w-full justify-center text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
-            onClick={handleSignOut}
+          <Link
+            to="/profile"
+            className="w-full px-3 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-[#6938EF] dark:hover:text-[#9D7BFF] hover:bg-purple-50 dark:hover:bg-purple-900/20"
           >
-            Sign Out
-          </Button>
+            Profile
+          </Link>
         </SheetClose>
+        <SheetClose asChild>
+          <Link
+            to="/settings"
+            className="w-full px-3 py-2 text-sm text-gray-600 dark:text-gray-300 hover:text-[#6938EF] dark:hover:text-[#9D7BFF] hover:bg-purple-50 dark:hover:bg-purple-900/20"
+          >
+            Settings
+          </Link>
+        </SheetClose>
+        <div className="px-3 pt-3 border-t border-purple-100 dark:border-purple-900/40">
+          <SheetClose asChild>
+            <Button
+              variant="ghost"
+              className="w-full justify-center text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+              onClick={handleSignOut}
+            >
+              Sign Out
+            </Button>
+          </SheetClose>
+        </div>
       </div>
     );
   };
@@ -251,57 +272,29 @@ export function Navbar() {
                   <span>EduAI</span>
                 </SheetTitle>
               </SheetHeader>
-              <div className="flex flex-col h-full">
-                <div className="flex-1 px-6">
-                  {authState.status ? (
-                    <div className="mt-6 space-y-1">
-                      {menuItems.map((item) => {
-                        const isActive = location.pathname === item.path;
-                        return (
-                          <SheetClose asChild key={item.path}>
-                            <Link
-                              to={item.path}
-                              className={cn(
-                                "flex w-full items-center py-3 px-4 rounded-lg text-sm font-medium transition-colors",
-                                isActive
-                                  ? "bg-[#6938EF] text-white"
-                                  : "text-gray-600 dark:text-gray-300 hover:text-[#6938EF] dark:hover:text-[#9D7BFF] hover:bg-purple-50 dark:hover:bg-purple-900/20"
-                              )}
-                            >
-                              {item.icon && <item.icon className="w-4 h-4 mr-2" />}
-                              {item.label}
-                            </Link>
-                          </SheetClose>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <div className="mt-6 space-y-3">
-                      <SheetClose asChild>
-                        <Button
-                          variant="ghost"
-                          className="w-full justify-center text-gray-600 dark:text-gray-300 hover:text-[#6938EF] dark:hover:text-[#9D7BFF] hover:bg-purple-50 dark:hover:bg-purple-900/20"
-                          onClick={() => navigate("/login")}
-                        >
-                          Sign In
-                        </Button>
-                      </SheetClose>
-                      <SheetClose asChild>
-                        <Button 
-                          className="w-full justify-center bg-[#6938EF] dark:bg-[#9D7BFF] text-white hover:bg-[#5B2FD1] dark:hover:bg-[#8B63FF]"
-                          onClick={() => navigate("/signup")}
-                        >
-                          Get Started
-                        </Button>
-                      </SheetClose>
-                    </div>
-                  )}
+              <div className="flex flex-col py-6">
+                {authState.status && menuItems.map((item) => {
+                  const isActive = location.pathname === item.path;
+                  return (
+                    <SheetClose key={item.path} asChild>
+                      <Link
+                        to={item.path}
+                        className={cn(
+                          "flex items-center gap-2 px-6 py-3 transition-colors duration-200",
+                          isActive
+                            ? "bg-[#6938EF]/10 text-[#6938EF] dark:text-[#9D7BFF]"
+                            : "text-gray-600 dark:text-gray-300 hover:text-[#6938EF] dark:hover:text-[#9D7BFF] hover:bg-purple-50 dark:hover:bg-purple-900/20"
+                        )}
+                      >
+                        {item.icon && <item.icon className="w-4 h-4" />}
+                        <span className="text-sm font-medium">{item.label}</span>
+                      </Link>
+                    </SheetClose>
+                  );
+                })}
+                <div className="mt-auto px-6 pt-6 border-t border-purple-100 dark:border-purple-900/40">
+                  <MobileUserActions />
                 </div>
-                {authState.status && (
-                  <div className="p-6 border-t border-purple-100 dark:border-purple-900/40">
-                    <MobileUserActions />
-                  </div>
-                )}
               </div>
             </SheetContent>
           </Sheet>

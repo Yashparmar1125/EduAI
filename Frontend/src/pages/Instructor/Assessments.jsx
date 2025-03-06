@@ -135,8 +135,8 @@ const Assessments = () => {
 
   const fetchAssessments = async () => {
     try {
-      const { data } = await getInstructorAssessments();
-      setAssessments(data.assessments);
+      const response = await getInstructorAssessments();
+      setAssessments(response.assessments);
     } catch (error) {
       console.error('Error fetching assessments:', error);
       toast({

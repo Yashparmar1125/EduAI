@@ -33,7 +33,7 @@ const EditCourse = () => {
 
   const fetchCourseDetails = async () => {
     try {
-      const { data } = await getCourseDetails(courseId);
+      const  data  = await getCourseDetails(courseId);
       const course = data.course;
       
       setCourseData({

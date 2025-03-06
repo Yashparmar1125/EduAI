@@ -37,7 +37,7 @@ export const getInstructorAssessments = async (req, res) => {
       instructor: req.user.userId,
     }).sort({ createdAt: -1 });
 
-    res.json({ assessments });
+    res.status(200).json({ success: true, assessments });
   } catch (error) {
     res
       .status(500)
@@ -130,7 +130,7 @@ export const getAssessmentStats = async (req, res) => {
       status: assessment.status,
     };
 
-    res.json({ stats });
+    res.status(200).json({ success: true, stats });
   } catch (error) {
     res.status(500).json({
       message: "Error fetching assessment statistics",

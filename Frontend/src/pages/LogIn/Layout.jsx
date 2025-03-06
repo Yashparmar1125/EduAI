@@ -26,17 +26,17 @@ const Layout = () => {
       // Send user information to your backend to create a session
       const response = await googleLogin(auth_token);
       
-      if (response.status === 200) {
-        const responseData = await response.data  // Parse the JSON here
-        dispatch(login({
+      if (response.success===true) {
+     
+          dispatch(login({
           name: user.displayName,
           email: user.email,
           avatar: user.photoURL,
-          role: responseData.user.role,  // Set role from backend
+          role: response.user.role,  // Set role from backend
         }));
         dispatch(updateUserProfile({
           name: user.displayName,
-          role: responseData.user.role,  // Set role from backend
+          role: response.user.role,  // Set role from backend
         }));
         navigate('/dashboard');  // Redirect to dashboard after successful login
       }
@@ -56,9 +56,9 @@ const Layout = () => {
 
     try {
       const response = await emailLogin(email, password);
-
-      if (response.status === 200) {
-        const userData = response.data.user;
+      
+      if (response.success===true) {
+        const userData = response.user;
         // Dispatch login action to Redux store
         dispatch(login({
           name: userData.name,

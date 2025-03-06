@@ -42,11 +42,11 @@ const CourseDetails = () => {
 
   const fetchCourseDetails = async () => {
     try {
-      const { data } = await getCourseDetails(courseId);
+      const  data  = await getCourseDetails(courseId);
       setCourse(data.course);
       // Fetch course statistics
       const statsData = await getCourseStats(courseId);
-      setStats(statsData.data);
+      setStats(statsData);
     } catch (error) {
       console.error('Error fetching course details:', error);
       toast({

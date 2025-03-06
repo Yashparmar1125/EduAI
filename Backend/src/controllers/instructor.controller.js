@@ -52,6 +52,7 @@ export const getInstructorStats = async (req, res) => {
     };
 
     res.json({
+      success: true,
       message: "Instructor statistics retrieved successfully",
       stats,
     });
@@ -72,6 +73,7 @@ export const getInstructorCourses = async (req, res) => {
       .lean();
 
     res.json({
+      success: true,
       message: "Instructor courses retrieved successfully",
       courses,
     });
@@ -129,6 +131,7 @@ export const getCourseStats = async (req, res) => {
       completionRate,
       totalRevenue,
       averageRating,
+      success: true,
     });
   } catch (error) {
     console.error("Error getting course statistics:", error);
