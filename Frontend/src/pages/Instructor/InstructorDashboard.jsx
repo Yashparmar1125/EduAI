@@ -80,9 +80,9 @@ const CourseCard = ({ _id, title, studentsCount, poster, status }) => {
           <div className="absolute top-3 right-3">
             <span className={cn(
               "px-3 py-1.5 text-xs font-medium rounded-full",
-              status === 'published' ? 'bg-green-500/10 text-green-500' : 'bg-yellow-500/10 text-yellow-500'
+             'bg-green-500/10 text-green-500'
             )}>
-              {status}
+              publis
             </span>
           </div>
         </div>

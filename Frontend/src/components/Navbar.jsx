@@ -64,6 +64,13 @@ export function Navbar() {
   };
 
   const getMenuItems = () => {
+    if (authState.status === false) {
+      return [
+        { path: "/", label: "Home" },
+        { path: "/community", label: "Community" },
+        { path: "/internships", label: "Internships" },
+      ];
+    }
     
     if (role === 'instructor') {
       return [
@@ -111,7 +118,7 @@ export function Navbar() {
       <DropdownMenu>
         <DropdownMenuTrigger className="flex items-center space-x-2 focus:outline-none">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={user.avatarUrl} />
+            <AvatarImage src={user.avatar} />
             <AvatarFallback className="bg-purple-100 dark:bg-purple-900/40 text-[#6938EF] dark:text-[#9D7BFF]">
               {user.name?.charAt(0).toUpperCase()}
             </AvatarFallback>
@@ -121,15 +128,15 @@ export function Navbar() {
           </span>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
-          <DropdownMenuItem asChild>
+          <DropdownMenuItem>
             <Link to="/profile" className="w-full">Profile</Link>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild>
+          <DropdownMenuItem>
             <Link to="/settings" className="w-full">Settings</Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem
-            className="text-red-600 dark:text-red-400 cursor-pointer"
+            className="text-red-600 dark:text-red-400"
             onClick={handleSignOut}
           >
             Sign Out
@@ -222,7 +229,7 @@ export function Navbar() {
           </Link>
         </div>
 
-        {authState.status && (
+        { (
           <div className="hidden md:flex items-center justify-center space-x-6 absolute left-1/2 transform -translate-x-1/2">
             {menuItems.map((item) => {
               const isActive = location.pathname === item.path;

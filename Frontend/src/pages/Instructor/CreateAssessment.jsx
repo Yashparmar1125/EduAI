@@ -157,7 +157,7 @@ const CreateAssessment = () => {
     setSaving(true);
 
     try {
-      const { data } = await createAssessment(assessment);
+      const  data  = await createAssessment(assessment);
       toast({
         title: "Success",
         description: "Assessment created successfully",

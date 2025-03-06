@@ -40,7 +40,8 @@ import {
   updateAvatarUrl,
   enrollInCourse 
 } from '../../redux/slices/userSlice';
-import { getDashboardData } from '../../api/axios.api';
+import { getDashboardData, enrollCourse } from '../../api/axios.api';
+import { useToast } from '@/components/ui/toast';
 const Dashboard = () => {
   const { theme } = useTheme();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -48,6 +49,7 @@ const Dashboard = () => {
   const [dashboardData, setDashboardData] = useState(null);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   // Redux state
   const user = useSelector((state) => state.user);
@@ -109,6 +111,35 @@ const Dashboard = () => {
 
     fetchDashboardData();
   }, []);
+
+  const handleEnroll = async (courseId) => {
+    try {
+      // Ensure we're passing a string or number ID
+      const id = typeof courseId === 'object' ? courseId.id : courseId;
+      
+      const response = await enrollCourse(id);
+      if (response.success) {
+        dispatch(enrollInCourse(id));
+        toast({
+          title: "Success",
+          description: "Course enrolled successfully",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: response.message || "Failed to enroll in course",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Error enrolling in course:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to enroll in course",
+        variant: "destructive",
+      });
+    }
+  };
 
   // Check if data is loading
   if (isLoading) {
@@ -503,7 +534,7 @@ const Dashboard = () => {
                               size="sm" 
                               variant="ghost" 
                               className="h-7 px-2 text-xs text-[#6938EF]"
-                              onClick={() => dispatch(enrollInCourse(course.id))}
+                              onClick={() => handleEnroll(course.id)}
                             >
                               Enroll Now
                             </Button>
@@ -683,7 +714,7 @@ const Dashboard = () => {
                                   size="sm" 
                                   variant="ghost" 
                                   className="h-7 px-2 text-xs text-[#6938EF]"
-                                  onClick={() => dispatch(enrollInCourse(course.id))}
+                                  onClick={() => handleEnroll(course.id)}
                                 >
                                   {course.enrolled ? 'Enrolled' : 'Enroll'}
                                 </Button>
