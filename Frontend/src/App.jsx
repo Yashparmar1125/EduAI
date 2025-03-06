@@ -18,7 +18,7 @@ import Login from './modals/Login';
 import { Navbar } from './components/navbar';
 import CourseLearning from './pages/Dashboard/CourseLearning';
 import ProtectedRoute from './components/ProtectedRoute';
-
+import TopSection from './pages/Community/TopSection'; // Import TopSection component
 
 function App() {
   return (
@@ -31,10 +31,8 @@ function App() {
             <Route path="/signup" element={<SignUpLayout />} />
             <Route path="/login" element={<LogInLayout />} />
             <Route path="/internships" element={<Internships />} />
+            <Route path="/community1" element={<TopSection />} /> {/* Add route for TopSection */}
             
-            
-            
-
             {/* Protected Routes */}
             <Route path="/assessment" element={<ProtectedRoute element={<Questions />} />} />
             <Route path="/roadmap" element={<ProtectedRoute element={<RoadmapPage />} />} />
