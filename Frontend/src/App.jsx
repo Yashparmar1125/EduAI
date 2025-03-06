@@ -179,7 +179,7 @@ function App() {
                   <Route path="/dashboard/course/:courseId" element={<CourseOverview />} />
                   <Route path="/achievements" element={<ProtectedRoute element={<Achievements />} />} />
                   <Route path="/course" element={<ProtectedRoute element={<CourseOverview />} />} />
-                  <Route path="/learning" element={<ProtectedRoute element={<CourseLearning />} />} />
+                  <Route path="/learning/:courseId" element={<ProtectedRoute element={<CourseLearning />} />} />
                   <Route path="/explore" element={<ProtectedRoute element={<ExploreCourses />} />} />
                 </Routes>
                 <Footer />

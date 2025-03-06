@@ -238,6 +238,14 @@ const Dashboard = () => {
               <Button 
                 className="mt-3 bg-[#6938EF] hover:bg-[#5B2FD1] text-white text-sm"
                 size="sm"
+                onClick={() => {
+                  if (dashboardData.enrolledCourses.length > 0) {
+                    const mostRecentCourse = dashboardData.enrolledCourses[0];
+                    navigate(`/learning/${mostRecentCourse.id}`);
+                  } else {
+                    navigate('/explore');
+                  }
+                }}
               >
                 {isNewUser ? 'Explore Courses' : 'Continue Learning'}
               </Button>
@@ -744,12 +752,16 @@ const Dashboard = () => {
                     </div>
                     <div className="divide-y divide-border">
                       {dashboardData.enrolledCourses.map((course) => (
-                        <div key={course.id} className={cn(
-                          "flex gap-4 p-5 transition-all",
-                          theme === 'dark' 
-                            ? 'hover:bg-[#1A1425]/50' 
-                            : 'hover:bg-accent'
-                        )}>
+                        <div 
+                          key={course.id} 
+                          className={cn(
+                            "flex gap-4 p-5 transition-all cursor-pointer",
+                            theme === 'dark' 
+                              ? 'hover:bg-[#1A1425]/50' 
+                              : 'hover:bg-accent'
+                          )}
+                          onClick={() => navigate(`/learning/${course.id}`)}
+                        >
                           <div className={cn(
                             "w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0",
                             theme === 'dark' ? 'bg-[#1A1425]' : 'bg-accent'

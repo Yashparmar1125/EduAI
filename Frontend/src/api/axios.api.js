@@ -185,3 +185,49 @@ export const getAllCourses = (filters = {}) => {
 
   return api.get(`/api/course/explore?${params.toString()}`);
 };
+
+// Course Progress Tracking
+export const startModule = async (courseId, moduleId) => {
+  try {
+    const response = await api.post(
+      `/api/progress/courses/${courseId}/modules/${moduleId}/start`
+    );
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+export const updateModuleProgress = async (courseId, moduleId, progress) => {
+  try {
+    const response = await api.patch(
+      `/api/progress/courses/${courseId}/modules/${moduleId}/progress`,
+      { progress }
+    );
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+export const completeModule = async (courseId, moduleId) => {
+  try {
+    const response = await api.post(
+      `/api/progress/courses/${courseId}/modules/${moduleId}/complete`
+    );
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+export const getCourseProgress = async (courseId) => {
+  try {
+    const response = await api.get(
+      `/api/progress/courses/${courseId}/progress`
+    );
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};

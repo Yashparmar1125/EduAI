@@ -59,6 +59,7 @@ app.use("/api/course", courseRoutes);
 app.use("/api/instructor", instructorRoutes);
 app.use("/api/assessment", assessmentRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/progress", progressRoutes);
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);
