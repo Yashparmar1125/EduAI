@@ -1,4 +1,5 @@
 import express from "express";
+
 import {
   createAssessment,
   getInstructorAssessments,
@@ -8,11 +9,13 @@ import {
   getAssessmentStats,
   getNextQuestions,
   submitAssessment,
+  getLangflowRoadmap,
 } from "../controllers/assessment.controller.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
+router.post("/langflow", getLangflowRoadmap);
 // Protected routes (require authentication)
 router.use(authMiddleware);
 
@@ -38,5 +41,7 @@ router.delete("/delete/:assessmentId", deleteAssessment);
 router.get("/get/:assessmentId/stats", getAssessmentStats);
 
 router.post("/submit", submitAssessment);
+
+
 
 export default router;

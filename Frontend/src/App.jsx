@@ -4,7 +4,6 @@ import { ThemeProvider } from './components/theme-provider';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import store, { persistor } from './redux/store/store';
-import { Home } from './pages/Home/Home';
 import { Footer } from './components/Footer';
 import Questions from './pages/Assessments/Questions';
 import RoadmapPage from './pages/Assessments/Roadmap';
@@ -29,6 +28,8 @@ import { ToastProvider } from './components/ui/toast';
 import AssessmentDetails from './pages/Instructor/AssessmentDetails';
 import EditAssessment from './pages/Instructor/EditAssessment';
 import ExploreCourses from './pages/ExploreCourses/ExploreCourses';
+import LandingPage from './pages/LandingPage/MainPage';
+import NotFound from './components/NotFound';
 
 function App() {
   return (
@@ -57,7 +58,7 @@ function App() {
               <div className="min-h-screen bg-background text-foreground">
                 <Navbar />
                 <Routes>
-                  <Route path="/" element={<Home />} />
+                  <Route path="/" element={<LandingPage />} />
                   <Route path="/signup" element={<SignUpLayout />} />
                   <Route path="/login" element={<LogInLayout />} />
                   <Route path="/internships" element={<Internships />} />
@@ -181,6 +182,8 @@ function App() {
                   <Route path="/course" element={<ProtectedRoute element={<CourseOverview />} />} />
                   <Route path="/learning/:courseId" element={<ProtectedRoute element={<CourseLearning />} />} />
                   <Route path="/explore" element={<ProtectedRoute element={<ExploreCourses />} />} />
+
+                  <Route path="*" element={<NotFound />} />
                 </Routes>
                 <Footer />
               </div>

@@ -153,34 +153,31 @@ const Questions = () => {
 
             setMessage("Creating Your Learning Roadmap");
             
-            // Make API call to backend
-            const response = await axios.post('http://localhost:5000/api/assessment/submit', {
-                assessmentId: assessment?.id,
-                initialResponses,
-                assessmentResponses,
-                averageScore,
-                totalQuestions,
-                correctAnswers
-            }, {
-                withCredentials: true,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+            // Call our backend proxy instead of Langflow directly
+            const langflowResponse = await axios.post(
+                'http://localhost:5000/api/assessment/langflow',
+                {
+                    input_value: `Level: ${initialResponses[0].answer}, Interest: ${initialResponses[1].answer}`
+                },
+                {
+                    withCredentials: true,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+                    }
                 }
-            });
-
-            // Store the response data in localStorage
+            );
+            
+            // Store assessment results and roadmap data
             localStorage.setItem('assessmentResults', JSON.stringify({
-                ...response.data,
                 averageScore,
                 totalQuestions,
-                correctAnswers
+                correctAnswers,
+                initialResponses,
+                roadmap: langflowResponse.data
             }));
 
-            // Add a small delay to show the loading screen
             await new Promise(resolve => setTimeout(resolve, 1500));
-
-            // Navigate to roadmap page
             navigate('/roadmap');
         } catch (error) {
             console.error('Error submitting assessment:', error);
