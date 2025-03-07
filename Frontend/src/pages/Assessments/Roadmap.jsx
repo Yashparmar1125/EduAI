@@ -16,35 +16,84 @@ const RoadmapPage = () => {
   const [steps, setSteps] = useState([]);
   
   useEffect(() => {
-   
     const storedResults = localStorage.getItem('assessmentResults');
+    console.log('Raw localStorage data:', storedResults);
+  
     if (storedResults) {
-      const { roadmap } = JSON.parse(storedResults);
-      
-      
-      if (roadmap && roadmap.result) {
-        const formattedSteps = formatRoadmapSteps(roadmap.result);
-        setSteps(formattedSteps);
+      try {
+        const results = JSON.parse(storedResults);
+        console.log('Parsed assessment results:', results);
+  
+        let roadmapData;
+        if (results.roadmap?.result?.outputs?.results?.message?.text) {
+          console.log('Extracting roadmap from message text');
+          const cleanText = results.roadmap.result.outputs.results.message.text.replace(/```json\n|\n```/g, '');
+          roadmapData = JSON.parse(cleanText);
+        } else if (typeof results.roadmap.result === 'string') {
+          console.log('Extracting roadmap from string');
+          const cleanText = results.roadmap.result.replace(/```json\n|\n```/g, '');
+          roadmapData = JSON.parse(cleanText);
+        } else {
+          console.log('Extracting roadmap directly');
+          const rawText = results?.roadmap?.result?.outputs?.[0]?.outputs?.[0]?.results?.message?.text;
+          if (rawText) {
+            const cleanText = rawText.replace(/```json\n|\n```/g, '');
+            roadmapData = JSON.parse(cleanText);
+          }
+        }
+  
+        console.log('Final roadmap data:', roadmapData);
+        if (roadmapData?.roadmap) {
+          setSteps(roadmapData.roadmap.map((step, index) => ({
+            id: index + 1,
+            title: step.title,
+            description: step.description,
+            duration: step.duration,
+            resources: step.resources || [],
+            color: "#6938EF",
+            icon: getIconForStep(index)
+          })));
+        }
+      } catch (error) {
+        console.error('Error parsing roadmap data:', error);
       }
     }
   }, []);
   
+  
+  const getIconForStep = (index) => {
+    const icons = [
+      <Rocket className="w-5 h-5 sm:w-6 sm:h-6" />,
+      <Code2 className="w-5 h-5 sm:w-6 sm:h-6" />,
+      <Database className="w-5 h-5 sm:w-6 sm:h-6" />,
+      <Blocks className="w-5 h-5 sm:w-6 sm:h-6" />
+    ];
+    return icons[index % icons.length];
+  };
+  
   const formatRoadmapSteps = (roadmapResult) => {
-   
     try {
-     
-      return roadmapResult.map((step, index) => ({
-        id: index + 1,
-        title: step.title || `Step ${index + 1}`,
-        description: step.description || "",
-        topics: step.topics || [],
-        duration: step.duration || "4 weeks",
-        color: "#6938EF",
-        icon: getIconForStep(index) 
-      }));
+      // Ensure roadmapResult is an array
+      const steps = Array.isArray(roadmapResult) ? roadmapResult : [];
+      
+      return steps.map((step, index) => {
+        
+        const stepData = {
+          id: index + 1,
+          title: step.title || `Step ${index + 1}`,
+          description: step.description || "No description provided",
+          topics: Array.isArray(step.topics) ? step.topics : [],
+          duration: step.duration || "4 weeks",
+          color: "#6938EF",
+          icon: getIconForStep(index)
+        };
+
+        console.log('Formatted step:', stepData);
+        return stepData;
+      });
     } catch (error) {
       console.error('Error formatting roadmap:', error);
-      return []; 
+      return [];
     }
   };
   
@@ -220,16 +269,19 @@ const RoadmapPage = () => {
                     </p>
 
                     <div className="flex flex-wrap gap-1.5 sm:gap-2">
-                      {step.topics.map((topic, i) => (
-                        <motion.span
+                      {step.resources.map((resource, i) => (
+                        <motion.a
                           key={i}
+                          href={resource.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
                           transition={{ delay: i * 0.1 }}
-                          className="text-[10px] sm:text-xs px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-[#2A2438] text-gray-300 border border-[#6938EF]/20"
+                          className="text-[10px] sm:text-xs px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-[#2A2438] text-gray-300 border border-[#6938EF]/20 hover:border-[#6938EF]/50 transition-colors"
                         >
-                          {topic}
-                        </motion.span>
+                          {resource.name}
+                        </motion.a>
                       ))}
                     </div>
                   </div>

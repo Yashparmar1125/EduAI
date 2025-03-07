@@ -1,27 +1,33 @@
 import React from 'react';
-
+import { useNavigate } from 'react-router-dom';
 
 const FourOptions = () => {
+  const navigate = useNavigate();
+
   const options = [
     {
       icon: "https://dashboard.codeparrot.ai/api/image/Z8X6dMhTinWyM7Gv/healthic.png",
       title: "SKILL ASSESSMENT",
-      description: "Elevate your potential! Click to assess your skills and discover where you stand."
+      description: "Elevate your potential! Click to assess your skills and discover where you stand.",
+      path: "/assessment"
     },
     {
       icon: "https://dashboard.codeparrot.ai/api/image/Z8X6dMhTinWyM7Gv/gis-map.png",
       title: "INTERNSHIPS",
-      description: "Kickstart Your Career! Explore exciting internships and gain real-world experience."
+      description: "Kickstart Your Career! Explore exciting internships and gain real-world experience.",
+      path: "/internships"
     },
     {
       icon: "https://dashboard.codeparrot.ai/api/image/Z8X6dMhTinWyM7Gv/fluent-c.png",
       title: "COMMUNITY",
-      description: "Find Your Tribe! Join a thriving community that matches your passion and interests."
+      description: "Find Your Tribe! Join a thriving community that matches your passion and interests.",
+      path: "/community"
     },
     {
       icon: "https://dashboard.codeparrot.ai/api/image/Z8X6dMhTinWyM7Gv/carbon-d.png",
       title: "DASHBOARD",
-      description: "Your Learning Hub! Track progress, ongoing lectures, certificates, and more."
+      description: "Your Learning Hub! Track progress, ongoing lectures, certificates, and more.",
+      path: "/dashboard"
     }
   ];
 
@@ -36,6 +42,7 @@ const FourOptions = () => {
           <div 
             key={index} 
             className="bg-white rounded-xl p-6 cursor-pointer relative min-h-[273px] transition-all duration-200 hover:shadow-lg hover:scale-[1.02]"
+            onClick={() => navigate(option.path)}
           >
             <div className="mb-6">
               <img src={option.icon} alt={option.title} className="w-[52px] h-[52px] object-contain" />

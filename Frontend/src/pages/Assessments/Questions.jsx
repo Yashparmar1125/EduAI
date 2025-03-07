@@ -153,32 +153,36 @@ const Questions = () => {
 
             setMessage("Creating Your Learning Roadmap");
             
-            // Call our backend proxy instead of Langflow directly
             const langflowResponse = await axios.post(
                 'http://localhost:5000/api/assessment/langflow',
                 {
-                    input_value: `Level: ${initialResponses[0].answer}, Interest: ${initialResponses[1].answer}`
+                    input_value: `Level: ${initialResponses[0].answer}, Interest: ${initialResponses[1].answer}, Score: ${averageScore}`,
+                    assessmentScore: averageScore,
+                    skillGaps: assessmentResponses.filter(r => !r.isCorrect).map(r => r.question),
+                    assessmentId: assessment.id  // Add assessment ID
                 },
                 {
                     withCredentials: true,
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
+                       
                     }
                 }
             );
-            
-            // Store assessment results and roadmap data
-            localStorage.setItem('assessmentResults', JSON.stringify({
+            const resultsData = {
                 averageScore,
                 totalQuestions,
                 correctAnswers,
                 initialResponses,
-                roadmap: langflowResponse.data
-            }));
-
-            await new Promise(resolve => setTimeout(resolve, 1500));
+                roadmap: {
+                    result: langflowResponse.data.roadmap || langflowResponse.data
+                }
+            };
+            localStorage.setItem('assessmentResults', JSON.stringify(resultsData));
+            // Add a small delay for better UX
+            await new Promise(resolve => setTimeout(resolve, 1000));
             navigate('/roadmap');
+            
         } catch (error) {
             console.error('Error submitting assessment:', error);
             setError(error.response?.data?.message || 'Failed to submit assessment. Please try again.');
