@@ -1,10 +1,23 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Search } from 'lucide-react';
 import comImage from '@/assets/com_image.jpg';
 import aiImage from '@/assets/AI.png'; // Updated AI image path
+import CreateSpaceModal from './CreateSpace'; // Import CreateSpaceModal
+import AddQuestion from './AddQuestion'; // Import AddQuestion
 
 const TopSection = ({ title, subtitle, buttons }) => {
+  const [isCreateSpaceOpen, setIsCreateSpaceOpen] = useState(false);
+  const [isAddQuestionOpen, setIsAddQuestionOpen] = useState(false);
+
+  const handleButtonClick = (buttonText) => {
+    if (buttonText === "Create Space") {
+      setIsCreateSpaceOpen(true);
+    } else if (buttonText === "Add a question") {
+      setIsAddQuestionOpen(true);
+    }
+  };
+
   return (
     <Fragment>
       {/* Updated Background with Image */}
@@ -28,6 +41,7 @@ const TopSection = ({ title, subtitle, buttons }) => {
             {buttons.map((button, index) => (
               <Button
                 key={index}
+                onClick={() => handleButtonClick(button.text)}
                 style={{
                   backgroundColor: button.bgColor,
                   borderColor: button.borderColor,
@@ -35,9 +49,9 @@ const TopSection = ({ title, subtitle, buttons }) => {
                   padding: '0.75rem 1.25rem',
                   fontWeight: 'bold',
                   borderRadius: '1rem',
-                  transition: 'background-color 0.2s',
+                  transition: 'all 0.2s',
                 }}
-                className="hover:bg-opacity-80"
+                className="hover:opacity-80"
               >
                 {button.text}
               </Button>
@@ -58,7 +72,7 @@ const TopSection = ({ title, subtitle, buttons }) => {
             <input
               type="text"
               placeholder="Search..."
-              className="pl-10 pr-4 py-2 text-white bg-[#7209B7] rounded-lg border-none outline-none w-200"
+              className="pl-10 pr-4 py-2 text-white bg-[#7209B7] rounded-lg border-none outline-none w-200  "
             />
           </div>
           <Button
@@ -77,7 +91,7 @@ const TopSection = ({ title, subtitle, buttons }) => {
       </div>
 
       {/* Title "Artificial Intelligence" */}
-      <div className="flex flex-col items-left justify-center w-full py-6 pl-55 pt-10 bg-gray-00">
+      <div className="flex flex-col items-left justify-center w-full py-6 pl-35 pt-10 bg-gray-00">
         <h2 className="text-gray-910 text-3xl font-bold">Artificial Intelligence</h2>
       </div>
 
@@ -121,13 +135,13 @@ const TopSection = ({ title, subtitle, buttons }) => {
       </div>
 
       {/* Title "Physics and Mathematics" */}
-      <div className="flex flex-col items-left justify-center w-full py-6 pl-55 pt-10 bg-gray-00">
+      <div className="flex flex-col items-left justify-center w-full py-6 pl-35 pt-10 bg-gray-00">
         <h2 className="text-gray-910 text-3xl font-bold">Physics and Mathematics</h2>
       </div>
 
       
       {/* Cards Section */}
-      <div className="flex flex-wrap justify-center gap-9 p-4 bg-gray-00">
+      <div className="flex flex-wrap justify-center gap-9 p-4 pb-5 bg-gray-00">
         {/* Existing 4 Cards */}
         {["Artificial Intelligence", "Machine Learning", "Data Science", "Deep Learning"].map((topic, index) => (
           <div key={index} className="bg-white rounded-2xl shadow-lg w-72 overflow-hidden">
@@ -147,7 +161,7 @@ const TopSection = ({ title, subtitle, buttons }) => {
       </div>
 
       {/* Additional 4 Cards Below */}
-      <div className="flex flex-wrap justify-center gap-9 p-4 bg-gray-00">
+      <div className="flex flex-wrap justify-center gap-9 p-4 pb-20 bg-gray-00">
         {["Computer Vision", "NLP", "Robotics", "Cybersecurity"].map((topic, index) => (
           <div key={index} className="bg-white rounded-2xl shadow-lg w-72 overflow-hidden">
             <div className="relative">
@@ -164,6 +178,15 @@ const TopSection = ({ title, subtitle, buttons }) => {
           </div>
         ))}
       </div>
+
+      <CreateSpaceModal 
+        isOpen={isCreateSpaceOpen}
+        onClose={() => setIsCreateSpaceOpen(false)}
+      />
+      <AddQuestion 
+        isOpen={isAddQuestionOpen}
+        onClose={() => setIsAddQuestionOpen(false)}
+      />
     </Fragment>
   );
 };
