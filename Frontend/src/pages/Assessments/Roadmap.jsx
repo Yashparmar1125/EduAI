@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import domtoimage from 'dom-to-image';
 import confetti from 'canvas-confetti';
@@ -13,55 +13,41 @@ const RoadmapPage = () => {
   const [activeStep, setActiveStep] = useState(0);
   const [completedSteps, setCompletedSteps] = useState(new Set());
   const [isDownloading, setIsDownloading] = useState(false);
-
-  const steps = [
-    {
-      id: 1,
-      title: "Web Fundamentals",
-      description: "Your journey begins here! Master the core technologies.",
-      topics: ["HTML5", "CSS3", "JavaScript"],
-      duration: "4 weeks",
-      color: "#6938EF",
-      icon: <Rocket className="w-6 h-6 sm:w-8 sm:h-8" />,
-    },
-    {
-      id: 2,
-      title: "React Basics",
-      description: "Level up with modern UI development!",
-      topics: ["JSX", "Components", "Props & State"],
-      duration: "6 weeks",
-      color: "#6938EF",
-      icon: <Code2 className="w-6 h-6 sm:w-8 sm:h-8" />,
-    },
-    {
-      id: 3,
-      title: "Advanced React",
-      description: "Become a React ninja!",
-      topics: ["Hooks", "Context", "Redux"],
-      duration: "8 weeks",
-      color: "#6938EF",
-      icon: <Blocks className="w-6 h-6 sm:w-8 sm:h-8" />,
-    },
-    {
-      id: 4,
-      title: "Backend Integration",
-      description: "Connect everything together!",
-      topics: ["APIs", "Authentication", "Database"],
-      duration: "6 weeks",
-      color: "#6938EF",
-      icon: <Database className="w-6 h-6 sm:w-8 sm:h-8" />,
-    },
-    {
-      id: 5,
-      title: "Full Stack Project",
-      description: "Show off your skills!",
-      topics: ["Architecture", "Deployment", "Testing"],
-      duration: "8 weeks",
-      color: "#6938EF",
-      icon: <Trophy className="w-6 h-6 sm:w-8 sm:h-8" />,
+  const [steps, setSteps] = useState([]);
+  
+  useEffect(() => {
+   
+    const storedResults = localStorage.getItem('assessmentResults');
+    if (storedResults) {
+      const { roadmap } = JSON.parse(storedResults);
+      
+      
+      if (roadmap && roadmap.result) {
+        const formattedSteps = formatRoadmapSteps(roadmap.result);
+        setSteps(formattedSteps);
+      }
     }
-  ];
-
+  }, []);
+  
+  const formatRoadmapSteps = (roadmapResult) => {
+   
+    try {
+     
+      return roadmapResult.map((step, index) => ({
+        id: index + 1,
+        title: step.title || `Step ${index + 1}`,
+        description: step.description || "",
+        topics: step.topics || [],
+        duration: step.duration || "4 weeks",
+        color: "#6938EF",
+        icon: getIconForStep(index) 
+      }));
+    } catch (error) {
+      console.error('Error formatting roadmap:', error);
+      return []; 
+    }
+  };
+  
   const handleStepComplete = (index) => {
     if (!completedSteps.has(index)) {
       const newCompleted = new Set(completedSteps);
@@ -76,7 +62,7 @@ const RoadmapPage = () => {
       });
     }
   };
-
+  
   const downloadAsPNG = async () => {
     if (isDownloading) return;
     setIsDownloading(true);
@@ -125,7 +111,7 @@ const RoadmapPage = () => {
     }
     setIsDownloading(false);
   };
-
+  
   return (
     <div className={cn(
       "min-h-[calc(100vh-4rem)] p-4 sm:p-8",
