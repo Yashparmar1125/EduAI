@@ -65,7 +65,7 @@ const CourseDetails = () => {
     }
 
     try {
-      await axios.delete(`/api/course/${courseId}`);
+      await deleteCourse(courseId);
       toast({
         title: "Success",
         description: "Course deleted successfully",

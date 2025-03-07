@@ -279,9 +279,8 @@ const CreateCourse = () => {
       courseFormData.append('modules', JSON.stringify(formData.modules));
       
       // Send request to backend
-      const { data } = await createCourse(courseFormData);
-      
-      // Show success message
+      const data  = await createCourse(courseFormData);
+        // Show success message
       toast({
         title: "Success!",
         description: data.message || "Course created successfully",
@@ -290,6 +289,9 @@ const CreateCourse = () => {
       
       // Navigate to the course page
       navigate(`/instructor/courses/${data.course._id}`);
+      
+      
+      
       
     } catch (error) {
       console.error('Error creating course:', error);

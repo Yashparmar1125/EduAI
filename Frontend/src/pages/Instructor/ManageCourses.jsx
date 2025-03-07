@@ -28,7 +28,7 @@ import {
   Badge
 } from "@/components/ui/badge";
 import { useToast } from "../../components/ui/toast";
-import { getInstructorCourses } from "../../api/axios.api";
+import { getInstructorCourses ,deleteCourse} from "../../api/axios.api";
 
 const ManageCourses = () => {
   const { theme } = useTheme();
@@ -74,7 +74,7 @@ const ManageCourses = () => {
     }
 
     try {
-      await axios.delete(`/api/course/${courseId}`);
+      await deleteCourse(courseId);
       toast({
         title: "Success",
         description: "Course deleted successfully",

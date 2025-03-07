@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FaGoogle, FaFacebook } from 'react-icons/fa';
+import { FaGoogle, FaGithub } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { cn } from "@/lib/utils";
 import { useTheme } from "../../components/theme-provider";
 
-const RightSection = ({ defaultData = {}, onGoogleSignIn, onLogin, error }) => {
+const RightSection = ({ defaultData = {}, onGoogleSignIn, onLogin,onGithubLogin, error }) => {
   const { theme } = useTheme();
   const [formData, setFormData] = useState({
     email: defaultData.email || '',
@@ -200,9 +200,10 @@ const RightSection = ({ defaultData = {}, onGoogleSignIn, onLogin, error }) => {
                 theme === 'dark' ? 'border-[#6938EF]/20' : 'border-border'
               )}
               aria-label="Sign in with Facebook"
+              onClick={onGithubLogin}
             >
-              <FaFacebook className="text-xl text-[#1877f2]" />
-              <span className="text-sm font-medium">Facebook</span>
+              <FaGithub className="text-xl text-[#1877f2]" />
+              <span className="text-sm font-medium">Github</span>
             </motion.button>
           </div>
         </motion.div>

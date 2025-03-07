@@ -174,6 +174,7 @@ export const createCourse = async (req, res) => {
     res.status(201).json({
       message: "Course created successfully",
       course,
+      sucess: true,
     });
   } catch (error) {
     console.error("Error creating course:", error);

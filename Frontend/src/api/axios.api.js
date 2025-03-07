@@ -42,6 +42,31 @@ export const emailLogin = (email, password) => {
   );
 };
 
+export const githubLogin = (auth_token) => {
+  return api.post(
+    "/api/auth/github/login",
+    { auth_token },
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+};
+
+// Github signup API
+export const githubSignup = (auth_token) => {
+  return api.post(
+    "/api/auth/github/register",
+    { auth_token },
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+};
+
 // Email/password signup API
 export const emailSignup = (name, email, password, interests) => {
   return api.post(

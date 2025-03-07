@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FaGoogle, FaFacebook } from 'react-icons/fa';
+import { FaGoogle,  FaGithub } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { cn } from "@/lib/utils";
 import { useTheme } from "../../components/theme-provider";
 import { Mail, Lock, User, Briefcase, Heart } from 'lucide-react';
 
-const RightSection = ({ defaultData = {}, onGoggleSignIn, onSignUp }) => {
+const RightSection = ({ defaultData = {}, onGoggleSignUp, onSignUp, onGithubSignUp }) => {
   const { theme } = useTheme();
   const [formData, setFormData] = useState({
     firstName: defaultData.firstName || '',
@@ -272,7 +272,7 @@ const RightSection = ({ defaultData = {}, onGoggleSignIn, onSignUp }) => {
                 "transition-all duration-200 ease-in-out z-10",
                 theme === 'dark' ? 'border-[#6938EF]/20' : 'border-border'
               )}
-              onClick={onGoggleSignIn}
+              onClick={onGoggleSignUp}
               aria-label="Sign up with Google"
             >
               <FaGoogle className="text-xl text-[#ea4335]" />
@@ -288,9 +288,10 @@ const RightSection = ({ defaultData = {}, onGoggleSignIn, onSignUp }) => {
                 theme === 'dark' ? 'border-[#6938EF]/20' : 'border-border'
               )}
               aria-label="Sign up with Facebook"
+              onClick={onGithubSignUp}
             >
-              <FaFacebook className="text-xl text-[#1877f2]" />
-              <span className="text-sm font-medium">Facebook</span>
+              <FaGithub className="text-xl text-[#1877f2]" />
+              <span className="text-sm font-medium">Github</span>
             </button>
           </div>
         </div>

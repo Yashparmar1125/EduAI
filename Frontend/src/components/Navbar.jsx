@@ -76,8 +76,7 @@ export function Navbar() {
       return [
         { path: "/instructor/dashboard", label: "Dashboard", icon: LayoutDashboard },
         { path: "/instructor/courses", label: "Courses", icon: BookOpen },
-        { path: "/instructor/assessments", label: "Assessments", icon: FileQuestion },
-        { path: "/instructor/settings", label: "Settings", icon: Settings }
+        { path: "/instructor/assessments", label: "Assessments", icon: FileQuestion }
       ];
     }
     

@@ -36,21 +36,7 @@ const InstructorLayout = ({ children }) => {
       icon: ClipboardList,
       path: '/instructor/assessments'
     },
-    {
-      title: 'Students',
-      icon: Users,
-      path: '/instructor/students'
-    },
-    {
-      title: 'Analytics',
-      icon: BarChart3,
-      path: '/instructor/analytics'
-    },
-    {
-      title: 'Settings',
-      icon: Settings,
-      path: '/instructor/settings'
-    }
+    
   ];
 
   const isActive = (path) => {
@@ -106,17 +92,7 @@ const InstructorLayout = ({ children }) => {
         </nav>
 
         {/* Create Course Button */}
-        <button
-          onClick={() => navigate('/instructor/courses/create')}
-          className={cn(
-            "w-full mt-8 flex items-center justify-center gap-2",
-            "px-4 py-2 rounded-lg bg-[#6938EF] text-white",
-            "hover:bg-[#5B2FD1] transition-colors duration-200"
-          )}
-        >
-          <GraduationCap className="w-5 h-5" />
-          <span>Create Course</span>
-        </button>
+        
       </div>
 
       {/* Main Content */}

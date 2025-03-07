@@ -32,17 +32,13 @@ export const getDashboardData = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
+    const allCourses = await Course.find().populate("instructor", "name").lean();
 
-    // Debug log to check user data
-    console.log("User data:", JSON.stringify(user, null, 2));
-    console.log("Enrolled courses length:", user.enrolledCourses?.length);
-
+    // Shuffle courses array and get the first 3 random courses
+    const shuffledCourses = allCourses.sort(() => Math.random() - 0.5).slice(0, 3);
     // Get trending courses (just get latest 3 courses for now)
-    const trendingCourses = await Course.find()
-      .populate("instructor", "name")
-      .sort({ createdAt: -1 })
-      .limit(3)
-      .lean();
+    const trendingCourses = shuffledCourses.slice(0, 3);
+      
 
     // Format the response based on whether user has enrolled courses
     const hasEnrolledCourses =
