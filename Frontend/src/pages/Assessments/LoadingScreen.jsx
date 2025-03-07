@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 
-export const LoadingScreen = () => {
+export const LoadingScreen = ({message,}) => {
   return (
     <div className="fixed inset-0 bg-background/80 backdrop-blur-sm">
       <div className="flex flex-col items-center justify-center h-screen gap-8">
@@ -51,7 +51,7 @@ export const LoadingScreen = () => {
             animate={{ opacity: [0.5, 1, 0.5] }}
             transition={{ duration: 2, repeat: Infinity }}
           >
-            Creating Your Learning Roadmap
+            {message}
           </motion.h2>
           <div className="space-y-2">
             <motion.p
