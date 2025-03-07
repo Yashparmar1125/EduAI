@@ -7,6 +7,7 @@ import {
   getCourseProgress,
   getCompletedCourses,
   isCourseCompleted,
+  verifyCertificatePublic,
 } from "../controllers/progress.controller.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
 
@@ -39,5 +40,8 @@ router.get(
   authMiddleware,
   getCompletedCourses
 );
+
+// Certificate verification (public route)
+router.get("/verify/:certificateId", verifyCertificatePublic);
 
 export default router;

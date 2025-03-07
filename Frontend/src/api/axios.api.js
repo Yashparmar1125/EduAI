@@ -256,3 +256,78 @@ export const getCourseProgress = async (courseId) => {
     throw error.response?.data || error.message;
   }
 };
+
+//assesment
+
+export const nextQuestions = async (responses) => {
+  return axios.post(
+    "http://localhost:5000/api/assessment/next-questions",
+    {
+      responses,
+    },
+    {
+      withCredentials: true,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+      },
+    }
+  );
+};
+
+export const getCourseCompletionStatus = async (courseId) => {
+  try {
+    const response = await axios.get(
+      `/api/progress/courses/${courseId}/completion`
+    );
+    return response.data;
+  } catch (error) {
+    throw error.response?.data?.error || error.message;
+  }
+};
+
+export const getCertificate = async (courseId) => {
+  try {
+    const response = await axios.get(
+      `/api/progress/courses/${courseId}/certificate`
+    );
+    return response.data;
+  } catch (error) {
+    throw error.response?.data?.error || error.message;
+  }
+};
+
+// Achievement API functions
+export const getAchievements = async () => {
+  try {
+    return api.get("/api/achievements");
+  } catch (error) {
+    throw error.response?.data?.error || error.message;
+  }
+};
+
+export const checkAchievements = async () => {
+  try {
+    const response = await axios.post("/api/achievements/check");
+    return response.data;
+  } catch (error) {
+    throw error.response?.data?.error || error.message;
+  }
+};
+
+export const getAchievementDetails = async (achievementId) => {
+  try {
+    const response = await axios.get(`/api/achievements/${achievementId}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data?.error || error.message;
+  }
+};
+
+export const updateXP = async (xpEarned) => {
+  try {
+    return api.post("/api/gamification/updateXP", { xpEarned });
+  } catch (error) {
+    throw error.response?.data?.error || error.message;
+  }
+};

@@ -16,15 +16,17 @@ import progressRoutes from "./routes/progress.routes.js";
 import instructorRoutes from "./routes/instructor.routes.js";
 import assessmentRoutes from "./routes/assessment.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
+import achievementRoutes from "./routes/achievement.routes.js";
+import gamificationRoutes from "./routes/gamification.routes.js";
 
-import { readFileSync } from 'fs';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
+import { readFileSync } from "fs";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const serviceAccount = JSON.parse(
-  readFileSync(join(__dirname, '../service-account.json'))
+  readFileSync(join(__dirname, "../service-account.json"))
 );
 
 firebaseAdmin.initializeApp({
@@ -68,6 +70,8 @@ app.use("/api/instructor", instructorRoutes);
 app.use("/api/assessment", assessmentRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/progress", progressRoutes);
+app.use("/api/achievements", achievementRoutes);
+app.use("/api/gamification", gamificationRoutes);
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);

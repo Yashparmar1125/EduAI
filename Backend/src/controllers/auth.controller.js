@@ -4,7 +4,7 @@ import firebaseAdmin from "firebase-admin";
 import { createUserWithEmailAndPassword } from "firebase/auth"; // Firebase Auth method for user creation
 // Import Firebase auth instance
 import { fileURLToPath } from "url";
-
+import Gamification from "../models/gamification.model.js";
 // Get the current directory of the module
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -57,6 +57,17 @@ export const register = async (req, res) => {
     });
 
     await newUser.save();
+
+    const gamification = new Gamification({
+      userId: newUser._id,
+      totalXP: 0,
+      level: 1,
+      rank: "Novice",
+      achievements: [],
+      streak: 0,
+      lastLogin: new Date(),
+    });
+    await gamification.save();
 
     // Create JWT token for the user
     const token = createToken(newUser._id);
@@ -244,6 +255,16 @@ export const googleRegister = async (req, res) => {
 
       // Save the user to the database
       await user.save();
+      const gamification = new Gamification({
+        userId: newUser._id,
+        totalXP: 0,
+        level: 1,
+        rank: "Novice",
+        achievements: [],
+        streak: 0,
+        lastLogin: new Date(),
+      });
+      await gamification.save();
     }
 
     // Create JWT token
@@ -291,6 +312,16 @@ export const githubRegister = async (req, res) => {
 
       // Save the user to the database
       await user.save();
+      const gamification = new Gamification({
+        userId: newUser._id,
+        totalXP: 0,
+        level: 1,
+        rank: "Novice",
+        achievements: [],
+        streak: 0,
+        lastLogin: new Date(),
+      });
+      await gamification.save();
     } else {
       // If user exists, we should check if GitHub is linked
       if (user.githubLinked) {
