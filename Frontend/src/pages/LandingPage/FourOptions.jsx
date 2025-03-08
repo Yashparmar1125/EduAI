@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { useNavigate } from 'react-router-dom';
 
 const FourOptions = () => {
@@ -10,28 +11,36 @@ const FourOptions = () => {
       title: "SKILL ASSESSMENT",
       description: "Elevate your potential! Click to assess your skills and discover where you stand.",
       path: "/assessment"
+
     },
     {
       icon: "https://dashboard.codeparrot.ai/api/image/Z8X6dMhTinWyM7Gv/gis-map.png",
       title: "INTERNSHIPS",
+
       description: "Kickstart Your Career! Explore exciting internships and gain real-world experience.",
       path: "/internships"
+
     },
     {
       icon: "https://dashboard.codeparrot.ai/api/image/Z8X6dMhTinWyM7Gv/fluent-c.png",
       title: "COMMUNITY",
+
       description: "Find Your Tribe! Join a thriving community that matches your passion and interests.",
       path: "/community"
+
     },
     {
       icon: "https://dashboard.codeparrot.ai/api/image/Z8X6dMhTinWyM7Gv/carbon-d.png",
       title: "DASHBOARD",
+
       description: "Your Learning Hub! Track progress, ongoing lectures, certificates, and more.",
       path: "/dashboard"
+
     }
   ];
 
   return (
+
     <div className="bg-black min-h-screen p-8">
       <h1 className="font-urbanist text-5xl font-black text-white text-center mb-12">
         Your Personalized Path to Success
@@ -54,6 +63,7 @@ const FourOptions = () => {
               <p className="font-urbanist text-lg font-semibold text-[#727272] mt-6">
                 {option.description}
               </p>
+
             </div>
           </div>
         ))}

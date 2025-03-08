@@ -1,5 +1,7 @@
 import React from 'react';
+
 import heroImg from '../../assets/heroImg.png';
+
 import FourOptions from './FourOptions'; // Import FourOptions component
 import TrendingCourses from './TrendingCourses'; // Import TrendingCourses component
 import Testimonials from './Testimonials'; // Import Testimonials component
@@ -30,6 +32,7 @@ const TopSection = () => {
         </div>
       </div>
     </div>
+
   );
 };
 
