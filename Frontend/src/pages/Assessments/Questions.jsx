@@ -190,7 +190,7 @@ const Questions = () => {
             const name=initialResponses[1].answer;
             const roadmap=JSON.stringify(resultsData);
             localStorage.setItem('assessmentResults', JSON.stringify(resultsData));
-            await createRoadmap(roadmap,name);
+            // await createRoadmap(roadmap,name);
             // Add a small delay for better UX
             await new Promise(resolve => setTimeout(resolve, 1000));
             navigate('/roadmap');

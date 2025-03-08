@@ -17,7 +17,14 @@ import {
   ArrowRight,
   Sparkles,
   TrendingUp,
-  GanttChartSquare
+  GanttChartSquare,
+  Code,
+  Network,
+  Cloud,
+  Binary,
+  AlertTriangle,
+  GraduationCap,
+  Route
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -69,11 +76,82 @@ const LearningAnalyticsSection = ({ theme }) => {
     });
   });
 
+  // Skill gaps data
+  const skillGapsData = [
+    { 
+      skill: 'Django',
+      proficiency: 45,
+      status: 'needs-improvement',
+      recommendation: 'Take Django for Beginners course',
+      icon: Code
+    },
+    { 
+      skill: 'System Design',
+      proficiency: 35,
+      status: 'critical',
+      recommendation: 'Practice with real-world architecture problems',
+      icon: Network
+    },
+    { 
+      skill: 'Cloud Computing',
+      proficiency: 55,
+      status: 'moderate',
+      recommendation: 'Complete AWS certification',
+      icon: Cloud
+    },
+    { 
+      skill: 'Data Structures',
+      proficiency: 65,
+      status: 'improving',
+      recommendation: 'Practice advanced algorithms',
+      icon: Binary
+    }
+  ];
+
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'critical':
+        return 'text-red-500 bg-red-500/10';
+      case 'needs-improvement':
+        return 'text-orange-500 bg-orange-500/10';
+      case 'moderate':
+        return 'text-yellow-500 bg-yellow-500/10';
+      case 'improving':
+        return 'text-green-500 bg-green-500/10';
+      default:
+        return 'text-muted-foreground bg-accent';
+    }
+  };
+
   const skillCards = [
-    { title: 'Courses Completed', value: '12', trend: '+2', icon: BookOpen },
-    { title: 'Avg. Performance', value: '85%', trend: '+5%', icon: TrendingUp },
-    { title: 'Skills Mastered', value: '8', trend: '+1', icon: Trophy },
-    { title: 'Learning Streak', value: '15 days', trend: '+3', icon: Sparkles },
+    { 
+      title: 'Critical Skills', 
+      value: '2', 
+      trend: 'High Priority', 
+      icon: AlertTriangle,
+      color: 'text-red-500'
+    },
+    { 
+      title: 'In Progress', 
+      value: '4', 
+      trend: 'On Track', 
+      icon: TrendingUp,
+      color: 'text-[#6938EF]'
+    },
+    { 
+      title: 'Recommended Courses', 
+      value: '3', 
+      trend: 'Available', 
+      icon: GraduationCap,
+      color: 'text-green-500'
+    },
+    { 
+      title: 'Learning Path', 
+      value: '85%', 
+      trend: 'Aligned', 
+      icon: Route,
+      color: 'text-blue-500'
+    }
   ];
 
   return (
@@ -158,32 +236,54 @@ const LearningAnalyticsSection = ({ theme }) => {
             </div>
           </div>
 
-          {/* Stats Cards */}
+          {/* Skill Gaps */}
           <div className="space-y-4">
-            {skillCards.map((card, index) => (
-              <div
+            {skillGapsData.map((skill, index) => (
+              <motion.div
                 key={index}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
                 className={cn(
                   "p-4 rounded-xl border",
                   theme === 'dark' ? 'bg-[#1A1425] border-[#6938EF]/10' : 'bg-accent/50 border-border'
                 )}
               >
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-[#6938EF]/10">
-                    <card.icon className="h-5 w-5 text-[#6938EF]" />
+                <div className="flex items-start gap-4">
+                  <div className={cn(
+                    "p-3 rounded-lg",
+                    getStatusColor(skill.status)
+                  )}>
+                    <skill.icon className="w-5 h-5" />
                   </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground">{card.title}</p>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xl font-semibold">{card.value}</span>
-                      <span className="text-xs text-green-500 flex items-center gap-1">
-                        <TrendingUp className="h-3 w-3" />
-                        {card.trend}
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className="font-medium">{skill.skill}</h3>
+                      <span className={cn(
+                        "text-xs px-2 py-1 rounded-full",
+                        getStatusColor(skill.status)
+                      )}>
+                        {skill.proficiency}% Proficient
                       </span>
                     </div>
+                    <div className="mb-3">
+                      <Progress 
+                        value={skill.proficiency} 
+                        className="h-1.5" 
+                        indicatorClassName={cn(
+                          "transition-all",
+                          skill.proficiency < 40 ? "bg-red-500" :
+                          skill.proficiency < 60 ? "bg-orange-500" :
+                          skill.proficiency < 80 ? "bg-yellow-500" : "bg-green-500"
+                        )}
+                      />
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      {skill.recommendation}
+                    </p>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>

@@ -1,26 +1,75 @@
 import React from 'react';
-
+import { motion } from 'framer-motion';
+import { cn } from "@/lib/utils";
+import { useTheme } from "../../components/theme-provider";
+import { Quote } from 'lucide-react';
 
 const TestimonialCard = ({ imageUrl, text, name, title }) => {
+  const { theme } = useTheme();
+  
   return (
-    <div className="w-[297px] min-h-[393px] bg-white rounded-[15.73px] border border-[#e5e7eb] p-[18.87px_14.68px_18.87px_23.07px] flex flex-col items-center justify-between shadow-md transition-all duration-200 hover:scale-105 hover:bg-[#3A0CA3] group mt-12 mb-4">
-      <img src={imageUrl} alt={name} className="w-[149.93px] h-[135.61px] object-cover rounded-full mb-5" />
-      <div className="flex flex-col gap-[18.87px] w-full items-center">
-        <p className="font-urbanist font-normal text-[18.87px] text-[#4b5563] text-center leading-normal group-hover:text-white">
+    <motion.div
+      whileHover={{ scale: 1.05 }}
+      className={cn(
+        "w-[300px] rounded-2xl border p-6 group",
+        "transition-all duration-300 ease-in-out",
+        theme === 'dark' 
+          ? 'bg-[#110C1D] border-[#6938EF]/20 hover:bg-[#6938EF] hover:border-[#6938EF]' 
+          : 'bg-card border-border hover:bg-[#6938EF] hover:border-[#6938EF]'
+      )}
+    >
+      <div className="flex flex-col items-center text-center">
+        <div className="relative mb-6">
+          <div className="w-20 h-20 rounded-full overflow-hidden ring-4 ring-[#6938EF]/20 group-hover:ring-white/20 transition-all duration-300">
+            <img 
+              src={imageUrl} 
+              alt={name} 
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <div className={cn(
+            "absolute -bottom-2 -right-2 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300",
+            theme === 'dark' 
+              ? 'bg-[#6938EF] group-hover:bg-white' 
+              : 'bg-[#6938EF] group-hover:bg-white'
+          )}>
+            <Quote className="w-4 h-4 text-white group-hover:text-[#6938EF] transition-colors duration-300" />
+          </div>
+        </div>
+        
+        <p className={cn(
+          "mb-6 text-base leading-relaxed transition-colors duration-300",
+          theme === 'dark'
+            ? 'text-muted-foreground group-hover:text-white'
+            : 'text-muted-foreground group-hover:text-white'
+        )}>
           {text}
         </p>
-        <h2 className="font-urbanist font-bold text-[25.16px] text-black text-center m-0 group-hover:text-white">
+        
+        <h3 className={cn(
+          "text-lg font-semibold mb-1 transition-colors duration-300",
+          theme === 'dark'
+            ? 'text-white group-hover:text-white'
+            : 'text-foreground group-hover:text-white'
+        )}>
           {name}
-        </h2>
-        <p className="font-urbanist font-normal text-[18.87px] text-black text-center m-0 group-hover:text-white">
+        </h3>
+        
+        <p className={cn(
+          "text-sm transition-colors duration-300",
+          theme === 'dark'
+            ? 'text-muted-foreground group-hover:text-white/80'
+            : 'text-muted-foreground group-hover:text-white/80'
+        )}>
           {title}
         </p>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
 const Testimonials = () => {
+  const { theme } = useTheme();
   const testimonials = [
     {
       imageUrl: "https://dashboard.codeparrot.ai/api/image/Z8czSxQ2u-KHiHW2/img.png",
@@ -36,34 +85,56 @@ const Testimonials = () => {
     },
     {
       imageUrl: "https://dashboard.codeparrot.ai/api/image/Z8czSxQ2u-KHiHW2/img-3.png",
-      text: "This platform has significantly boosted my career. The resources and opportunities have helped me grow professionally like never before.",
+      text: "This platform has significantly boosted my career. The resources and opportunities have helped me grow professionally.",
       name: "Kevin Joseph",
       title: "Data Scientist"
     },
     {
       imageUrl: "https://dashboard.codeparrot.ai/api/image/Z8czSxQ2u-KHiHW2/img-4.png",
-      text: "This platform has significantly boosted my career. The resources and opportunities have helped me grow professionally like never before.",
+      text: "This platform has significantly boosted my career. The resources and opportunities have helped me grow professionally.",
       name: "Monica Gartner",
       title: "Graphics Engineer"
     }
   ];
 
   return (
-    <div className="font-urbanist bg-[#3A0CA3] text-white w-full min-h-screen flex flex-col items-center justify-center p-2.5">
-      <h1 className="text-[48px] font-bold -mt-[150px] mb-10">
-        Testimonials
-      </h1>
-      <div className="flex flex-row flex-wrap gap-[39px] justify-center mb-0 pb-0">
-        {testimonials.map((testimonial, index) => (
-          <TestimonialCard
-            key={index}
-            imageUrl={testimonial.imageUrl}
-            text={testimonial.text}
-            name={testimonial.name}
-            title={testimonial.title}
-          />
-        ))}
+    <div className={cn(
+      "w-full py-20 px-4 sm:px-6 lg:px-8",
+      theme === 'dark' ? 'bg-[#0A0118]' : 'bg-background'
+    )}>
+      <div className="max-w-7xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-16"
+        >
+          <h1 className={cn(
+            "text-4xl sm:text-5xl font-bold mb-6",
+            theme === 'dark' ? 'text-white' : 'text-foreground'
+          )}>
+            What Our Students Say
+          </h1>
+          <p className={cn(
+            "text-xl max-w-3xl mx-auto",
+            theme === 'dark' ? 'text-gray-300' : 'text-muted-foreground'
+          )}>
+            Hear from our community of learners about their experience
+          </p>
+        </motion.div>
 
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {testimonials.map((testimonial, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+            >
+              <TestimonialCard {...testimonial} />
+            </motion.div>
+          ))}
+        </div>
       </div>
     </div>
   );

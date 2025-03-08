@@ -1,19 +1,94 @@
 import React, { useRef } from 'react';
+import { motion } from 'framer-motion';
+import { cn } from "@/lib/utils";
+import { useTheme } from "../../components/theme-provider";
+import { ChevronLeft, ChevronRight, Star, Users, Clock } from 'lucide-react';
+import { Button } from "@/components/ui/button";
 
+const CourseCard = ({ course, theme }) => {
+  return (
+    <div className={cn(
+      "flex-none w-[350px] rounded-2xl border overflow-hidden snap-center",
+      "transition-all duration-200 hover:shadow-lg hover:scale-[1.02]",
+      "flex flex-col",
+      theme === 'dark' 
+        ? 'bg-[#110C1D] border-[#6938EF]/20 hover:border-[#6938EF]/40' 
+        : 'bg-card border-border hover:border-[#6938EF]/40'
+    )}>
+      <div className="relative aspect-video">
+        <img
+          src={course.courseImg}
+          alt={course.title}
+          className="w-full h-full object-cover"
+        />
+        <div className={cn(
+          "absolute top-4 right-4 px-3 py-1 rounded-full text-sm font-medium",
+          "bg-[#6938EF] text-white"
+        )}>
+          {course.badge}
+        </div>
+      </div>
+
+      <div className="flex flex-col flex-grow p-6">
+        <h3 className={cn(
+          "text-xl font-semibold mb-2 line-clamp-2",
+          theme === 'dark' ? 'text-white' : 'text-foreground'
+        )}>
+          {course.title}
+        </h3>
+
+        <div className="flex items-center gap-4 mb-4">
+          <div className="flex items-center gap-1">
+            <Star className="w-4 h-4 text-[#6938EF] fill-[#6938EF]" />
+            <span className="text-sm text-muted-foreground">
+              {course.rating} ({course.reviews})
+            </span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Users className="w-4 h-4 text-muted-foreground" />
+            <span className="text-sm text-muted-foreground">
+              {course.students} students
+            </span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3 mb-4">
+          <img
+            src={course.instructorImg}
+            alt={course.instructor}
+            className="w-8 h-8 rounded-full"
+          />
+          <span className="text-sm text-muted-foreground line-clamp-1">
+            {course.instructor}
+          </span>
+        </div>
+
+        <div className="mt-auto pt-4">
+          <Button 
+            className="w-full bg-[#6938EF] hover:bg-[#5B2FD1] text-white"
+          >
+            Enroll Now
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const TrendingCourses = () => {
+  const { theme } = useTheme();
   const courses = [
     {
       id: 1,
-      title: 'Machine Learning Fundamentals',
+      title: 'ML Fundamentals',
       instructor: 'Dr. Sarah Johnson',
       instructorImg: 'https://dashboard.codeparrot.ai/api/image/Z8X9N8hTinWyM7G1/img-2.png',
       courseImg: 'https://dashboard.codeparrot.ai/api/image/Z8X9N8hTinWyM7G1/img.png',
       badge: 'Most Popular',
-      badgeColor: '#4f46e5',
+      badgeColor: '#6938EF',
       rating: '4.9',
       reviews: '2.3k',
-      badgeIcon: 'https://dashboard.codeparrot.ai/api/image/Z8X9N8hTinWyM7G1/frame.png'
+      students: '15k+'
     },
     {
       id: 2,
@@ -25,7 +100,7 @@ const TrendingCourses = () => {
       badgeColor: '#16a34a',
       rating: '4.8',
       reviews: '1.8k',
-      badgeIcon: 'https://dashboard.codeparrot.ai/api/image/Z8X9N8hTinWyM7G1/frame-3.png'
+      students: '12k+'
     },
     {
       id: 3,
@@ -37,12 +112,9 @@ const TrendingCourses = () => {
       badgeColor: '#9333ea',
       rating: '4.7',
       reviews: '1.5k',
-      badgeIcon: 'https://dashboard.codeparrot.ai/api/image/Z8X9N8hTinWyM7G1/frame-5.png'
+      students: '8k+'
     }
   ];
-
-  // Duplicate the courses to create more cards
-  const duplicatedCourses = [...courses, ...courses, ...courses];
 
   const containerRef = useRef(null);
 
@@ -61,58 +133,73 @@ const TrendingCourses = () => {
   };
 
   return (
-    <div className="w-full py-8 px-4 flex flex-col items-center bg-[#111827] text-white text-center relative">
-      <h1 className="font-urbanist text-5xl font-black text-white mb-4">Trending Courses</h1>
-      <p className="font-urbanist text-xl font-semibold text-white my-5 text-center max-w-[840px] mb-8">
-        Explore Top Courses, Master New Skills, and Level Up Your Career.
-      </p>
-      
-      <div className="absolute top-1/2 w-full flex justify-between transform -translate-y-1/2">
-        <button 
-          className="bg-[#111827] border-none text-white text-3xl px-4 py-2 cursor-pointer transition-colors hover:bg-black/80" 
-          onClick={scrollLeft}
+    <div className={cn(
+      "w-full py-20 px-4 sm:px-6 lg:px-8",
+      theme === 'dark' ? 'bg-[#0A0118]' : 'bg-background'
+    )}>
+      <div className="max-w-7xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-16"
         >
-          &lt;
-        </button>
-        <button 
-          className="bg-[#111827] border-none text-white text-3xl px-4 py-2 cursor-pointer transition-colors hover:bg-black/80" 
-          onClick={scrollRight}
-        >
-          &gt;
-        </button>
-      </div>
+          <h1 className={cn(
+            "text-4xl sm:text-5xl font-bold mb-6",
+            theme === 'dark' ? 'text-white' : 'text-foreground'
+          )}>
+            Trending Courses
+          </h1>
+          <p className={cn(
+            "text-xl max-w-3xl mx-auto",
+            theme === 'dark' ? 'text-gray-300' : 'text-muted-foreground'
+          )}>
+            Explore Top Courses, Master New Skills, and Level Up Your Career
+          </p>
+        </motion.div>
 
-      <div
-        ref={containerRef}
-        className="flex flex-row gap-8 flex-nowrap overflow-x-hidden pb-4 w-full max-w-[1280px] cursor-grab active:cursor-grabbing scrollbar-hide"
-      >
-        {duplicatedCourses.map((course, index) => (
-          <div 
-            key={index} 
-            className="w-full h-[378px] bg-white rounded-xl border border-[#f3f4f6] overflow-hidden p-6 max-w-[300px] transition-all duration-200 flex-none hover:transform hover:-translate-y-1.5 hover:shadow-lg"
+        <div className="relative">
+          <Button
+            variant="ghost"
+            size="icon"
+            className={cn(
+              "absolute -left-4 top-1/2 -translate-y-1/2 z-10",
+              theme === 'dark' ? 'bg-[#110C1D]/80 hover:bg-[#1A1425]' : 'bg-background/80 hover:bg-accent'
+            )}
+            onClick={scrollLeft}
           >
-            <img src={course.courseImg} alt={course.title} className="w-full h-48 object-cover rounded-xl mb-4" />
-            <div className="p-0">
-              <div className="flex items-center gap-2 mb-2">
-                <img src={course.badgeIcon} alt="" className="w-3.5 h-3.5" />
-                <span className="font-urbanist" style={{ color: course.badgeColor }}>
-                  {course.badge}
-                </span>
-              </div>
-              <h2 className="font-urbanist text-xl font-bold text-black mb-3">{course.title}</h2>
-              <div className="flex items-center gap-2 mb-2">
-                <img src={course.instructorImg} alt={course.instructor} className="w-8 h-8 rounded-full" />
-                <span className="font-urbanist text-sm text-gray-600">{course.instructor}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="font-urbanist text-sm text-gray-600">
+            <ChevronLeft className="w-6 h-6" />
+          </Button>
 
-                  {course.rating} ({course.reviews} reviews)
-                </span>
-              </div>
-            </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            className={cn(
+              "absolute -right-4 top-1/2 -translate-y-1/2 z-10",
+              theme === 'dark' ? 'bg-[#110C1D]/80 hover:bg-[#1A1425]' : 'bg-background/80 hover:bg-accent'
+            )}
+            onClick={scrollRight}
+          >
+            <ChevronRight className="w-6 h-6" />
+          </Button>
+
+          <div
+            ref={containerRef}
+            className="flex gap-6 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-4"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
+            {[...courses, ...courses].map((course, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+              >
+                <CourseCard course={course} theme={theme} />
+              </motion.div>
+            ))}
           </div>
-        ))}
+        </div>
       </div>
     </div>
   );
