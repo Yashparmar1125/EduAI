@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet';
 import { cn } from "@/lib/utils";
 import { useTheme } from "../../components/theme-provider";
 import { useToast } from "../../components/ui/toast";
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 import {
   ArrowLeft,
   Edit,
@@ -14,7 +15,8 @@ import {
   Award,
   BookOpen,
   Brain,
-  Target
+  Target,
+  TrendingUp
 } from 'lucide-react';
 import { getAssessmentDetails, getAssessmentStats, deleteAssessment } from '../../api/axios.api';
 
@@ -40,6 +42,133 @@ const StatCard = ({ icon: Icon, label, value, description }) => {
       {description && (
         <p className="text-sm text-muted-foreground">{description}</p>
       )}
+    </div>
+  );
+};
+
+const SkillGapsPieChart = () => {
+  const data = [
+    { name: 'React', value: 30 },
+    { name: 'Redux', value: 20 },
+    { name: 'HTML', value: 15 },
+    { name: 'CSS', value: 15 },
+    { name: 'JavaScript', value: 20 },
+  ];
+
+  const COLORS = ['#6938EF', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4'];
+
+  return (
+    <div style={{ width: '100%', height: 300 }}>
+      <ResponsiveContainer>
+        <PieChart>
+          <Pie
+            data={data}
+            cx="50%"
+            cy="50%"
+            innerRadius={60}
+            outerRadius={100}
+            fill="#8884d8"
+            paddingAngle={5}
+            dataKey="value"
+            label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+          >
+            {data.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+            ))}
+          </Pie>
+          <Tooltip />
+          <Legend verticalAlign="bottom" height={36} />
+        </PieChart>
+      </ResponsiveContainer>
+    </div>
+  );
+};
+
+const LearningAnalyticsChart = () => {
+  const { theme } = useTheme();
+  const data = [
+    { subject: 'Problem Solving', A: 85, fullMark: 100 },
+    { subject: 'Technical Skills', A: 75, fullMark: 100 },
+    { subject: 'Communication', A: 90, fullMark: 100 },
+    { subject: 'Creativity', A: 80, fullMark: 100 },
+    { subject: 'Leadership', A: 70, fullMark: 100 },
+    { subject: 'Teamwork', A: 88, fullMark: 100 },
+  ];
+
+  return (
+    <div className={cn(
+      "p-6 rounded-2xl border",
+      theme === 'dark' ? 'bg-[#110C1D] border-[#6938EF]/20' : 'bg-white border-border'
+    )}>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h2 className="text-xl font-semibold">Learning Analytics</h2>
+          <p className="text-sm text-muted-foreground mt-1">Your skill development overview</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className={cn(
+            "p-2 rounded-lg",
+            theme === 'dark' ? 'bg-[#1A1425]' : 'bg-accent/50'
+          )}>
+            <TrendingUp className="w-5 h-5 text-[#6938EF]" />
+          </div>
+        </div>
+      </div>
+      
+      <div className="h-[400px] w-full">
+        <ResponsiveContainer width="100%" height="100%">
+          <RadarChart cx="50%" cy="50%" outerRadius="80%" data={data}>
+            <PolarGrid stroke={theme === 'dark' ? '#2D2D2D' : '#e5e5e5'} />
+            <PolarAngleAxis
+              dataKey="subject"
+              tick={{ fill: theme === 'dark' ? '#9CA3AF' : '#6B7280', fontSize: 12 }}
+            />
+            <PolarRadiusAxis
+              angle={30}
+              domain={[0, 100]}
+              tick={{ fill: theme === 'dark' ? '#9CA3AF' : '#6B7280', fontSize: 12 }}
+            />
+            <Radar
+              name="Skills"
+              dataKey="A"
+              stroke="#6938EF"
+              fill="#6938EF"
+              fillOpacity={0.3}
+            />
+            <Tooltip
+              contentStyle={{
+                backgroundColor: theme === 'dark' ? '#1A1425' : 'white',
+                border: '1px solid #6938EF20',
+                borderRadius: '8px',
+              }}
+            />
+            <Legend />
+          </RadarChart>
+        </ResponsiveContainer>
+      </div>
+
+      <div className="grid grid-cols-3 gap-4 mt-6">
+        {data.map((item, index) => (
+          <div
+            key={index}
+            className={cn(
+              "p-4 rounded-xl",
+              theme === 'dark' ? 'bg-[#1A1425]' : 'bg-accent/50'
+            )}
+          >
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium">{item.subject}</span>
+              <span className="text-sm font-bold text-[#6938EF]">{item.A}%</span>
+            </div>
+            <div className="w-full h-2 bg-[#6938EF]/10 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-[#6938EF] rounded-full"
+                style={{ width: `${item.A}%` }}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
@@ -228,27 +357,15 @@ const AssessmentDetails = () => {
             "p-6 rounded-2xl border",
             theme === 'dark' ? 'bg-[#110C1D] border-[#6938EF]/20' : 'bg-white border-border'
           )}>
-            <h2 className="text-xl font-semibold mb-4">Top Skill Gaps</h2>
-            {stats.topSkillGaps && stats.topSkillGaps.length > 0 ? (
-              <div className="space-y-4">
-                {stats.topSkillGaps.map((gap, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between p-3 rounded-lg bg-accent/50"
-                  >
-                    <div className="flex items-center gap-3">
-                      <Target className="w-5 h-5 text-[#6938EF]" />
-                      <span>{gap.skill}</span>
-                    </div>
-                    <span className="text-sm font-medium">
-                      {gap.gapPercentage.toFixed(1)}% gap
-                    </span>
-                  </div>
-                ))}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div>
+                <h2 className="text-xl font-semibold mb-4">Top Skill Gaps</h2>
+                <SkillGapsPieChart />
               </div>
-            ) : (
-              <p className="text-muted-foreground">No skill gaps data available yet</p>
-            )}
+              <div>
+                <LearningAnalyticsChart />
+              </div>
+            </div>
           </div>
         </div>
 

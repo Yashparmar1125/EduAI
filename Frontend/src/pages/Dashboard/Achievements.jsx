@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useReward } from 'react-rewards';
 import { cn } from "@/lib/utils";
 import { useTheme } from "../../components/theme-provider";
-import { Trophy, Star, Target, Brain, Code, Users, Zap, Award, Crown, BookOpen, Medal } from 'lucide-react';
+import { Trophy, Star, Target, Brain, Scroll, Users, Zap, Award, Crown, BookOpen, Medal } from 'lucide-react';
 import { Progress } from "@/components/ui/progress";
 import confetti from 'canvas-confetti';
 import { Button } from "@/components/ui/button";
@@ -138,6 +138,66 @@ const AchievementCard = ({ achievement, theme }) => {
   );
 };
 
+const AchievementBadgeCard = ({ badge, theme }) => {
+  return (
+    <motion.div
+      whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(105, 56, 239, 0.3)" }}
+      className={cn(
+        "relative p-8 rounded-xl overflow-hidden",
+        "transition-all duration-300",
+        "border-2 border-[#6938EF]/20",
+        "bg-gradient-to-b from-[#110C1D] to-[#110C1D]/90",
+        "hover:border-[#6938EF]/50",
+        theme === 'dark' ? 'shadow-lg shadow-[#6938EF]/10' : 'shadow-lg shadow-[#6938EF]/5'
+      )}
+    >
+      {/* Glowing borders */}
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#6938EF] to-[#9D7BFF] opacity-80" />
+      <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-[#9D7BFF] to-[#6938EF] opacity-80" />
+      <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-[#6938EF] to-[#9D7BFF] opacity-80" />
+      <div className="absolute top-0 right-0 w-1 h-full bg-gradient-to-b from-[#6938EF] to-[#9D7BFF] opacity-80" />
+      
+      <div className="flex flex-col items-center text-center space-y-4">
+        {/* Badge Icon Container with enhanced glow */}
+        <div className={cn(
+          "w-20 h-20 rounded-full flex items-center justify-center",
+          "bg-gradient-to-br from-[#6938EF] to-[#9D7BFF]",
+          "shadow-xl shadow-[#6938EF]/20",
+          "relative"
+        )}>
+          <div className="absolute inset-0 rounded-full bg-[#6938EF]/20 animate-pulse" />
+          {badge.icon}
+        </div>
+
+        {/* Badge Title with gradient */}
+        <h3 className="text-lg font-semibold bg-clip-text text-transparent bg-gradient-to-r from-white to-white/90">
+          {badge.title}
+        </h3>
+        
+        {/* Badge Description */}
+        <p className="text-sm text-muted-foreground">{badge.description}</p>
+        
+        {/* XP Reward with enhanced styling */}
+        <div className="flex items-center gap-2 text-sm bg-[#6938EF]/10 px-4 py-2 rounded-full">
+          <Star className="h-4 w-4 text-yellow-500 animate-pulse" />
+          <span className="text-yellow-500 font-medium">{badge.xp} XP</span>
+        </div>
+
+        {/* Rarity Tag with enhanced styling */}
+        <span className={cn(
+          "px-4 py-1.5 rounded-full text-xs font-medium",
+          "shadow-lg",
+          badge.rarity === 'legendary' ? 'bg-yellow-500/20 text-yellow-500 shadow-yellow-500/20' :
+          badge.rarity === 'epic' ? 'bg-purple-500/20 text-purple-500 shadow-purple-500/20' :
+          'bg-blue-500/20 text-blue-500 shadow-blue-500/20'
+        )}>
+          {badge.rarity.charAt(0).toUpperCase() + badge.rarity.slice(1)}
+        </span>
+      </div>
+    </motion.div>
+  );
+};
+
 const HowToEarnSection = ({ theme }) => {
   const earningMethods = [
     {
@@ -147,10 +207,10 @@ const HowToEarnSection = ({ theme }) => {
       category: "learning"
     },
     {
-      icon: <Code className="w-6 h-6" />,
-      title: "Code Challenges",
-      description: "Solve coding challenges and complete programming tasks",
-      category: "coding"
+      icon: <Scroll className="w-6 h-6" />,
+      title: "Certificates",
+      description: "Earn certificates by completing courses and modules",
+      category: "certificates"
     },
     {
       icon: <Users className="w-6 h-6" />,
@@ -178,8 +238,45 @@ const HowToEarnSection = ({ theme }) => {
     }
   ];
 
+  const achievementBadges = [
+    {
+      title: "Master Scholar",
+      description: "Complete 50 courses with excellence",
+      xp: 1000,
+      rarity: "legendary",
+      icon: <Crown className="w-8 h-8 text-white" />
+    },
+    {
+      title: "Knowledge Seeker",
+      description: "Maintain a 30-day learning streak",
+      xp: 500,
+      rarity: "epic",
+      icon: <Medal className="w-8 h-8 text-white" />
+    },
+    {
+      title: "Community Champion",
+      description: "Help 100 fellow learners",
+      xp: 750,
+      rarity: "epic",
+      icon: <Trophy className="w-8 h-8 text-white" />
+    }
+  ];
+
   return (
     <div className="space-y-8">
+      {/* ALL Achievements Section */}
+      <div className={cn(
+        "p-6 rounded-xl border",
+        theme === 'dark' ? 'bg-[#110C1D] border-[#6938EF]/20' : 'bg-card border-border'
+      )}>
+        <h2 className="text-2xl font-bold mb-12">All Achievements</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-5">
+          {achievementBadges.map((badge, index) => (
+            <AchievementBadgeCard key={index} badge={badge} theme={theme} />
+          ))}
+        </div>
+      </div>
+
       <div className={cn(
         "p-6 rounded-xl border",
         theme === 'dark' ? 'bg-[#110C1D] border-[#6938EF]/20' : 'bg-card border-border'
@@ -259,7 +356,7 @@ const Achievements = () => {
   const categories = [
     { id: 'all', label: 'All Achievements', icon: <Trophy className="h-4 w-4" /> },
     { id: 'learning', label: 'Learning', icon: <BookOpen className="h-4 w-4" /> },
-    { id: 'coding', label: 'Coding', icon: <Code className="h-4 w-4" /> },
+    { id: 'certificates', label: 'Certificates', icon: <Scroll className="h-4 w-4" /> },
     { id: 'community', label: 'Community', icon: <Users className="h-4 w-4" /> },
   ];
 
@@ -391,11 +488,11 @@ const Achievements = () => {
                 "text-sm flex items-center gap-2",
                 selectedCategory === category.id 
                   ? "bg-gradient-to-r from-[#6938EF] to-[#9D7BFF] hover:from-[#5B2FD1] hover:to-[#8B6AE5] text-white" 
-                  : "border-[#6938EF]/20 text-[#6938EF] hover:bg-[#6938EF]/10"
+                  : "border-[#6938EF]/20 text-white hover:bg-[#6938EF]/10"
               )}
               onClick={() => setSelectedCategory(category.id)}
             >
-              {category.icon}
+              <span className="text-white">{category.icon}</span>
               {category.label}
             </Button>
           ))}
