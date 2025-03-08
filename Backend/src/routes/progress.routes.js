@@ -6,6 +6,7 @@ import {
   completeModule,
   getCourseProgress,
   getCompletedCourses,
+  isCourseCompleted,
 } from "../controllers/progress.controller.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
 
@@ -30,6 +31,7 @@ router.post(
 
 // Course progress
 router.get("/courses/:courseId/progress", authMiddleware, getCourseProgress);
+router.get("/courses/:courseId/completion", authMiddleware, isCourseCompleted);
 
 // Completed courses & certificates
 router.get(

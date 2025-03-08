@@ -1,299 +1,421 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { cn } from "@/lib/utils";
 import { useTheme } from "../../components/theme-provider";
+import { useDispatch, useSelector } from 'react-redux';
 import { 
   BookOpen, 
   Clock, 
   Star, 
   User,
-  CheckCircle,
-  PlayCircle,
-  FileText,
-  Download,
-  MessageSquare
+  ChevronRight,
+  ArrowLeft,
+  Play,
+  CheckCircle2,
+  Lock,
+  BookMarked,
+  MessageSquare,
+  Share2,
+  Download
 } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { useToast } from '@/components/ui/toast';
+import { enrollCourse, getCourseDetails } from '../../api/axios.api';
 
 const CourseOverview = () => {
+  const { courseId } = useParams();
+  const navigate = useNavigate();
   const { theme } = useTheme();
-  
-  // Mock course data
-  const course = {
-    title: "Digital Marketing with AI",
-    description: "Master the art of digital marketing with AI tools and automation",
-    instructor: {
-      name: "Dr. Sarah Mitchell",
-      avatar: "/assets/instructor.png",
-      title: "Digital Marketing Expert",
-      students: 15420,
-      courses: 12,
-      rating: 4.8
-    },
-    stats: {
-      enrolled: 1245,
-      duration: "15 hours",
-      modules: 8,
-      level: "Intermediate"
-    },
-    progress: 0,
-    features: [
-      "Access to AI marketing tools",
-      "Real-world case studies",
-      "Lifetime access",
-      "Certificate of completion"
-    ],
-    modules: [
-      {
-        id: 1,
-        title: "Introduction to Digital Marketing",
-        duration: "45 mins",
-        lectures: 5,
-        isLocked: false,
-        isCompleted: false
-      },
-      {
-        id: 2,
-        title: "Understanding Your Target Audience",
-        duration: "1 hour",
-        lectures: 4,
-        isLocked: false,
-        isCompleted: false
-      },
-      {
-        id: 3,
-        title: "AI Tools for Market Research",
-        duration: "2 hours",
-        lectures: 6,
-        isLocked: true,
-        isCompleted: false
+  const { toast } = useToast();
+  const [course, setCourse] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [isEnrolled, setIsEnrolled] = useState(false);
+
+  useEffect(() => {
+    const fetchCourseDetails = async () => {
+      try {
+        const response = await getCourseDetails(courseId);
+        setCourse(response.course);
+        setIsEnrolled(response.course.isEnrolled || false);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching course details:", error);
+        setError(error.message || "Failed to fetch course details");
+        setIsLoading(false);
       }
-    ],
-    reviews: [
-      {
-        id: 1,
-        user: {
-          name: "Alex Thompson",
-          avatar: "/assets/user1.png"
-        },
-        rating: 5,
-        comment: "This course exceeded my expectations. The AI tools section was particularly helpful.",
-        date: "2 days ago"
-      },
-      {
-        id: 2,
-        user: {
-          name: "Maria Garcia",
-          avatar: "/assets/user2.png"
-        },
-        rating: 4,
-        comment: "Great content and practical examples. Would recommend to beginners.",
-        date: "1 week ago"
+    };
+
+    fetchCourseDetails();
+  }, [courseId]);
+
+  const handleEnroll = async () => {
+    try {
+      const response = await enrollCourse(courseId);
+      if (response.success) {
+        setIsEnrolled(true);
+        toast({
+          title: "Success",
+          description: "Course enrolled successfully",
+        });
+        // Navigate to the learning page after successful enrollment
+        navigate(`/dashboard`);
+      } else {
+        toast({
+          title: "Error",
+          description: response.message || "Failed to enroll in course",
+          variant: "destructive",
+        });
       }
-    ]
+    } catch (error) {
+      console.error("Error enrolling in course:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to enroll in course",
+        variant: "destructive",
+      });
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className={cn(
+        "min-h-[calc(100vh-4rem)] p-4 sm:p-8 flex items-center justify-center",
+        theme === 'dark' ? 'bg-[#0A0118]' : 'bg-background'
+      )}>
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#6938EF] mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">Loading course details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={cn(
+        "min-h-[calc(100vh-4rem)] p-4 sm:p-8 flex items-center justify-center",
+        theme === 'dark' ? 'bg-[#0A0118]' : 'bg-background'
+      )}>
+        <div className="text-center">
+          <p className="text-red-500">Error: {error}</p>
+          <Button 
+            onClick={() => window.location.reload()}
+            className="mt-4 bg-[#6938EF] hover:bg-[#5B2FD1] text-white"
+          >
+            Retry
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!course) {
+    return (
+      <div className={cn(
+        "min-h-[calc(100vh-4rem)] p-4 sm:p-8 flex items-center justify-center",
+        theme === 'dark' ? 'bg-[#0A0118]' : 'bg-background'
+      )}>
+        <div className="text-center">
+          <p className="text-red-500">Course not found</p>
+          <Button 
+            onClick={() => navigate(-1)}
+            className="mt-4 bg-[#6938EF] hover:bg-[#5B2FD1] text-white"
+          >
+            Go Back
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={cn(
-      "min-h-[calc(100vh-4rem)] p-4 sm:p-8",
+      "min-h-[calc(100vh-4rem)]",
       theme === 'dark' ? 'bg-[#0A0118]' : 'bg-background'
     )}>
-      <div className="max-w-7xl mx-auto">
-        {/* Course Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className={cn(
-            "p-6 sm:p-8 rounded-2xl shadow-lg border mb-8",
-            theme === 'dark' ? 'bg-[#110C1D] border-[#6938EF]/20' : 'bg-card border-border'
-          )}
-        >
-          <div className="flex flex-col md:flex-row gap-6 justify-between">
-            <div className="space-y-4">
-              <h1 className={cn(
-                "text-2xl sm:text-3xl font-bold",
-                theme === 'dark' ? 'text-white' : 'text-foreground'
-              )}>
-                {course.title}
-              </h1>
-              <p className="text-muted-foreground">{course.description}</p>
-              
-              <div className="flex items-center gap-4 text-sm">
-                <div className="flex items-center gap-1">
-                  <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                  <span className="font-medium">{course.instructor.rating}</span>
-                </div>
-                <div className="flex items-center gap-1 text-muted-foreground">
-                  <User className="h-4 w-4" />
-                  <span>{course.stats.enrolled} students</span>
-                </div>
-                <div className="flex items-center gap-1 text-muted-foreground">
-                  <Clock className="h-4 w-4" />
-                  <span>{course.stats.duration}</span>
-                </div>
+      {/* Hero Section */}
+      <div className="relative h-[300px] w-full">
+        <div className="absolute inset-0 bg-gradient-to-r from-[#6938EF]/20 to-[#9D7BFF]/20" />
+        <img
+          src={course.poster}
+          alt={course.title}
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 p-8">
+          <div className="max-w-7xl mx-auto">
+            <Button
+              variant="ghost"
+              className="mb-6 text-white hover:text-white hover:bg-white/10"
+              onClick={() => navigate(-1)}
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Dashboard
+            </Button>
+            <h1 className="text-4xl font-bold text-white mb-4">{course.title}</h1>
+            <div className="flex flex-wrap gap-4 text-white/80">
+              <div className="flex items-center gap-2">
+                <User className="h-4 w-4" />
+                <span className="text-sm">{course.instructor?.name || 'Unknown Instructor'}</span>
               </div>
-
-              <div className="flex items-center gap-3">
-                <Avatar className="h-12 w-12">
-                  <AvatarImage src={course.instructor.avatar} />
-                  <AvatarFallback className="bg-[#6938EF]/10 text-[#6938EF]">
-                    {course.instructor.name.charAt(0)}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <h3 className="font-medium">{course.instructor.name}</h3>
-                  <p className="text-sm text-muted-foreground">{course.instructor.title}</p>
-                </div>
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4" />
+                <span className="text-sm">{course.duration || 'N/A'}</span>
               </div>
-            </div>
-
-            <div className="flex flex-col gap-4">
-              <Button className="bg-[#6938EF] hover:bg-[#5B2FD1] text-white">
-                Continue Learning
-              </Button>
-              <Progress value={course.progress} className="h-2" 
-                indicatorClassName="bg-gradient-to-r from-[#6938EF] to-[#9D7BFF]" />
-              <p className="text-xs text-center text-muted-foreground">
-                {course.progress}% Complete
-              </p>
+              <div className="flex items-center gap-2">
+                <Star className="h-4 w-4" />
+                <span className="text-sm">{course.rating || '4.5'}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <User className="h-4 w-4" />
+                <span className="text-sm">{course.studentsEnrolled?.length || 0} students</span>
+              </div>
             </div>
           </div>
-        </motion.div>
+        </div>
+      </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column - Course Content */}
-          <div className="lg:col-span-2 space-y-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-8">
+        {/* Course Actions */}
+        <div className="flex flex-wrap gap-4 mb-8">
+          {isEnrolled ? (
+            <div className="flex items-center gap-4">
+              <div className={cn(
+                "px-4 py-2 rounded-lg flex items-center gap-2",
+                theme === 'dark' ? 'bg-[#6938EF]/20' : 'bg-[#6938EF]/10'
+              )}>
+                <CheckCircle2 className="h-4 w-4 text-[#6938EF]" />
+                <span className="text-sm font-medium text-[#6938EF]">Enrolled</span>
+              </div>
+              <Button
+                className="bg-[#6938EF] hover:bg-[#5B2FD1] text-white"
+                onClick={() => navigate(`/learning/${courseId}`)}
+              >
+                <Play className="h-4 w-4 mr-2" />
+                Continue Learning
+              </Button>
+            </div>
+          ) : (
+            <Button
+              className="bg-[#6938EF] hover:bg-[#5B2FD1] text-white"
+              onClick={handleEnroll}
+            >
+              Enroll Now
+            </Button>
+          )}
+          <Button variant="outline" className="border-[#6938EF]/20 text-[#6938EF] hover:bg-[#6938EF]/10">
+            <BookMarked className="h-4 w-4 mr-2" />
+            Save for Later
+          </Button>
+          <Button variant="outline" className="border-[#6938EF]/20 text-[#6938EF] hover:bg-[#6938EF]/10">
+            <Share2 className="h-4 w-4 mr-2" />
+            Share
+          </Button>
+        </div>
+
+        {/* Course Content */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* Course Description */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className={cn(
+                "p-6 rounded-xl border shadow-sm",
+                theme === 'dark' ? 'bg-[#110C1D] border-[#6938EF]/20' : 'bg-card border-border'
+              )}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold">Course Description</h2>
+                {isEnrolled && (
+                  <div className={cn(
+                    "px-3 py-1 rounded-full text-xs font-medium",
+                    theme === 'dark' ? 'bg-[#6938EF]/20 text-[#6938EF]' : 'bg-[#6938EF]/10 text-[#6938EF]'
+                  )}>
+                    Enrolled
+                  </div>
+                )}
+              </div>
+              <p className="text-muted-foreground">{course.description}</p>
+            </motion.div>
+
             {/* Course Modules */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              <div className={cn(
-                "rounded-xl border shadow-sm",
+              className={cn(
+                "p-6 rounded-xl border shadow-sm",
                 theme === 'dark' ? 'bg-[#110C1D] border-[#6938EF]/20' : 'bg-card border-border'
-              )}>
-                <div className="p-5 border-b border-border">
-                  <h2 className={cn(
-                    "text-lg font-semibold",
-                    theme === 'dark' ? 'text-white' : 'text-foreground'
-                  )}>
-                    Course Content
-                  </h2>
-                </div>
-                <div className="divide-y divide-border">
-                  {course.modules.map((module) => (
-                    <div key={module.id} className={cn(
-                      "flex items-center gap-4 p-5 transition-all",
-                      theme === 'dark' ? 'hover:bg-[#1A1425]/50' : 'hover:bg-accent',
-                      module.isLocked && 'opacity-50'
+              )}
+            >
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <h2 className="text-xl font-semibold">Course Content</h2>
+                  {isEnrolled && (
+                    <div className={cn(
+                      "px-2 py-0.5 rounded-full text-xs font-medium",
+                      theme === 'dark' ? 'bg-[#6938EF]/20 text-[#6938EF]' : 'bg-[#6938EF]/10 text-[#6938EF]'
                     )}>
-                      <div className={cn(
-                        "w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0",
-                        module.isCompleted ? "bg-green-500/20 text-green-500" : "bg-[#6938EF]/20 text-[#6938EF]"
-                      )}>
-                        {module.isCompleted ? <CheckCircle className="h-5 w-5" /> : <PlayCircle className="h-5 w-5" />}
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="font-medium text-sm">{module.title}</h3>
-                        <div className="flex items-center gap-3 mt-1">
-                          <span className="text-xs text-muted-foreground flex items-center gap-1">
-                            <Clock className="h-3 w-3" />
-                            {module.duration}
-                          </span>
-                          <span className="text-xs text-muted-foreground flex items-center gap-1">
-                            <FileText className="h-3 w-3" />
-                            {module.lectures} lectures
-                          </span>
-                        </div>
-                      </div>
+                      Enrolled
                     </div>
-                  ))}
+                  )}
+                </div>
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <span>{course.modules?.length || 0} modules</span>
+                  <span>•</span>
+                  <span>{course.modules?.reduce((acc, module) => acc + (module.lessons?.length || 0), 0) || 0} lessons</span>
                 </div>
               </div>
-            </motion.div>
-
-            {/* Reviews Section */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-            >
-              <div className={cn(
-                "rounded-xl border shadow-sm",
-                theme === 'dark' ? 'bg-[#110C1D] border-[#6938EF]/20' : 'bg-card border-border'
-              )}>
-                <div className="p-5 border-b border-border">
-                  <h2 className={cn(
-                    "text-lg font-semibold",
-                    theme === 'dark' ? 'text-white' : 'text-foreground'
+              <div className="space-y-4">
+                {course.modules?.map((module, moduleIndex) => (
+                  <div key={module._id} className={cn(
+                    "p-4 rounded-lg border",
+                    theme === 'dark' ? 'bg-[#1A1425] border-[#6938EF]/10' : 'bg-accent/50 border-border'
                   )}>
-                    Student Reviews
-                  </h2>
-                </div>
-                <div className="p-5 space-y-4">
-                  {course.reviews.map((review) => (
-                    <div key={review.id} className={cn(
-                      "p-4 rounded-xl",
-                      theme === 'dark' ? 'bg-[#1A1425]/50' : 'bg-accent/50'
-                    )}>
-                      <div className="flex items-start gap-3">
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage src={review.user.avatar} />
-                          <AvatarFallback>{review.user.name.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1">
-                          <div className="flex justify-between">
-                            <h3 className="text-sm font-medium">{review.user.name}</h3>
-                            <span className="text-xs text-muted-foreground">{review.date}</span>
-                          </div>
-                          <div className="flex items-center gap-1 mt-1">
-                            {Array.from({ length: review.rating }).map((_, i) => (
-                              <Star key={i} className="h-3 w-3 fill-yellow-500 text-yellow-500" />
-                            ))}
-                          </div>
-                          <p className="text-sm mt-2">{review.comment}</p>
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className={cn(
+                          "w-8 h-8 rounded-lg flex items-center justify-center text-sm font-medium",
+                          theme === 'dark' ? 'bg-[#6938EF]/20 text-[#6938EF]' : 'bg-[#6938EF]/10 text-[#6938EF]'
+                        )}>
+                          {moduleIndex + 1}
                         </div>
+                        <h3 className="font-medium">{module.title}</h3>
                       </div>
+                      <span className="text-sm text-muted-foreground">{module.duration}</span>
                     </div>
-                  ))}
-                </div>
+                    <div className="space-y-2">
+                      {module.lessons?.map((lesson) => (
+                        <div key={lesson._id} className={cn(
+                          "flex items-center gap-3 p-3 rounded-md cursor-pointer transition-all",
+                          theme === 'dark' 
+                            ? 'hover:bg-[#1A1425]/50' 
+                            : 'hover:bg-accent'
+                        )}>
+                          {isEnrolled ? (
+                            <div className={cn(
+                              "w-6 h-6 rounded-full flex items-center justify-center",
+                              theme === 'dark' ? 'bg-[#6938EF]/20' : 'bg-[#6938EF]/10'
+                            )}>
+                              <Play className="h-4 w-4 text-[#6938EF]" />
+                            </div>
+                          ) : (
+                            <div className={cn(
+                              "w-6 h-6 rounded-full flex items-center justify-center",
+                              theme === 'dark' ? 'bg-gray-700' : 'bg-gray-200'
+                            )}>
+                              <Lock className="h-4 w-4 text-muted-foreground" />
+                            </div>
+                          )}
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm">{lesson.title}</span>
+                              <span className="text-xs text-muted-foreground">{lesson.duration}</span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+                {(!course.modules || course.modules.length === 0) && (
+                  <div className="text-center text-muted-foreground py-8">
+                    <BookOpen className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                    <p>No course content available yet.</p>
+                  </div>
+                )}
               </div>
             </motion.div>
           </div>
 
-          {/* Right Column - Course Info */}
-          <div className="space-y-6">
+          {/* Sidebar */}
+          <div className="space-y-8">
+            {/* Course Progress */}
+            {isEnrolled && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                className={cn(
+                  "p-6 rounded-xl border shadow-sm",
+                  theme === 'dark' ? 'bg-[#110C1D] border-[#6938EF]/20' : 'bg-card border-border'
+                )}
+              >
+                <h2 className="text-xl font-semibold mb-4">Your Progress</h2>
+                <div className="space-y-4">
+                  <div>
+                    <div className="flex justify-between mb-2">
+                      <span className="text-sm">Overall Progress</span>
+                      <span className="text-sm font-medium">0%</span>
+                    </div>
+                    <Progress value={0} className="h-2" 
+                      indicatorClassName="bg-gradient-to-r from-[#6938EF] to-[#9D7BFF]" />
+                  </div>
+                  <div>
+                    <div className="flex justify-between mb-2">
+                      <span className="text-sm">Completed Lessons</span>
+                      <span className="text-sm font-medium">0/0</span>
+                    </div>
+                    <Progress value={0} className="h-2" 
+                      indicatorClassName="bg-gradient-to-r from-[#6938EF] to-[#9D7BFF]" />
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
             {/* Course Features */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
-            >
-              <div className={cn(
-                "rounded-xl border shadow-sm",
+              className={cn(
+                "p-6 rounded-xl border shadow-sm",
                 theme === 'dark' ? 'bg-[#110C1D] border-[#6938EF]/20' : 'bg-card border-border'
-              )}>
-                <div className="p-5 border-b border-border">
-                  <h2 className={cn(
-                    "text-lg font-semibold",
-                    theme === 'dark' ? 'text-white' : 'text-foreground'
+              )}
+            >
+              <h2 className="text-xl font-semibold mb-4">Course Features</h2>
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <div className={cn(
+                    "w-8 h-8 rounded-lg flex items-center justify-center",
+                    theme === 'dark' ? 'bg-[#6938EF]/20' : 'bg-[#6938EF]/10'
                   )}>
-                    Course Features
-                  </h2>
+                    <CheckCircle2 className="h-5 w-5 text-[#6938EF]" />
+                  </div>
+                  <span className="text-sm">Full lifetime access</span>
                 </div>
-                <div className="p-5">
-                  <ul className="space-y-3">
-                    {course.features.map((feature, index) => (
-                      <li key={index} className="flex items-center gap-2 text-sm">
-                        <CheckCircle className="h-4 w-4 text-[#6938EF]" />
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
+                <div className="flex items-center gap-2">
+                  <div className={cn(
+                    "w-8 h-8 rounded-lg flex items-center justify-center",
+                    theme === 'dark' ? 'bg-[#6938EF]/20' : 'bg-[#6938EF]/10'
+                  )}>
+                    <CheckCircle2 className="h-5 w-5 text-[#6938EF]" />
+                  </div>
+                  <span className="text-sm">Access on mobile and desktop</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className={cn(
+                    "w-8 h-8 rounded-lg flex items-center justify-center",
+                    theme === 'dark' ? 'bg-[#6938EF]/20' : 'bg-[#6938EF]/10'
+                  )}>
+                    <CheckCircle2 className="h-5 w-5 text-[#6938EF]" />
+                  </div>
+                  <span className="text-sm">Certificate of completion</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className={cn(
+                    "w-8 h-8 rounded-lg flex items-center justify-center",
+                    theme === 'dark' ? 'bg-[#6938EF]/20' : 'bg-[#6938EF]/10'
+                  )}>
+                    <CheckCircle2 className="h-5 w-5 text-[#6938EF]" />
+                  </div>
+                  <span className="text-sm">30-day money-back guarantee</span>
                 </div>
               </div>
             </motion.div>
@@ -303,28 +425,21 @@ const CourseOverview = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.5 }}
-            >
-              <div className={cn(
-                "rounded-xl border shadow-sm",
+              className={cn(
+                "p-6 rounded-xl border shadow-sm",
                 theme === 'dark' ? 'bg-[#110C1D] border-[#6938EF]/20' : 'bg-card border-border'
-              )}>
-                <div className="p-5 border-b border-border">
-                  <h2 className={cn(
-                    "text-lg font-semibold",
-                    theme === 'dark' ? 'text-white' : 'text-foreground'
-                  )}>
-                    Course Resources
-                  </h2>
-                </div>
-                <div className="p-5">
-                  <Button 
-                    variant="outline" 
-                    className="w-full flex items-center gap-2 border-[#6938EF]/20 text-[#6938EF] hover:bg-[#6938EF]/10"
-                  >
-                    <Download className="h-4 w-4" />
-                    Download Materials
-                  </Button>
-                </div>
+              )}
+            >
+              <h2 className="text-xl font-semibold mb-4">Course Resources</h2>
+              <div className="space-y-3">
+                <Button variant="outline" className="w-full justify-start border-[#6938EF]/20 text-[#6938EF] hover:bg-[#6938EF]/10">
+                  <Download className="h-4 w-4 mr-2" />
+                  Course Materials
+                </Button>
+                <Button variant="outline" className="w-full justify-start border-[#6938EF]/20 text-[#6938EF] hover:bg-[#6938EF]/10">
+                  <MessageSquare className="h-4 w-4 mr-2" />
+                  Course Discussion
+                </Button>
               </div>
             </motion.div>
           </div>
