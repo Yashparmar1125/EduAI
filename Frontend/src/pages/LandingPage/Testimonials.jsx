@@ -1,5 +1,6 @@
 import React from 'react';
 
+
 const TestimonialCard = ({ imageUrl, text, name, title }) => {
   return (
     <div className="w-[297px] min-h-[393px] bg-white rounded-[15.73px] border border-[#e5e7eb] p-[18.87px_14.68px_18.87px_23.07px] flex flex-col items-center justify-between shadow-md transition-all duration-200 hover:scale-105 hover:bg-[#3A0CA3] group mt-12 mb-4">
@@ -62,9 +63,11 @@ const Testimonials = () => {
             title={testimonial.title}
           />
         ))}
+
       </div>
     </div>
   );
 };
 
 export default Testimonials;
+

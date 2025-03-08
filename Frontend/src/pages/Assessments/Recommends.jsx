@@ -14,7 +14,7 @@ const Recommends = () => {
       id: 1,
       title: "UI Design Fundamentals",
       description: "Master the core concepts of interface design with UI fundamentals",
-      image: "/path/to/ui-design-image.png",
+      image: "",
       rating: 4.7,
       duration: "2h 45m",
       level: "Beginner"

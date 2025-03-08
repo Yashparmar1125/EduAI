@@ -688,13 +688,7 @@ const Dashboard = () => {
                 )}>
                   My Learning Paths
                 </h2>
-                <div className={cn(
-                  "flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm",
-                  theme === 'dark' ? 'bg-[#1A1425]' : 'bg-accent'
-                )}>
-                  <span className="text-muted-foreground">Select One</span>
-                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                </div>
+                
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

@@ -340,23 +340,26 @@ async function generateRecommendations(userProfile, skillGaps) {
     return [];
   }
 }
-
-
+// Add this function
 export const getLangflowRoadmap = async (req, res) => {
   try {
+    const { input_value, assessmentScore, skillGaps } = req.body;
+    
+    const payload = {
+      input_value,
+      output_type: "chat",
+      input_type: "chat",
+      tweaks: {
+        "ChatInput-dOH3m": {},
+        "Prompt-cMcHL": {},
+        "GoogleGenerativeAIModel-3V8H5": {},
+        "ChatOutput-XCd37": {}
+      }
+    };
+
     const response = await axios.post(
-      'https://api.langflow.astra.datastax.com/lf/8cc1b12e-0394-4c0b-bdb7-16035690648a/api/v1/run/b875a095-4a08-4053-a3f5-ee95163cda7d?stream=false',
-      {
-        input_value: req.body.input_value,
-        output_type: "chat",
-        input_type: "chat",
-        tweaks: {
-          "ChatInput-dOH3m": {},
-          "Prompt-cMcHL": {},
-          "GoogleGenerativeAIModel-3V8H5": {},
-          "ChatOutput-XCd37": {}
-        }
-      },
+      process.env.LANGFLOW_API_URL,
+      payload,
       {
         headers: {
           'Content-Type': 'application/json',
@@ -364,9 +367,13 @@ export const getLangflowRoadmap = async (req, res) => {
         }
       }
     );
+
     res.json(response.data);
   } catch (error) {
-    console.error('Langflow API Error:', error.response?.data || error.message);
-    res.status(500).json({ error: 'Failed to fetch roadmap data' });
+    console.error('Error calling Langflow API:', error.response?.data || error.message);
+    res.status(500).json({
+      error: 'Failed to generate roadmap',
+      details: error.response?.data || error.message
+    });
   }
 };

@@ -106,6 +106,7 @@ const TrendingCourses = () => {
               </div>
               <div className="flex items-center gap-2">
                 <span className="font-urbanist text-sm text-gray-600">
+
                   {course.rating} ({course.reviews} reviews)
                 </span>
               </div>
