@@ -19,6 +19,7 @@ import CourseLearning from './pages/Dashboard/CourseLearning';
 import ProtectedRoute from './components/ProtectedRoute';
 import CreateCourse from './pages/Instructor/CreateCourse';
 import ManageCourses from './pages/Instructor/ManageCourses';
+
 import InstructorDashboard from './pages/Instructor/InstructorDashboard';
 import CreateAssessment from './pages/Instructor/CreateAssessment';
 import CourseDetails from './pages/Instructor/CourseDetails';
@@ -30,6 +31,7 @@ import AssessmentDetails from './pages/Instructor/AssessmentDetails';
 import EditAssessment from './pages/Instructor/EditAssessment';
 import ExploreCourses from './pages/ExploreCourses/ExploreCourses';
 import TopSection from './pages/Community/TopSection'; 
+import CommunityLayout from './pages/CommunityLayout';
 
 function App() {
   return (
@@ -176,6 +178,7 @@ function App() {
                   {/* Protected Routes */}
                   <Route path="/assessment" element={<ProtectedRoute element={<Questions />} />} />
                   <Route path="/community1" element={<TopSection />} /> {/* Add route for TopSection */}
+                  <Route path="/community/queries" element={<CommunityLayout />} />
                   <Route path="/roadmap" element={<ProtectedRoute element={<RoadmapPage />} />} />
                   <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard />} />} />
                   <Route path="/dashboard/course/:courseId" element={<CourseOverview />} />
