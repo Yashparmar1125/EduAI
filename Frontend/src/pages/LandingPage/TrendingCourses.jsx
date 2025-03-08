@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import './TrendingCourses.css';
+
 
 const TrendingCourses = () => {
   const courses = [
@@ -61,34 +61,52 @@ const TrendingCourses = () => {
   };
 
   return (
-    <div className="trending-courses">
-      <h1 className="title">Trending Courses</h1>
-      <p className="subtitle">
+    <div className="w-full py-8 px-4 flex flex-col items-center bg-[#111827] text-white text-center relative">
+      <h1 className="font-urbanist text-5xl font-black text-white mb-4">Trending Courses</h1>
+      <p className="font-urbanist text-xl font-semibold text-white my-5 text-center max-w-[840px] mb-8">
         Explore Top Courses, Master New Skills, and Level Up Your Career.
       </p>
-      <div className="scroll-buttons">
-        <button className="scroll-button left" onClick={scrollLeft}>&lt;</button>
-        <button className="scroll-button right" onClick={scrollRight}>&gt;</button>
+      
+      <div className="absolute top-1/2 w-full flex justify-between transform -translate-y-1/2">
+        <button 
+          className="bg-[#111827] border-none text-white text-3xl px-4 py-2 cursor-pointer transition-colors hover:bg-black/80" 
+          onClick={scrollLeft}
+        >
+          &lt;
+        </button>
+        <button 
+          className="bg-[#111827] border-none text-white text-3xl px-4 py-2 cursor-pointer transition-colors hover:bg-black/80" 
+          onClick={scrollRight}
+        >
+          &gt;
+        </button>
       </div>
-      <div className="courses-container" ref={containerRef}>
+
+      <div
+        ref={containerRef}
+        className="flex flex-row gap-8 flex-nowrap overflow-x-hidden pb-4 w-full max-w-[1280px] cursor-grab active:cursor-grabbing scrollbar-hide"
+      >
         {duplicatedCourses.map((course, index) => (
-          <div key={index} className="course-card">
-            <img src={course.courseImg} alt={course.title} className="course-image" />
-            <div className="course-content">
-              <div className="badge-container">
-                <img src={course.badgeIcon} alt="" className="badge-icon" />
-                <span className="badge" style={{ color: course.badgeColor }}>
+          <div 
+            key={index} 
+            className="w-full h-[378px] bg-white rounded-xl border border-[#f3f4f6] overflow-hidden p-6 max-w-[300px] transition-all duration-200 flex-none hover:transform hover:-translate-y-1.5 hover:shadow-lg"
+          >
+            <img src={course.courseImg} alt={course.title} className="w-full h-48 object-cover rounded-xl mb-4" />
+            <div className="p-0">
+              <div className="flex items-center gap-2 mb-2">
+                <img src={course.badgeIcon} alt="" className="w-3.5 h-3.5" />
+                <span className="font-urbanist" style={{ color: course.badgeColor }}>
                   {course.badge}
                 </span>
               </div>
-              <h2 className="course-title">{course.title}</h2>
-              <div className="instructor">
-                <img src={course.instructorImg} alt="" className="instructor-image" />
-                <span className="instructor-name">{course.instructor}</span>
+              <h2 className="font-urbanist text-xl font-bold text-black mb-3">{course.title}</h2>
+              <div className="flex items-center gap-2 mb-2">
+                <img src={course.instructorImg} alt={course.instructor} className="w-8 h-8 rounded-full" />
+                <span className="font-urbanist text-sm text-gray-600">{course.instructor}</span>
               </div>
-              <div className="rating">
-                <img src="https://dashboard.codeparrot.ai/api/image/Z8X9N8hTinWyM7G1/frame-2.png" alt="" className="star-icon" />
-                <span className="rating-text">
+              <div className="flex items-center gap-2">
+                <span className="font-urbanist text-sm text-gray-600">
+
                   {course.rating} ({course.reviews} reviews)
                 </span>
               </div>
@@ -101,3 +119,4 @@ const TrendingCourses = () => {
 };
 
 export default TrendingCourses;
+

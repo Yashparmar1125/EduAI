@@ -17,7 +17,15 @@ import instructorRoutes from "./routes/instructor.routes.js";
 import assessmentRoutes from "./routes/assessment.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
 
-import serviceAccount from "../service-account.json" assert { type: "json" };
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const serviceAccount = JSON.parse(
+  readFileSync(join(__dirname, '../service-account.json'))
+);
 
 firebaseAdmin.initializeApp({
   credential: firebaseAdmin.credential.cert(serviceAccount), // Initialize using the service account key

@@ -127,15 +127,9 @@ export function Navbar() {
           </span>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
-          <DropdownMenuItem>
-            <Link to="/profile" className="w-full">Profile</Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Link to="/settings" className="w-full">Settings</Link>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
+          
           <DropdownMenuItem
-            className="text-red-600 dark:text-red-400"
+            className="text-red-600 dark:text-red-400 justify-center hover:bg-red-50 dark:hover:bg-red-900/20"
             onClick={handleSignOut}
           >
             Sign Out

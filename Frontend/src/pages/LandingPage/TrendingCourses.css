@@ -121,4 +121,86 @@
   font-family: 'Urbanist', sans-serif;
   font-size: 0.875rem;
   font-weight: 700;
+  line-height: 14px;
 }
+
+.course-title {
+  font-family: 'Urbanist', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 20px;
+  color: #000;
+  margin: 20px 0;
+  margin-bottom: 0.5rem;
+}
+
+.instructor {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.instructor-image {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+}
+
+.instructor-name {
+  font-family: 'Urbanist', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.star-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 0.5rem;
+}
+
+.rating-text {
+  font-family: 'Urbanist', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #000;
+}
+
+@media (max-width: 1200px) {
+  .courses-container {
+    gap: 20px;
+  }
+  
+  .course-card {
+    width: calc(50% - 10px);
+    min-width: 300px;
+  }
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 2.25rem;
+  }
+  
+  .subtitle {
+    font-size: 1rem;
+  }
+  
+  .course-card {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+
+}
+

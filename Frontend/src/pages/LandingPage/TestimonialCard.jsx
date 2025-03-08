@@ -1,5 +1,5 @@
 import React from 'react';
-import './TestimonialCard.css';
+
 
 const TestimonialCard = ({ imageUrl, text, name, title }) => {
   return (
@@ -22,3 +22,4 @@ TestimonialCard.defaultProps = {
 };
 
 export default TestimonialCard;
+

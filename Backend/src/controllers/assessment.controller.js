@@ -5,8 +5,8 @@ import {
 } from "../validators/assessment.validator.js";
 import User from "../models/user.model.js";
 import Course from "../models/course.model.js";
+import axios from 'axios';
 
-// Create a new assessment
 export const createAssessment = async (req, res) => {
   try {
     const { error, value } = createAssessmentSchema.validate(req.body);
@@ -199,6 +199,15 @@ export const submitAssessment = async (req, res) => {
       correctAnswers,
     } = req.body;
 
+    console.log('Received submission:', {
+      assessmentId,
+      initialResponses,
+      assessmentResponses,
+      averageScore,
+      totalQuestions,
+      correctAnswers,
+    });
+
     // Find assessment by ID
     const assessment = await Assessment.findById(assessmentId);
     if (!assessment) {
@@ -331,3 +340,40 @@ async function generateRecommendations(userProfile, skillGaps) {
     return [];
   }
 }
+// Add this function
+export const getLangflowRoadmap = async (req, res) => {
+  try {
+    const { input_value, assessmentScore, skillGaps } = req.body;
+    
+    const payload = {
+      input_value,
+      output_type: "chat",
+      input_type: "chat",
+      tweaks: {
+        "ChatInput-dOH3m": {},
+        "Prompt-cMcHL": {},
+        "GoogleGenerativeAIModel-3V8H5": {},
+        "ChatOutput-XCd37": {}
+      }
+    };
+
+    const response = await axios.post(
+      process.env.LANGFLOW_API_URL,
+      payload,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.LANGFLOW_TOKEN}`
+        }
+      }
+    );
+
+    res.json(response.data);
+  } catch (error) {
+    console.error('Error calling Langflow API:', error.response?.data || error.message);
+    res.status(500).json({
+      error: 'Failed to generate roadmap',
+      details: error.response?.data || error.message
+    });
+  }
+};
