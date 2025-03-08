@@ -33,19 +33,19 @@ import ExploreCourses from './pages/ExploreCourses/ExploreCourses';
 import LandingPage from './pages/LandingPage/MainPage';
 import NotFound from './components/NotFound';
 
-import TopSection from './pages/Community/TopSection'; 
+import TopSection from './pages/Community/TopSection';
 import CommunityLayout from './pages/CommunityLayout';
 
 
 function App() {
   return (
     <Provider store={store}>
-      <PersistGate 
+      <PersistGate
         loading={
           <div className="flex items-center justify-center min-h-screen">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#6938EF]"></div>
           </div>
-        } 
+        }
         persistor={persistor}
         onBeforeLift={() => {
           console.log('Before lifting state...');
@@ -68,120 +68,120 @@ function App() {
                   <Route path="/signup" element={<SignUpLayout />} />
                   <Route path="/login" element={<LogInLayout />} />
                   <Route path="/internships" element={<Internships />} />
-                  
+
                   {/* Instructor Routes with Layout */}
-                  <Route 
-                    path="/instructor/courses" 
+                  <Route
+                    path="/instructor/courses"
                     element={
-                      <ProtectedRoute 
+                      <ProtectedRoute
                         element={
                           <InstructorLayout>
                             <ManageCourses />
                           </InstructorLayout>
-                        } 
+                        }
                       />
-                    } 
+                    }
                   />
-                  <Route 
-                    path="/instructor/courses/create" 
+                  <Route
+                    path="/instructor/courses/create"
                     element={
-                      <ProtectedRoute 
+                      <ProtectedRoute
                         element={
                           <InstructorLayout>
                             <CreateCourse />
                           </InstructorLayout>
-                        } 
+                        }
                       />
-                    } 
+                    }
                   />
-                  <Route 
-                    path="/instructor/courses/:courseId" 
+                  <Route
+                    path="/instructor/courses/:courseId"
                     element={
-                      <ProtectedRoute 
+                      <ProtectedRoute
                         element={
                           <InstructorLayout>
                             <CourseDetails />
                           </InstructorLayout>
-                        } 
+                        }
                       />
-                    } 
+                    }
                   />
-                  <Route 
-                    path="/instructor/courses/:courseId/edit" 
+                  <Route
+                    path="/instructor/courses/:courseId/edit"
                     element={
-                      <ProtectedRoute 
+                      <ProtectedRoute
                         element={
                           <InstructorLayout>
                             <EditCourse />
                           </InstructorLayout>
-                        } 
+                        }
                       />
-                    } 
+                    }
                   />
-                  <Route 
-                    path="/instructor/dashboard" 
+                  <Route
+                    path="/instructor/dashboard"
                     element={
-                      <ProtectedRoute 
+                      <ProtectedRoute
                         element={
                           <InstructorLayout>
                             <InstructorDashboard />
                           </InstructorLayout>
-                        } 
+                        }
                       />
-                    } 
+                    }
                   />
-                  <Route 
-                    path="/instructor/assessments" 
+                  <Route
+                    path="/instructor/assessments"
                     element={
-                      <ProtectedRoute 
+                      <ProtectedRoute
                         element={
                           <InstructorLayout>
                             <Assessments />
                           </InstructorLayout>
-                        } 
+                        }
                       />
-                    } 
+                    }
                   />
-                  <Route 
-                    path="/instructor/assessments/create" 
+                  <Route
+                    path="/instructor/assessments/create"
                     element={
-                      <ProtectedRoute 
+                      <ProtectedRoute
                         element={
                           <InstructorLayout>
                             <CreateAssessment />
                           </InstructorLayout>
-                        } 
+                        }
                       />
-                    } 
+                    }
                   />
-                  <Route 
-                    path="/instructor/assessments/:assessmentId" 
+                  <Route
+                    path="/instructor/assessments/:assessmentId"
                     element={
-                      <ProtectedRoute 
+                      <ProtectedRoute
                         element={
                           <InstructorLayout>
                             <AssessmentDetails />
                           </InstructorLayout>
-                        } 
+                        }
                       />
-                    } 
+                    }
                   />
-                  <Route 
-                    path="/instructor/assessments/:assessmentId/edit" 
+                  <Route
+                    path="/instructor/assessments/:assessmentId/edit"
                     element={
-                      <ProtectedRoute 
+                      <ProtectedRoute
                         element={
                           <InstructorLayout>
                             <EditAssessment />
                           </InstructorLayout>
-                        } 
+                        }
                       />
-                    } 
+                    }
                   />
-                  
+
                   {/* Protected Routes */}
                   <Route path="/assessment" element={<ProtectedRoute element={<Questions />} />} />
-                  <Route path="/community1" element={<TopSection />} /> {/* Add route for TopSection */}
+                  <Route path="/community" element={<TopSection />} /> {/* Add route for TopSection */}
                   <Route path="/community/queries" element={<CommunityLayout />} />
                   <Route path="/roadmap" element={<ProtectedRoute element={<RoadmapPage />} />} />
                   <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard />} />} />

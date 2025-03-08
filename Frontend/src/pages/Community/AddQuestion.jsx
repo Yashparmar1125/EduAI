@@ -42,7 +42,7 @@ const AddQuestion = ({ isOpen, onClose }) => {
               <label className="text-white font-roboto text-[19.6px] block mb-[11px]">
                 Enter your question
               </label>
-              <textarea 
+              <textarea
                 className="w-full h-[117px] bg-white rounded-[8.98px] p-[16.13px] text-black font-roboto text-[17.45px] resize-none"
                 placeholder="Enter your question here"
               />
@@ -53,14 +53,14 @@ const AddQuestion = ({ isOpen, onClose }) => {
           <div className="mt-[44px]">
             <div className="h-[3px] bg-[#24bdff]" />
             <div className="flex justify-between items-center px-[115px] py-[15px]">
-              <button 
+              <button
                 className="text-white font-urbanist text-[17.14px] font-bold"
                 onClick={onClose}
               >
                 Cancel
               </button>
-              <button 
-                className="bg-[#3a0ca3] text-[#f5f5f5] font-urbanist text-[17.14px] font-bold px-[15.38px] py-[5px] rounded-[9.41px] w-[115.76px] h-[32px]"
+              <button
+                className="bg-[#3a0ca3] text-[#f5f5f5] font-urbanist text-[17.14px] font-bold px-[15.38px] py-[5px] rounded-[9.41px] w-[115.76px] h-[56px] cursor-pointer"
               >
                 Add Question
               </button>
