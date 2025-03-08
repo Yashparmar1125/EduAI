@@ -15,7 +15,9 @@ import {
   Trophy,
   ChevronRight,
   ArrowRight,
-  Sparkles
+  Sparkles,
+  TrendingUp,
+  GanttChartSquare
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -42,6 +44,154 @@ import {
 } from '../../redux/slices/userSlice';
 import { getDashboardData, enrollCourse } from '../../api/axios.api';
 import { useToast } from '@/components/ui/toast';
+import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ResponsiveContainer, Tooltip } from 'recharts';
+
+const LearningAnalyticsSection = ({ theme }) => {
+  const [hoveredArea, setHoveredArea] = useState(null);
+
+  const analyticsData = [
+    { skill: 'Web Development', value: 85, fullMark: 100 },
+    { skill: 'Mobile Development', value: 75, fullMark: 100 },
+    { skill: 'UI/UX Design', value: 90, fullMark: 100 },
+    { skill: 'Artificial Intelligence', value: 80, fullMark: 100 },
+    { skill: 'Blockchain Technology', value: 70, fullMark: 100 },
+    { skill: 'Frontend', value: 88, fullMark: 100 },
+  ];
+
+  // Create separate datasets for each section
+  const sections = analyticsData.map((_, index) => {
+    const nextIndex = (index + 1) % analyticsData.length;
+    return analyticsData.map((data, i) => {
+      if (i === index || i === nextIndex) {
+        return data;
+      }
+      return { ...data, value: 0 };
+    });
+  });
+
+  const skillCards = [
+    { title: 'Courses Completed', value: '12', trend: '+2', icon: BookOpen },
+    { title: 'Avg. Performance', value: '85%', trend: '+5%', icon: TrendingUp },
+    { title: 'Skills Mastered', value: '8', trend: '+1', icon: Trophy },
+    { title: 'Learning Streak', value: '15 days', trend: '+3', icon: Sparkles },
+  ];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, delay: 0.1 }}
+      className="mb-8"
+    >
+      <div className={cn(
+        "p-6 rounded-xl border shadow-sm",
+        theme === 'dark' ? 'bg-[#110C1D] border-[#6938EF]/20' : 'bg-card border-border'
+      )}>
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className={cn(
+              "text-xl font-semibold",
+              theme === 'dark' ? 'text-white' : 'text-foreground'
+            )}>
+              Learning Analytics
+            </h2>
+            <p className="text-sm text-muted-foreground">Your skill development overview</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Spider Chart */}
+          <div className="lg:col-span-2">
+            <div className="h-[400px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <RadarChart 
+                  cx="50%" 
+                  cy="50%" 
+                  outerRadius="80%" 
+                  data={analyticsData}
+                  onMouseMove={(e) => {
+                    if (e && e.activeTooltipIndex !== undefined) {
+                      setHoveredArea(e.activeTooltipIndex);
+                    }
+                  }}
+                  onMouseLeave={() => setHoveredArea(null)}
+                >
+                  <PolarGrid stroke={theme === 'dark' ? '#2D2D2D' : '#e5e5e5'} />
+                  <PolarAngleAxis
+                    dataKey="skill"
+                    tick={{ fill: theme === 'dark' ? '#9CA3AF' : '#6B7280', fontSize: 12 }}
+                  />
+                  <PolarRadiusAxis
+                    angle={30}
+                    domain={[0, 100]}
+                    tick={{ fill: theme === 'dark' ? '#9CA3AF' : '#6B7280', fontSize: 12 }}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: theme === 'dark' ? '#1A1425' : 'white',
+                      border: '1px solid #6938EF20',
+                      borderRadius: '8px',
+                    }}
+                    formatter={(value) => [`${value}%`, 'Proficiency']}
+                  />
+                  {/* Base white radar */}
+                  <Radar
+                    name="Skills"
+                    dataKey="value"
+                    stroke="rgba(255, 255, 255, 0.8)"
+                    fill="rgba(255, 255, 255, 0.3)"
+                    fillOpacity={0.3}
+                  />
+                  {/* Highlighted sections */}
+                  {hoveredArea !== null && (
+                    <Radar
+                      name="Skills"
+                      dataKey="value"
+                      data={sections[hoveredArea]}
+                      stroke="#6938EF"
+                      fill="#6938EF"
+                      fillOpacity={0.6}
+                    />
+                  )}
+                </RadarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* Stats Cards */}
+          <div className="space-y-4">
+            {skillCards.map((card, index) => (
+              <div
+                key={index}
+                className={cn(
+                  "p-4 rounded-xl border",
+                  theme === 'dark' ? 'bg-[#1A1425] border-[#6938EF]/10' : 'bg-accent/50 border-border'
+                )}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-[#6938EF]/10">
+                    <card.icon className="h-5 w-5 text-[#6938EF]" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-muted-foreground">{card.title}</p>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl font-semibold">{card.value}</span>
+                      <span className="text-xs text-green-500 flex items-center gap-1">
+                        <TrendingUp className="h-3 w-3" />
+                        {card.trend}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
 const Dashboard = () => {
   const { theme } = useTheme();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -298,13 +448,14 @@ const Dashboard = () => {
                               key={style.id}
                               variant={user.avatarStyle === style.id ? "default" : "outline"}
                               className={cn(
-                                "text-xs h-8",
+                                "text-sm flex items-center gap-2",
                                 user.avatarStyle === style.id 
-                                  ? "bg-[#6938EF] hover:bg-[#5B2FD1] text-white" 
-                                  : "border-[#6938EF]/20 text-[#6938EF] hover:bg-[#6938EF]/10"
+                                  ? "bg-gradient-to-r from-[#6938EF] to-[#9D7BFF] hover:from-[#5B2FD1] hover:to-[#8B6AE5] text-white" 
+                                  : "border-[#6938EF]/20 text-white hover:bg-[#6938EF]/10"
                               )}
                               onClick={() => dispatch(updateAvatarStyle(style.id))}
                             >
+                              <span className="text-white">{style.icon}</span>
                               {style.label}
                             </Button>
                           ))}
@@ -624,7 +775,7 @@ const Dashboard = () => {
                   >
                     <div className="flex flex-col items-center text-center">
                       <div className="p-3 rounded-lg bg-[#6938EF]/10 mb-3">
-                        <Trophy className="h-6 w-6 text-[#6938EF]" />
+                        <GanttChartSquare className="h-6 w-6 text-[#6938EF]" />
                       </div>
                       <h3 className="font-medium text-sm mb-1">Skill Assessment</h3>
                       <p className="text-xs text-muted-foreground">Evaluate your current skill level</p>
@@ -640,14 +791,14 @@ const Dashboard = () => {
                         ? 'bg-[#1A1425] border-[#6938EF]/10 hover:border-[#6938EF]/30' 
                         : 'bg-accent/50 border-border hover:border-[#6938EF]/30'
                     )}
-                    onClick={() => navigate('/learning-paths')}
+                    onClick={() => navigate('/achievements')}
                   >
                     <div className="flex flex-col items-center text-center">
                       <div className="p-3 rounded-lg bg-[#6938EF]/10 mb-3">
-                        <BookMarked className="h-6 w-6 text-[#6938EF]" />
+                        <Trophy className="h-6 w-6 text-[#6938EF]" />
                       </div>
-                      <h3 className="font-medium text-sm mb-1">Learning Paths</h3>
-                      <p className="text-xs text-muted-foreground">Follow structured learning paths</p>
+                      <h3 className="font-medium text-sm mb-1">Achievements</h3>
+                      <p className="text-xs text-muted-foreground">Track your milestones, celebrate success</p>
                     </div>
                   </motion.div>
 
@@ -674,53 +825,8 @@ const Dashboard = () => {
               </div>
             </motion.div>
 
-            {/* Learning Paths Section */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="mb-8"
-            >
-              <div className="flex justify-between items-center mb-4">
-                <h2 className={cn(
-                  "text-lg font-semibold",
-                  theme === 'dark' ? 'text-white' : 'text-foreground'
-                )}>
-                  My Learning Paths
-                </h2>
-                
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {dashboardData.enrolledCourses.map((course) => (
-                  <motion.div
-                    key={course.id}
-                    whileHover={{ scale: 1.02 }}
-                    className={cn(
-                      "p-5 rounded-xl border shadow-sm",
-                      theme === 'dark' 
-                        ? 'bg-[#110C1D] border-[#6938EF]/20' 
-                        : 'bg-card border-border'
-                    )}
-                  >
-                    <div className="flex justify-between items-center mb-3">
-                      <div className="flex items-center gap-2">
-                        <div className={cn(
-                          "w-8 h-8 rounded-lg flex items-center justify-center",
-                          "bg-[#6938EF]/10 text-[#6938EF]"
-                        )}>
-                          <BookMarked className="h-4 w-4" />
-                        </div>
-                        <h3 className="font-medium">{course.title}</h3>
-                      </div>
-                      <span className="text-xs text-muted-foreground">{course.progress}%</span>
-                    </div>
-                    <Progress value={course.progress} className="h-2" 
-                      indicatorClassName="bg-gradient-to-r from-[#6938EF] to-[#9D7BFF]" />
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
+            {/* Learning Analytics Section */}
+            <LearningAnalyticsSection theme={theme} />
 
             {/* Main Content */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -905,79 +1011,6 @@ const Dashboard = () => {
                       >
                         View All Discussions
                       </Button>
-                    </div>
-                  </div>
-                </motion.div>
-
-                {/* Achievements Section */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.5 }}
-                >
-                  <div className={cn(
-                    "rounded-xl border shadow-sm",
-                    theme === 'dark' ? 'bg-[#110C1D] border-[#6938EF]/20' : 'bg-card border-border'
-                  )}>
-                    <div className="p-5 border-b border-border flex justify-between items-center">
-                      <h2 className={cn(
-                        "text-lg font-semibold",
-                        theme === 'dark' ? 'text-white' : 'text-foreground'
-                      )}>
-                        Achievements
-                      </h2>
-                      <Link to="/achievements" className="text-xs text-[#6938EF] flex items-center gap-1 hover:underline">
-                        View All <ChevronRight className="h-3 w-3" />
-                      </Link>
-                    </div>
-                    <div className="p-5 space-y-4">
-                      {dashboardData.badges.map((achievement) => (
-                        <div key={achievement.id} className={cn(
-                          "p-3 rounded-xl transition-all",
-                          theme === 'dark' 
-                            ? 'bg-[#1A1425]/50 border border-[#6938EF]/10' 
-                            : 'bg-accent/50 border border-accent',
-                          !achievement.unlocked && 'opacity-70'
-                        )}>
-                          <div className="flex gap-3">
-                            <div className={cn(
-                              "w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 text-xl",
-                              achievement.unlocked 
-                                ? "bg-[#6938EF]/20 text-[#6938EF]" 
-                                : "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400"
-                            )}>
-                              {achievement.icon}
-                            </div>
-                            <div className="flex-1">
-                              <div className="flex justify-between">
-                                <h3 className="text-xs font-medium flex items-center gap-1">
-                                  {achievement.title}
-                                  {achievement.unlocked && (
-                                    <Trophy className="h-3 w-3 text-yellow-500 fill-yellow-500" />
-                                  )}
-                                </h3>
-                                <span className="text-[10px] text-muted-foreground">
-                                  {achievement.unlocked ? 'Unlocked' : `${achievement.progress}%`}
-                                </span>
-                              </div>
-                              <p className="text-xs mt-1 text-muted-foreground">{achievement.description}</p>
-                              {!achievement.unlocked && (
-                                <Progress value={achievement.progress} className="h-1.5 mt-2" 
-                                  indicatorClassName="bg-gradient-to-r from-[#6938EF] to-[#9D7BFF]" />
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                      <Link to="/achievements">
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          className="w-full text-xs border-[#6938EF]/20 text-[#6938EF] hover:bg-[#6938EF]/10"
-                        >
-                          View All Achievements
-                        </Button>
-                      </Link>
                     </div>
                   </div>
                 </motion.div>

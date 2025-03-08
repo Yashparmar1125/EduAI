@@ -60,6 +60,7 @@
     "react-select": "^5.2.1",
     "react-tabs": "^4.3.0",
     "reactflow": "^11.11.4",
+    "recharts": "^2.15.1",
     "redux-persist": "^6.0.0",
     "rollup": "^4.34.9",
     "tailwind-merge": "^3.0.2",
