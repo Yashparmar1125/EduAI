@@ -331,3 +331,22 @@ export const updateXP = async (xpEarned) => {
     throw error.response?.data?.error || error.message;
   }
 };
+
+export const createRoadmap = async (roadmap, name) => {
+  try {
+    return api.post("/api/assessment/langflow/roadmap/create", {
+      roadmap,
+      name,
+    });
+  } catch (error) {
+    throw error.response?.data?.error || error.message;
+  }
+};
+
+export const getRecommendedCourses = async () => {
+  try {
+    return api.get("/api/recommendations/courses");
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};

@@ -4,7 +4,7 @@ import { LoadingScreen } from "./LoadingScreen";
 import { useNavigate } from 'react-router-dom';
 import { Clock, BookOpen, Trophy } from 'lucide-react';
 import axios from 'axios';
-import { nextQuestions,updateXP} from '../../api/axios.api';
+import { nextQuestions,updateXP,createRoadmap} from '../../api/axios.api';
 
 const Questions = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -181,11 +181,16 @@ const Questions = () => {
                 totalQuestions,
                 correctAnswers,
                 initialResponses,
-                roadmap: {
-                    result: langflowResponse.data.roadmap || langflowResponse.data
+                roadmap:{
+                    results:langflowResponse.data.roadmap || langflowResponse.data
+
                 }
+                
             };
+            const name=initialResponses[1].answer;
+            const roadmap=JSON.stringify(resultsData);
             localStorage.setItem('assessmentResults', JSON.stringify(resultsData));
+            await createRoadmap(roadmap,name);
             // Add a small delay for better UX
             await new Promise(resolve => setTimeout(resolve, 1000));
             navigate('/roadmap');

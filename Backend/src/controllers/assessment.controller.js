@@ -1,11 +1,12 @@
 import Assessment from "../models/assessment.model.js";
+import Roadmap from "../models/roadmap.model.js";
 import {
   createAssessmentSchema,
   updateAssessmentSchema,
 } from "../validators/assessment.validator.js";
 import User from "../models/user.model.js";
 import Course from "../models/course.model.js";
-import axios from 'axios';
+import axios from "axios";
 
 export const createAssessment = async (req, res) => {
   try {
@@ -199,7 +200,7 @@ export const submitAssessment = async (req, res) => {
       correctAnswers,
     } = req.body;
 
-    console.log('Received submission:', {
+    console.log("Received submission:", {
       assessmentId,
       initialResponses,
       assessmentResponses,
@@ -344,7 +345,7 @@ async function generateRecommendations(userProfile, skillGaps) {
 export const getLangflowRoadmap = async (req, res) => {
   try {
     const { input_value, assessmentScore, skillGaps } = req.body;
-    
+
     const payload = {
       input_value,
       output_type: "chat",
@@ -353,27 +354,47 @@ export const getLangflowRoadmap = async (req, res) => {
         "ChatInput-dOH3m": {},
         "Prompt-cMcHL": {},
         "GoogleGenerativeAIModel-3V8H5": {},
-        "ChatOutput-XCd37": {}
-      }
+        "ChatOutput-XCd37": {},
+      },
     };
 
-    const response = await axios.post(
-      process.env.LANGFLOW_API_URL,
-      payload,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.LANGFLOW_TOKEN}`
-        }
-      }
-    );
+    const response = await axios.post(process.env.LANGFLOW_API_URL, payload, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.LANGFLOW_TOKEN}`,
+      },
+    });
 
     res.json(response.data);
   } catch (error) {
-    console.error('Error calling Langflow API:', error.response?.data || error.message);
+    console.error(
+      "Error calling Langflow API:",
+      error.response?.data || error.message
+    );
     res.status(500).json({
-      error: 'Failed to generate roadmap',
-      details: error.response?.data || error.message
+      error: "Failed to generate roadmap",
+      details: error.response?.data || error.message,
     });
+  }
+};
+
+export const createLangflowRoadmap = async (req, res) => {
+  try {
+    const { roadmap, name } = req.body;
+    const userId = req.user.userId;
+    console.log(userId, roadmap, name);
+    const roadmapData = new Roadmap({
+      userId,
+      name,
+      roadmap: JSON.stringify(roadmap),
+    });
+    await roadmapData.save();
+    res
+      .status(201)
+      .json({ message: "Roadmap created successfully", roadmapData });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error creating roadmap", error: error.message });
   }
 };
