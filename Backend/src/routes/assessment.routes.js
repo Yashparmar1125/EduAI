@@ -10,6 +10,7 @@ import {
   getNextQuestions,
   submitAssessment,
   getLangflowRoadmap,
+  createLangflowRoadmap
 } from "../controllers/assessment.controller.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
 
@@ -29,6 +30,7 @@ router.get("/get/:assessmentId", getAssessment);
 router.put("/update/:assessmentId", updateAssessment);
 router.delete("/delete/:assessmentId", deleteAssessment);
 router.get("/get/:assessmentId/stats", getAssessmentStats);
+router.post("/langflow/roadmap/create",authMiddleware, createLangflowRoadmap);
 
 // Assessment submission route (no auth required)
 router.post("/submit", submitAssessment);

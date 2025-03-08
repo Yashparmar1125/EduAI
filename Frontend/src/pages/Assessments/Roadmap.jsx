@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { Image, Loader2, Rocket, Database, Code2, Blocks, Trophy } from 'lucide-react';
 import { useTheme } from "../../components/theme-provider";
 import Recommends from './Recommends';
-
+ 
 const RoadmapPage = () => {
   const { theme } = useTheme();
   const roadmapRef = useRef(null);
@@ -14,16 +14,16 @@ const RoadmapPage = () => {
   const [completedSteps, setCompletedSteps] = useState(new Set());
   const [isDownloading, setIsDownloading] = useState(false);
   const [steps, setSteps] = useState([]);
-  
+ 
   useEffect(() => {
     const storedResults = localStorage.getItem('assessmentResults');
     console.log('Raw localStorage data:', storedResults);
-  
+ 
     if (storedResults) {
       try {
         const results = JSON.parse(storedResults);
         console.log('Parsed assessment results:', results);
-  
+ 
         let roadmapData;
         if (results.roadmap?.result?.outputs?.results?.message?.text) {
           console.log('Extracting roadmap from message text');
@@ -41,7 +41,7 @@ const RoadmapPage = () => {
             roadmapData = JSON.parse(cleanText);
           }
         }
-  
+ 
         console.log('Final roadmap data:', roadmapData);
         if (roadmapData?.roadmap) {
           setSteps(roadmapData.roadmap.map((step, index) => ({
@@ -59,8 +59,8 @@ const RoadmapPage = () => {
       }
     }
   }, []);
-  
-  
+ 
+ 
   const getIconForStep = (index) => {
     const icons = [
       <Rocket className="w-5 h-5 sm:w-6 sm:h-6" />,
@@ -70,14 +70,14 @@ const RoadmapPage = () => {
     ];
     return icons[index % icons.length];
   };
-  
+ 
   const formatRoadmapSteps = (roadmapResult) => {
     try {
       // Ensure roadmapResult is an array
       const steps = Array.isArray(roadmapResult) ? roadmapResult : [];
-      
+ 
       return steps.map((step, index) => {
-        
+ 
         const stepData = {
           id: index + 1,
           title: step.title || `Step ${index + 1}`,
@@ -87,7 +87,7 @@ const RoadmapPage = () => {
           color: "#6938EF",
           icon: getIconForStep(index)
         };
-
+ 
         console.log('Formatted step:', stepData);
         return stepData;
       });
@@ -96,13 +96,13 @@ const RoadmapPage = () => {
       return [];
     }
   };
-  
+ 
   const handleStepComplete = (index) => {
     if (!completedSteps.has(index)) {
       const newCompleted = new Set(completedSteps);
       newCompleted.add(index);
       setCompletedSteps(newCompleted);
-      
+ 
       confetti({
         particleCount: 100,
         spread: 70,
@@ -111,28 +111,28 @@ const RoadmapPage = () => {
       });
     }
   };
-  
+ 
   const downloadAsPNG = async () => {
     if (isDownloading) return;
     setIsDownloading(true);
     try {
       const element = roadmapRef.current;
-      
+ 
       // Create a temporary container with fixed width
       const container = document.createElement('div');
       container.style.position = 'absolute';
       container.style.left = '-9999px';
       container.style.width = '1200px'; // Fixed width to ensure all content is captured
-      
+ 
       // Clone the roadmap content
       const clone = element.cloneNode(true);
       clone.style.width = '100%';
       clone.style.height = 'auto';
       clone.style.backgroundColor = theme === 'dark' ? '#0A0118' : '#ffffff';
-      
+ 
       container.appendChild(clone);
       document.body.appendChild(container);
-
+ 
       const dataUrl = await domtoimage.toPng(clone, {
         quality: 1.0,
         width: 1200,
@@ -142,14 +142,14 @@ const RoadmapPage = () => {
           transformOrigin: 'top left'
         }
       });
-      
+ 
       document.body.removeChild(container);
-      
+ 
       const link = document.createElement('a');
       link.download = `learning-roadmap-${new Date().toISOString().split('T')[0]}.png`;
       link.href = dataUrl;
       link.click();
-      
+ 
       confetti({
         particleCount: 100,
         spread: 70,
@@ -160,7 +160,7 @@ const RoadmapPage = () => {
     }
     setIsDownloading(false);
   };
-  
+ 
   return (
     <div className={cn(
       "min-h-[calc(100vh-4rem)] p-4 sm:p-8",
@@ -173,7 +173,7 @@ const RoadmapPage = () => {
         )}>
           Your Learning Path
         </h1>
-        
+ 
         <div ref={roadmapRef} data-roadmap className={cn(
           "relative p-6 sm:p-12 rounded-2xl shadow-2xl border w-full",
           theme === 'dark' 
@@ -186,7 +186,7 @@ const RoadmapPage = () => {
               ? 'bg-gradient-to-b from-[#6938EF] via-[#9D7BFF] to-[#6938EF]'
               : 'bg-gradient-to-b from-[#6938EF] via-[#9D7BFF] to-[#6938EF]'
           )} />
-          
+ 
           {steps.map((step, index) => (
             <motion.div
               key={step.id}
@@ -233,7 +233,7 @@ const RoadmapPage = () => {
                       </motion.div>
                     )}
                   </div>
-
+ 
                   <div
                     className={cn(
                       "p-3 sm:p-5 rounded-xl sm:rounded-2xl border-2 flex-1 backdrop-blur-sm transition-all duration-300",
@@ -263,11 +263,11 @@ const RoadmapPage = () => {
                         {step.duration}
                       </span>
                     </div>
-                    
+ 
                     <p className="text-xs sm:text-sm text-gray-400 mb-3 sm:mb-4">
                       {step.description}
                     </p>
-
+ 
                     <div className="flex flex-wrap gap-1.5 sm:gap-2">
                       {step.resources.map((resource, i) => (
                         <motion.a
@@ -290,7 +290,7 @@ const RoadmapPage = () => {
             </motion.div>
           ))}
         </div>
-
+ 
         <div className="mt-6 sm:mt-8 flex justify-center space-x-4">
           <button
             onClick={downloadAsPNG}
@@ -310,5 +310,5 @@ const RoadmapPage = () => {
     </div>
   );
 };
-
+ 
 export default RoadmapPage;

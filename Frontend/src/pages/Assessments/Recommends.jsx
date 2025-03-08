@@ -1,46 +1,67 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { motion as Motion } from 'framer-motion';
 import { cn } from "@/lib/utils";
 import { useTheme } from "../../components/theme-provider";
-import { Star } from 'lucide-react';
+import { Star, Users, Clock } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { getRecommendedCourses } from "@/api/axios.api";
+import { toast } from 'react-hot-toast';
 
 const Recommends = () => {
   const { theme } = useTheme();
+  const navigate = useNavigate();
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const courses = [
-    {
-      id: 1,
-      title: "UI Design Fundamentals",
-      description: "Master the core concepts of interface design with UI fundamentals",
-      image: "",
-      rating: 4.7,
-      duration: "2h 45m",
-      level: "Beginner"
-    },
-    {
-      id: 2,
-      title: "Figma Masterclass",
-      description: "Learn UI design professional from zero using Figma",
-      image: "/path/to/figma-image.png",
-      rating: 4.8,
-      duration: "3h 30m",
-      level: "Intermediate"
-    },
-    {
-      id: 3,
-      title: "Advanced UX Research",
-      description: "Learn advanced user research methods and analysis",
-      image: "/path/to/ux-research-image.png",
-      rating: 4.9,
-      duration: "4h 15m",
-      level: "Advanced"
-    }
-  ];
+  useEffect(() => {
+    const fetchRecommendations = async () => {
+      try {
+        const data = await getRecommendedCourses();
+        // The response is already processed by axios interceptor
+        setCourses(data.recommendations || []);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching recommendations:', error);
+        toast.error(error.message || 'Failed to fetch course recommendations');
+        setLoading(false);
+      }
+    };
+
+    fetchRecommendations();
+  }, []);
+
+  const handleStartLearning = (e, courseId) => {
+    e.preventDefault(); // Prevent Link navigation
+    navigate(`/dashboard/course/${courseId}`);
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#6938EF]" />
+      </div>
+    );
+  }
+
+  if (!courses.length) {
+    return (
+      <div className="text-center py-12">
+        <h2 className={cn(
+          "text-lg font-semibold mb-2",
+          theme === 'dark' ? 'text-white' : 'text-foreground'
+        )}>
+          No Recommendations Yet
+        </h2>
+        <p className="text-muted-foreground">
+          Complete more courses and assessments to get personalized recommendations.
+        </p>
+      </div>
+    );
+  }
 
   return (
-    <motion.div
+    <Motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -55,8 +76,8 @@ const Recommends = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {courses.map((course) => (
-          <Link to="/course" key={course.id}>
-            <motion.div
+          <Link to={`/course/${course.id}`} key={course.id}>
+            <Motion.div
               whileHover={{ scale: 1.02 }}
               className={cn(
                 "rounded-xl border overflow-hidden",
@@ -65,7 +86,7 @@ const Recommends = () => {
             >
               <div className="aspect-video relative overflow-hidden">
                 <img
-                  src={course.image}
+                  src={course.image || '/placeholder-course.jpg'}
                   alt={course.title}
                   className="w-full h-full object-cover"
                 />
@@ -84,7 +105,15 @@ const Recommends = () => {
                     <span className="text-sm ml-1">{course.rating}</span>
                   </div>
                   <span className="text-xs text-muted-foreground">•</span>
-                  <span className="text-xs text-muted-foreground">{course.duration}</span>
+                  <div className="flex items-center">
+                    <Clock className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-xs text-muted-foreground ml-1">{course.duration}</span>
+                  </div>
+                  <span className="text-xs text-muted-foreground">•</span>
+                  <div className="flex items-center">
+                    <Users className="h-4 w-4 text-muted-foreground" />
+                    <span className="text-xs text-muted-foreground ml-1">{course.studentsCount}</span>
+                  </div>
                 </div>
 
                 <h3 className={cn(
@@ -94,21 +123,26 @@ const Recommends = () => {
                   {course.title}
                 </h3>
                 
-                <p className="text-sm text-muted-foreground mb-4">
+                <p className="text-sm text-muted-foreground mb-2">
                   {course.description}
+                </p>
+
+                <p className="text-sm text-muted-foreground mb-4">
+                  By {course.instructor}
                 </p>
 
                 <Button 
                   className="w-full bg-[#6938EF] hover:bg-[#5B2FD1] text-white"
+                  onClick={(e) => handleStartLearning(e, course.id)}
                 >
-                  Start Learning
+                  {course.price > 0 ? `Enroll for $${course.price}` : 'Start Learning'}
                 </Button>
               </div>
-            </motion.div>
+            </Motion.div>
           </Link>
         ))}
       </div>
-    </motion.div>
+    </Motion.div>
   );
 };
 

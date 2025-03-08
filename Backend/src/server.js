@@ -18,6 +18,7 @@ import assessmentRoutes from "./routes/assessment.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
 import achievementRoutes from "./routes/achievement.routes.js";
 import gamificationRoutes from "./routes/gamification.routes.js";
+import recommendationRoutes from "./routes/recommendation.routes.js";
 
 import { readFileSync } from "fs";
 import { fileURLToPath } from "url";
@@ -72,6 +73,7 @@ app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/progress", progressRoutes);
 app.use("/api/achievements", achievementRoutes);
 app.use("/api/gamification", gamificationRoutes);
+app.use("/api/recommendations", recommendationRoutes);
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);
