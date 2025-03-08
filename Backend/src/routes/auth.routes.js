@@ -17,6 +17,8 @@ import {
   updateProfile,
   profile,
   googleRegister,
+  githubRegister,
+  githubLogin,
 } from "../controllers/auth.controller.js";
 const router = express.Router();
 
@@ -27,6 +29,8 @@ import { authMiddleware } from "../middleware/auth.middleware.js";
 router.post("/register", validateRegistration, register);
 router.post("/google/login", googleLogin);
 router.post("/google/register", googleRegister);
+router.post("/github/register", githubRegister);
+router.post("/github/login", githubLogin);
 router.post("/login", validateLogin, login);
 router.get("/logout", logout);
 router.get("/profile", authMiddleware, profile);
