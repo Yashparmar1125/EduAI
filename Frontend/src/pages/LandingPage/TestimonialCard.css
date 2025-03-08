@@ -1,0 +1,76 @@
+.testimonial-card {
+  width: 297px;
+  min-height: 393px;
+  background: #ffffff;
+  border-radius: 15.73px;
+  border: 1px solid #e5e7eb;
+  padding: 18.87px 14.68px 18.87px 23.07px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.testimonial-card:hover {
+  transform: scale(1.05);
+  background-color: #3A0CA3;
+}
+
+.testimonial-avatar {
+  width: 149.93px;
+  height: 135.61px;
+  object-fit: cover;
+  border-radius: 50%;
+  margin-bottom: 20px;
+}
+
+.testimonial-content {
+  display: flex;
+  flex-direction: column;
+  gap: 18.87px;
+  width: 100%;
+  align-items: center;
+}
+
+.testimonial-text {
+  font-family: 'Urbanist', sans-serif;
+  font-weight: 400;
+  font-size: 18.87px;
+  color: #4b5563;
+  margin: 0;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.testimonial-card:hover .testimonial-text,
+.testimonial-card:hover .testimonial-name,
+.testimonial-card:hover .testimonial-title {
+  color: #ffffff;
+}
+
+.testimonial-name {
+  font-family: 'Urbanist', sans-serif;
+  font-weight: 700;
+  font-size: 25.16px;
+  color: #000000;
+  margin: 0;
+  text-align: center;
+}
+
+.testimonial-title {
+  font-family: 'Urbanist', sans-serif;
+  font-weight: 400;
+  font-size: 18.87px;
+  color: #000000;
+  margin: 0;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .testimonial-card {
+    width: 100%;
+    max-width: 297px;
+  }
+}

@@ -1,0 +1,124 @@
+.trending-courses {
+  width: 100%;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #111827;
+  color: white;
+  text-align: center;
+  position: relative;
+}
+
+.title {
+  font-family: 'Urbanist', sans-serif;
+  font-size: 3rem;
+  font-weight: 900;
+  color: #fff;
+  margin: 0;
+  margin-bottom: 1rem;
+}
+
+.subtitle {
+  font-family: 'Urbanist', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 20px 0 40px 0;
+  text-align: center;
+  max-width: 840px;
+  margin-bottom: 2rem;
+}
+
+.scroll-buttons {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  transform: translateY(-50%);
+}
+
+.scroll-button {
+  background-color: 111827;
+  border: none;
+  color: white;
+  font-size: 2rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.scroll-button:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.courses-container {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  flex-wrap: nowrap;
+  overflow-x: hidden;
+  padding-bottom: 1rem;
+  width: 100%;
+  max-width: 1280px;
+  cursor: grab;
+}
+
+.courses-container:active {
+  cursor: grabbing;
+}
+
+.courses-container::-webkit-scrollbar {
+  display: none;
+}
+
+.course-card {
+  width: 100%;
+  height: 378px;
+  background: #fff;
+  border-radius: 0.75rem;
+  border: 1px solid #f3f4f6;
+  overflow: hidden;
+  padding: 1.5rem;
+  max-width: 300px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  flex: 0 0 auto;
+}
+
+.course-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+.course-image {
+  width: 100%;
+  height: 192px;
+  object-fit: cover;
+  border-radius: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.course-content {
+  padding: 24px;
+  text-align: left;
+}
+
+.badge-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.badge-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 0.5rem;
+}
+
+.badge {
+  font-family: 'Urbanist', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
