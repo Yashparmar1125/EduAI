@@ -1,6 +1,9 @@
 // controllers/progressController.js
 import User from "../models/user.model.js";
 import Course from "../models/course.model.js";
+import { generateCertificate } from "../utils/certificate.util.js";
+import { checkAchievements } from "../utils/achievement.util.js";
+import { verifyCertificate } from "../utils/certificate.util.js";
 
 export const getCourseProgress = async (req, res) => {
   const { courseId } = req.params;
@@ -161,18 +164,38 @@ export const completeModule = async (req, res) => {
         user.completedCourses.push(courseId);
       }
 
-      // Generate certificate URL (you can implement certificate generation logic here)
-      enrolledCourse.certificateUrl = `/certificates/${user._id}-${courseId}.pdf`;
-    }
+      // Only generate certificate if one doesn't exist
+      if (!enrolledCourse.certificateId) {
+        try {
+          const certificateId = await generateCertificate(user._id, courseId);
+          enrolledCourse.certificateId = certificateId;
+        } catch (error) {
+          console.error("Error generating certificate:", error);
+          // Continue without certificate generation
+        }
+      }
 
-    await user.save();
-    res.status(200).json({
-      message: "Module completed successfully",
-      progress: enrolledCourse.progress,
-      completedModules: enrolledCourse.completedModules,
-      isCourseCompleted: completedModulesCount === totalModules,
-      certificateUrl: enrolledCourse.certificateUrl,
-    });
+      // Check for achievements when course is completed
+      const achievementResults = await checkAchievements(user._id, courseId);
+
+      await user.save();
+      res.status(200).json({
+        message: "Module completed successfully",
+        progress: enrolledCourse.progress,
+        completedModules: enrolledCourse.completedModules,
+        isCourseCompleted: completedModulesCount === totalModules,
+        certificateId: enrolledCourse.certificateId,
+        achievements: achievementResults,
+      });
+    } else {
+      await user.save();
+      res.status(200).json({
+        message: "Module completed successfully",
+        progress: enrolledCourse.progress,
+        completedModules: enrolledCourse.completedModules,
+        isCourseCompleted: false,
+      });
+    }
   } catch (error) {
     console.error("Error completing module:", error);
     res.status(500).json({ error: error.message });
@@ -237,6 +260,86 @@ export const getCompletedCourses = async (req, res) => {
     res.status(200).json(completedCourses);
   } catch (error) {
     console.error("Error getting completed courses:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const getCourseCompletionStatus = async (req, res) => {
+  const { courseId } = req.params;
+  try {
+    const user = await User.findById(req.user.userId);
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const enrolledCourse = user.enrolledCourses.find(
+      (c) => c.courseId.toString() === courseId
+    );
+
+    if (!enrolledCourse) {
+      return res
+        .status(404)
+        .json({ error: "Course not found in enrolled courses" });
+    }
+
+    const isCompleted = enrolledCourse.progress === 100;
+
+    res.status(200).json({
+      isCompleted,
+      progress: enrolledCourse.progress,
+      certificateUrl: enrolledCourse.certificateUrl,
+      completedModules: enrolledCourse.completedModules.length,
+      totalModules: enrolledCourse.courseId.modules.length,
+    });
+  } catch (error) {
+    console.error("Error getting course completion status:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const getCertificate = async (req, res) => {
+  const { courseId } = req.params;
+  try {
+    const user = await User.findById(req.user.userId);
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const enrolledCourse = user.enrolledCourses.find(
+      (c) => c.courseId.toString() === courseId
+    );
+
+    if (!enrolledCourse || !enrolledCourse.certificateId) {
+      return res.status(404).json({ error: "Certificate not found" });
+    }
+
+    // Verify the certificate
+    const verificationResult = await verifyCertificate(
+      enrolledCourse.certificateId
+    );
+
+    if (!verificationResult.isValid) {
+      return res.status(400).json({ error: verificationResult.message });
+    }
+
+    res.status(200).json({
+      certificate: verificationResult.certificate,
+    });
+  } catch (error) {
+    console.error("Error getting certificate:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const verifyCertificatePublic = async (req, res) => {
+  const { certificateId } = req.params;
+  try {
+    const verificationResult = await verifyCertificate(certificateId);
+    res.status(200).json(verificationResult);
+  } catch (error) {
+    console.error("Error verifying certificate:", error);
     res.status(500).json({ error: error.message });
   }
 };

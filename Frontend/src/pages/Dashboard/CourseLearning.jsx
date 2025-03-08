@@ -25,7 +25,9 @@ import {
   startModule, 
   updateModuleProgress, 
   completeModule,
-  getCourseProgress 
+  getCourseProgress,
+  getCourseCompletionStatus,
+  getCertificate
 } from '../../api/axios.api';
 
 const CourseLearning = () => {
@@ -46,6 +48,7 @@ const CourseLearning = () => {
   const progressUpdateInterval = useRef(null);
   const [lastProgressUpdate, setLastProgressUpdate] = useState(0);
   const [isCourseCompleted, setIsCourseCompleted] = useState(false);
+  const [certificate, setCertificate] = useState(null);
 
   // Get current module data
   const currentModuleData = course?.modules?.[currentModule];
@@ -55,9 +58,10 @@ const CourseLearning = () => {
   useEffect(() => {
     const fetchCourseDetails = async () => {
       try {
-        const [courseResponse, progressResponse] = await Promise.all([
+        const [courseResponse, progressResponse, completionResponse] = await Promise.all([
           getCourseDetails(courseId),
-          getCourseProgress(courseId)
+          getCourseProgress(courseId),
+          getCourseCompletionStatus(courseId)
         ]);
         
         if (!courseResponse?.course) {
@@ -75,7 +79,13 @@ const CourseLearning = () => {
           
           setProgress(calculatedProgress);
           setCompletedModules(progressResponse.completedModules || []);
-          setIsCourseCompleted(calculatedProgress === 100);
+          setIsCourseCompleted(completionResponse.isCompleted);
+          
+          // Fetch certificate if course is completed
+          if (completionResponse.isCompleted) {
+            const certificateResponse = await getCertificate(courseId);
+            setCertificate(certificateResponse.certificate);
+          }
           
           // Find the first incomplete module
           const incompleteModuleIndex = courseResponse.course.modules.findIndex(
@@ -394,6 +404,23 @@ const CourseLearning = () => {
           <p className="text-xl text-muted-foreground mb-8">
             You've successfully completed {course.title}
           </p>
+          {certificate && (
+            <div className="mb-8">
+              <div className="bg-[#6938EF]/10 p-4 rounded-lg mb-4">
+                <h3 className="font-semibold mb-2">Your Digital Certificate</h3>
+                <p className="text-sm text-muted-foreground">Certificate ID: {certificate.certificateId}</p>
+                <p className="text-sm text-muted-foreground">Issued on: {new Date(certificate.issueDate).toLocaleDateString()}</p>
+                <p className="text-sm text-muted-foreground">Valid until: {new Date(certificate.expiryDate).toLocaleDateString()}</p>
+              </div>
+              <Button 
+                className="w-full bg-[#6938EF] hover:bg-[#5B2FD1] text-white"
+                onClick={() => window.open(`/verify-certificate/${certificate.certificateId}`, '_blank')}
+              >
+                <Download className="w-4 h-4 mr-2" />
+                View Certificate
+              </Button>
+            </div>
+          )}
           <div className="space-y-4">
             <Button 
               className="w-full bg-[#6938EF] hover:bg-[#5B2FD1] text-white"
@@ -457,8 +484,8 @@ const CourseLearning = () => {
             </div>
           </div>
         </div>
-      </div>
-
+            </div>
+            
       <div className="flex h-[calc(100vh-8rem)]">
         {/* Main Content */}
         <div className={cn(
@@ -479,10 +506,10 @@ const CourseLearning = () => {
 
           {/* Lesson Content */}
           <div className="space-y-8">
-            <div className={cn(
+          <div className={cn(
               "p-6 rounded-xl border",
-              theme === 'dark' ? 'bg-[#110C1D] border-[#6938EF]/20' : 'bg-card border-border'
-            )}>
+            theme === 'dark' ? 'bg-[#110C1D] border-[#6938EF]/20' : 'bg-card border-border'
+          )}>
               <div className="flex items-center gap-2 mb-4">
                 <div className={cn(
                   "px-2 py-1 rounded-full text-xs font-medium",
@@ -547,7 +574,7 @@ const CourseLearning = () => {
               {course.modules.map((module, moduleIndex) => (
                 <div
                   key={moduleIndex}
-                  className={cn(
+              className={cn(
                     "group flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all",
                     currentModule === moduleIndex
                       ? 'bg-[#6938EF]/10 text-[#6938EF]'
@@ -583,7 +610,7 @@ const CourseLearning = () => {
                 </div>
               ))}
             </div>
-          </div>
+              </div>
         </div>
       </div>
     </div>

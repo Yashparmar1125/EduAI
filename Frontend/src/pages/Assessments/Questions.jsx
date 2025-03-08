@@ -4,6 +4,7 @@ import { LoadingScreen } from "./LoadingScreen";
 import { useNavigate } from 'react-router-dom';
 import { Clock, BookOpen, Trophy } from 'lucide-react';
 import axios from 'axios';
+import { nextQuestions,updateXP} from '../../api/axios.api';
 
 const Questions = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -151,15 +152,21 @@ const Questions = () => {
             const totalQuestions = assessmentResponses.length;
             const averageScore = Math.round((correctAnswers / totalQuestions) * 100);
 
+            await updateXP(20);
+
+            
+
             setMessage("Creating Your Learning Roadmap");
             
             const langflowResponse = await axios.post(
                 'http://localhost:5000/api/assessment/langflow',
                 {
+
                     input_value: `Level: ${initialResponses[0].answer}, Interest: ${initialResponses[1].answer}, Score: ${averageScore}`,
                     assessmentScore: averageScore,
                     skillGaps: assessmentResponses.filter(r => !r.isCorrect).map(r => r.question),
                     assessmentId: assessment.id  // Add assessment ID
+
                 },
                 {
                     withCredentials: true,

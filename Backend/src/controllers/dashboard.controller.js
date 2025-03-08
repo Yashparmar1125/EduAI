@@ -110,8 +110,7 @@ export const getDashboardData = async (req, res) => {
       })),
     };
 
-    // Debug log for final response
-    console.log("Final response:", JSON.stringify(response, null, 2));
+   
 
     res.status(200).json(response);
   } catch (error) {

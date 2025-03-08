@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useReward } from 'react-rewards';
 import { cn } from "@/lib/utils";
 import { useTheme } from "../../components/theme-provider";
-import { Trophy, Star, Target, Brain, Code, Users, Zap, Award, Crown, BookOpen } from 'lucide-react';
+import { Trophy, Star, Target, Brain, Code, Users, Zap, Award, Crown, BookOpen, Medal } from 'lucide-react';
 import { Progress } from "@/components/ui/progress";
 import confetti from 'canvas-confetti';
 import { Button } from "@/components/ui/button";
-
+import { getAchievements } from "@/api/axios.api";
 
 const getRarityColor = (rarity) => {
   switch (rarity) {
@@ -15,10 +15,10 @@ const getRarityColor = (rarity) => {
     case 'uncommon': return 'from-green-500 to-green-600';
     case 'rare': return 'from-purple-500 to-purple-600';
     case 'epic': return 'from-yellow-500 to-yellow-600';
+    case 'legendary': return 'bg-yellow-500';
     default: return 'from-gray-500 to-gray-600';
   }
 };
-
 
 const AchievementCard = ({ achievement, theme }) => {
   const { reward } = useReward(`reward-${achievement.id}`, 'confetti', {
@@ -29,6 +29,21 @@ const AchievementCard = ({ achievement, theme }) => {
     lifetime: 150,
     colors: ['#6938EF', '#9D7BFF', '#FFD700', '#FF69B4']
   });
+
+  const getIcon = (type) => {
+    switch (type) {
+      case 'course_completion':
+        return <Trophy className="w-6 h-6" />;
+      case 'module_completion':
+        return <Award className="w-6 h-6" />;
+      case 'skill_mastery':
+        return <Star className="w-6 h-6" />;
+      case 'streak':
+        return <Medal className="w-6 h-6" />;
+      default:
+        return <Target className="w-6 h-6" />;
+    }
+  };
 
   return (
     <motion.div
@@ -56,7 +71,7 @@ const AchievementCard = ({ achievement, theme }) => {
             ? "bg-gradient-to-br from-[#6938EF] to-[#9D7BFF] text-white" 
             : "bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400"
         )}>
-          {achievement.icon}
+          {getIcon(achievement.type)}
           {achievement.unlocked && (
             <motion.div
               initial={{ scale: 0 }}
@@ -123,9 +138,123 @@ const AchievementCard = ({ achievement, theme }) => {
   );
 };
 
+const HowToEarnSection = ({ theme }) => {
+  const earningMethods = [
+    {
+      icon: <BookOpen className="w-6 h-6" />,
+      title: "Complete Courses",
+      description: "Finish courses and modules to earn course completion achievements",
+      category: "learning"
+    },
+    {
+      icon: <Code className="w-6 h-6" />,
+      title: "Code Challenges",
+      description: "Solve coding challenges and complete programming tasks",
+      category: "coding"
+    },
+    {
+      icon: <Users className="w-6 h-6" />,
+      title: "Community Engagement",
+      description: "Help others, participate in discussions, and share knowledge",
+      category: "community"
+    },
+    {
+      icon: <Trophy className="w-6 h-6" />,
+      title: "Skill Mastery",
+      description: "Master specific skills and complete skill-based assessments",
+      category: "learning"
+    },
+    {
+      icon: <Medal className="w-6 h-6" />,
+      title: "Learning Streaks",
+      description: "Maintain consistent learning habits and daily streaks",
+      category: "learning"
+    },
+    {
+      icon: <Award className="w-6 h-6" />,
+      title: "Special Achievements",
+      description: "Complete special challenges and milestone achievements",
+      category: "all"
+    }
+  ];
+
+  return (
+    <div className="space-y-8">
+      <div className={cn(
+        "p-6 rounded-xl border",
+        theme === 'dark' ? 'bg-[#110C1D] border-[#6938EF]/20' : 'bg-card border-border'
+      )}>
+        <h2 className="text-2xl font-bold mb-4">How to Earn Achievements</h2>
+        <p className="text-muted-foreground mb-6">
+          Achievements are earned by completing various learning activities and challenges. 
+          Each achievement comes with XP rewards and helps track your learning progress.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {earningMethods.map((method, index) => (
+          <div
+            key={index}
+            className={cn(
+              "p-6 rounded-xl border group hover:border-[#6938EF]/50 transition-colors",
+              theme === 'dark' ? 'bg-[#110C1D] border-[#6938EF]/20' : 'bg-card border-border'
+            )}
+          >
+            <div className="flex items-start gap-4">
+              <div className={cn(
+                "p-3 rounded-xl",
+                theme === 'dark' ? 'bg-[#6938EF]/20' : 'bg-[#6938EF]/10'
+              )}>
+                {method.icon}
+              </div>
+              <div>
+                <h3 className="font-semibold mb-2">{method.title}</h3>
+                <p className="text-sm text-muted-foreground">{method.description}</p>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className={cn(
+        "p-6 rounded-xl border",
+        theme === 'dark' ? 'bg-[#110C1D] border-[#6938EF]/20' : 'bg-card border-border'
+      )}>
+        <h3 className="text-xl font-semibold mb-4">Achievement Rarities</h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-gray-500" />
+            <span className="text-sm">Common</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-blue-500" />
+            <span className="text-sm">Rare</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-purple-500" />
+            <span className="text-sm">Epic</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-yellow-500" />
+            <span className="text-sm">Legendary</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const Achievements = () => {
   const { theme } = useTheme();
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [achievements, setAchievements] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [totalXP, setTotalXP] = useState(0);
+  const [level, setLevel] = useState(1);
+  const [rank, setRank] = useState('Novice');
+  const [streak, setStreak] = useState(0);
+
   // Move categories array inside the component and combine with icons
   const categories = [
     { id: 'all', label: 'All Achievements', icon: <Trophy className="h-4 w-4" /> },
@@ -133,63 +262,62 @@ const Achievements = () => {
     { id: 'coding', label: 'Coding', icon: <Code className="h-4 w-4" /> },
     { id: 'community', label: 'Community', icon: <Users className="h-4 w-4" /> },
   ];
-  const achievements = [
-    {
-      id: 1,
-      title: "Fast Learner",
-      description: "Completed 5 courses in a month",
-      category: "learning",
-      icon: <Zap className="h-5 w-5" />,
-      unlocked: true,
-      progress: 100,
-      xp: 500,
-      rarity: "common",
-      unlockedAt: "2024-01-15"
-    },
-    {
-      id: 2,
-      title: "Code Master",
-      description: "Solved 50 coding challenges",
-      category: "coding",
-      icon: <Code className="h-5 w-5" />,
-      unlocked: false,
-      progress: 70,
-      xp: 1000,
-      rarity: "rare",
-      requirements: "Complete 50 coding challenges"
-    },
-    {
-      id: 3,
-      title: "Team Player",
-      category: "community",
-      description: "Helped 10 community members",
-      icon: <Users className="h-5 w-5" />,
-      unlocked: false,
-      progress: 40,
-      xp: 750,
-      rarity: "uncommon",
-      requirements: "Help 10 different community members"
-    },
-    // Add more achievements...
-  ];
-  const userStats = {
-    totalXP: 2500,
-    level: 5,
-    rank: "Rising Star",
-    completedAchievements: achievements.filter(a => a.unlocked).length,
-    totalAchievements: achievements.length
-  };
-  const triggerConfetti = () => {
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 }
-    });
-  };
+
+  useEffect(() => {
+    const fetchAchievements = async () => {
+      try {
+        const response = await getAchievements();
+        setAchievements(response.achievements || []);
+        setTotalXP(response.totalXP || 0);
+        setLevel(response.level || 1);
+        setRank(response.rank || 'Novice');
+        setStreak(response.streak || 0);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching achievements:', error);
+        setError(error.response?.data?.message || 'Failed to fetch achievements');
+        setLoading(false);
+      }
+    };
+
+    fetchAchievements();
+  }, []);
+
+  const unlockedCount = achievements.filter(a => a.unlocked).length;
+  const totalCount = achievements.length;
+
+  if (loading) {
+    return (
+      <div className={cn(
+        "min-h-[calc(100vh-4rem)] flex items-center justify-center",
+        theme === 'dark' ? 'bg-[#0A0118]' : 'bg-background'
+      )}>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#6938EF]" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={cn(
+        "min-h-[calc(100vh-4rem)] flex items-center justify-center p-4",
+        theme === 'dark' ? 'bg-[#0A0118]' : 'bg-background'
+      )}>
+        <div className={cn(
+          "max-w-md w-full p-8 rounded-xl border text-center",
+          theme === 'dark' ? 'bg-[#110C1D] border-[#6938EF]/20' : 'bg-card border-border'
+        )}>
+          <h2 className="text-2xl font-bold mb-4">Error</h2>
+          <p className="text-muted-foreground">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
   const filteredAchievements = achievements.filter(
     achievement => selectedCategory === 'all' || achievement.category === selectedCategory
   );
-  // Remove the old triggerConfetti function as we're using react-rewards now
+
   return (
     <div className={cn(
       "min-h-[calc(100vh-4rem)] p-4 sm:p-8",
@@ -213,7 +341,7 @@ const Achievements = () => {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Total XP</p>
-                <h3 className="text-2xl font-bold text-[#6938EF]">{userStats.totalXP}</h3>
+                <h3 className="text-2xl font-bold text-[#6938EF]">{totalXP}</h3>
               </div>
             </div>
             
@@ -222,8 +350,8 @@ const Achievements = () => {
                 <Crown className="h-6 w-6 text-[#6938EF]" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Level</p>
-                <h3 className="text-2xl font-bold text-[#6938EF]">{userStats.level}</h3>
+                <p className="text-sm text-muted-foreground">Level {level}</p>
+                <h3 className="text-2xl font-bold text-[#6938EF]">{rank}</h3>
               </div>
             </div>
 
@@ -232,8 +360,10 @@ const Achievements = () => {
                 <Award className="h-6 w-6 text-[#6938EF]" />
               </div>
               <div>
-                <p className="text-sm text-muted-foreground">Rank</p>
-                <h3 className="text-lg font-bold text-[#6938EF]">{userStats.rank}</h3>
+                <p className="text-sm text-muted-foreground">Streak</p>
+                <h3 className="text-lg font-bold text-[#6938EF]">
+                  {streak} {streak === 1 ? 'day' : 'days'}
+                </h3>
               </div>
             </div>
 
@@ -244,14 +374,14 @@ const Achievements = () => {
               <div>
                 <p className="text-sm text-muted-foreground">Achievements</p>
                 <h3 className="text-2xl font-bold text-[#6938EF]">
-                  {userStats.completedAchievements}/{userStats.totalAchievements}
+                  {unlockedCount}/{totalCount}
                 </h3>
               </div>
             </div>
           </div>
         </motion.div>
 
-        {/* Update Category Filter */}
+        {/* Category Filter */}
         <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
           {categories.map((category) => (
             <Button
@@ -271,16 +401,28 @@ const Achievements = () => {
           ))}
         </div>
 
-        {/* Achievements Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredAchievements.map((achievement) => (
-            <AchievementCard
-              key={achievement.id}
-              achievement={achievement}
-              theme={theme}
-            />
-          ))}
-        </div>
+        {/* Achievements Grid or How to Earn Section */}
+        {achievements.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredAchievements.map((achievement) => (
+              <AchievementCard
+                key={achievement._id}
+                achievement={achievement}
+                theme={theme}
+              />
+            ))}
+            {filteredAchievements.length === 0 && (
+              <div className={cn(
+                "col-span-full text-center py-12 rounded-xl border",
+                theme === 'dark' ? 'bg-[#110C1D] border-[#6938EF]/20' : 'bg-card border-border'
+              )}>
+                <p className="text-muted-foreground">No achievements found in this category</p>
+              </div>
+            )}
+          </div>
+        ) : (
+          <HowToEarnSection theme={theme} />
+        )}
       </div>
     </div>
   );
