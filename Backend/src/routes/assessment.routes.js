@@ -10,7 +10,8 @@ import {
   getNextQuestions,
   submitAssessment,
   getLangflowRoadmap,
-  createLangflowRoadmap
+  createLangflowRoadmap,
+  getLangflowQuestions,
 } from "../controllers/assessment.controller.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
 
@@ -19,6 +20,7 @@ const router = express.Router();
 // Public routes (no auth required)
 router.post("/next-questions", getNextQuestions);
 router.post("/langflow", getLangflowRoadmap);
+router.post("/questions/langflow", getLangflowQuestions);
 
 // Protected routes (require authentication)
 router.use(authMiddleware);
@@ -30,7 +32,7 @@ router.get("/get/:assessmentId", getAssessment);
 router.put("/update/:assessmentId", updateAssessment);
 router.delete("/delete/:assessmentId", deleteAssessment);
 router.get("/get/:assessmentId/stats", getAssessmentStats);
-router.post("/langflow/roadmap/create",authMiddleware, createLangflowRoadmap);
+router.post("/langflow/roadmap/create", authMiddleware, createLangflowRoadmap);
 
 // Assessment submission route (no auth required)
 router.post("/submit", submitAssessment);
