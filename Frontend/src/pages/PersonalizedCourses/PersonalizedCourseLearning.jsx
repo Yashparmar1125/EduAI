@@ -78,6 +78,30 @@ const PersonalizedCourseLearning = () => {
   }, [courseId]);
 
   useEffect(() => {
+    if (course?.progress) {
+      // Set completed modules from progress data
+      const completedModuleIds = course.progress
+        .filter(p => p.completed)
+        .map(p => p.moduleId);
+      setCompletedModules(completedModuleIds);
+
+      // Calculate overall progress
+      const totalModules = course.modules.length;
+      const completedCount = completedModuleIds.length;
+      setProgress((completedCount / totalModules) * 100);
+
+      // Set video progress for current module
+      const currentModuleProgress = course.progress.find(
+        p => p.moduleId === currentModule?._id
+      );
+      if (currentModuleProgress) {
+        setVideoProgress(currentModuleProgress.videoProgress || 0);
+        setLastProgressUpdate(currentModuleProgress.videoProgress || 0);
+      }
+    }
+  }, [course, currentModule]);
+
+  useEffect(() => {
     if (!course || !currentModule?.videoUrl) return;
 
     // Cleanup previous player
@@ -327,11 +351,15 @@ const PersonalizedCourseLearning = () => {
           percentage: calculateScore().percentage,
           answers: quizAnswers
         } : null,
-        completed: true
+        completed: true,
+        completedAt: new Date().toISOString()
       };
       
       await updateModuleProgress(courseId, currentModule._id, updatedProgress);
       setCompletedModules(prev => [...prev, currentModule._id]);
+      
+      // Update overall progress
+      setProgress(((completedModules.length + 1) / course.modules.length) * 100);
       
       toast({
         title: "Module Completed! 🎉",
@@ -475,11 +503,15 @@ const PersonalizedCourseLearning = () => {
   };
 
   const calculateScore = () => {
-    if (!quizSubmitted) return null;
+    if (!quizSubmitted || !currentModule?.questions) return null;
     
     const totalQuestions = currentModule.questions.length;
     const correctAnswers = currentModule.questions.reduce((count, question, index) => {
-      return quizAnswers[index] === question.answer ? count + 1 : count;
+      // Check if the selected answer matches the correct answer letter (A, B, C, D)
+      const selectedOption = quizAnswers[index];
+      const correctAnswerIndex = ['A', 'B', 'C', 'D'].indexOf(question.answer);
+      const isCorrect = selectedOption === question.options[correctAnswerIndex];
+      return isCorrect ? count + 1 : count;
     }, 0);
     
     return {
@@ -857,35 +889,45 @@ const PersonalizedCourseLearning = () => {
                               {questionIndex + 1}. {question.question}
                             </p>
                             <div className="grid gap-4">
-                              {Array.isArray(question.options) && question.options.map((option, optionIndex) => (
-                                <button
-                                  key={optionIndex}
-                                  onClick={() => !quizSubmitted && handleAnswerSelect(questionIndex, option)}
-                                  className={cn(
-                                    "w-full px-6 py-4 rounded-xl text-left transition-all flex items-center gap-4 text-base",
-                                    quizSubmitted
-                                      ? option === question.correctAnswer
-                                        ? "bg-green-500/10 text-green-500 border border-green-500"
-                                        : option === quizAnswers[questionIndex]
-                                        ? "bg-red-500/10 text-red-500 border border-red-500"
-                                        : theme === 'dark' ? "bg-[#1A1425]/50" : "bg-gray-50/50"
-                                      : quizAnswers[questionIndex] === option
-                                      ? "bg-[#6938EF]/10 text-[#6938EF] border border-[#6938EF]"
-                                      : theme === 'dark'
-                                        ? "bg-[#1A1425]/50 hover:bg-[#1A1425]"
-                                        : "bg-gray-50/50 hover:bg-gray-100"
-                                  )}
-                                >
-                                  <span className="flex-1">{option}</span>
-                                  {quizSubmitted && (
-                                    option === question.correctAnswer ? (
-                                      <CheckCircle className="w-5 h-5 text-green-500" />
-                                    ) : option === quizAnswers[questionIndex] ? (
-                                      <XCircle className="w-5 h-5 text-red-500" />
-                                    ) : null
-                                  )}
-                                </button>
-                              ))}
+                              {Array.isArray(question.options) && question.options.map((option, optionIndex) => {
+                                const answerLetter = ['A', 'B', 'C', 'D'][optionIndex];
+                                const isCorrectAnswer = quizSubmitted && question.answer === answerLetter;
+                                
+                                return (
+                                  <button
+                                    key={optionIndex}
+                                    onClick={() => !quizSubmitted && handleAnswerSelect(questionIndex, option)}
+                                    className={cn(
+                                      "w-full px-6 py-4 rounded-xl text-left transition-all flex items-center gap-4 text-base",
+                                      quizSubmitted
+                                        ? isCorrectAnswer
+                                          ? "bg-green-500/10 text-green-500 border border-green-500"
+                                          : option === quizAnswers[questionIndex]
+                                          ? "bg-red-500/10 text-red-500 border border-red-500"
+                                          : theme === 'dark' ? "bg-[#1A1425]/50" : "bg-gray-50/50"
+                                        : quizAnswers[questionIndex] === option
+                                        ? "bg-[#6938EF]/10 text-[#6938EF] border border-[#6938EF]"
+                                        : theme === 'dark'
+                                          ? "bg-[#1A1425]/50 hover:bg-[#1A1425]"
+                                          : "bg-gray-50/50 hover:bg-gray-100"
+                                    )}
+                                  >
+                                    <div className="flex items-center gap-4 flex-1">
+                                      <span className="flex-shrink-0 w-6 h-6 rounded-full border border-current flex items-center justify-center text-sm">
+                                        {answerLetter}
+                                      </span>
+                                      <span className="flex-1">{option}</span>
+                                    </div>
+                                    {quizSubmitted && (
+                                      isCorrectAnswer ? (
+                                        <CheckCircle className="w-5 h-5 text-green-500" />
+                                      ) : option === quizAnswers[questionIndex] ? (
+                                        <XCircle className="w-5 h-5 text-red-500" />
+                                      ) : null
+                                    )}
+                                  </button>
+                                );
+                              })}
                             </div>
                           </div>
                         ))}
