@@ -14,7 +14,18 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     port: 3030,
-    allowedHosts: ["5824-103-71-19-206.ngrok-free.app"],
+    allowedHosts: [
+      "5824-103-71-19-206.ngrok-free.app",
+      "https://astra.datastax.com",
+    ],
+    proxy: {
+      "/api": {
+        target: "https://astra.datastax.com",
+        changeOrigin: true,
+        headers: { "access-control-allow-origin": "*" },
+        secure: false,
+      },
+    },
   },
 
   resolve: {

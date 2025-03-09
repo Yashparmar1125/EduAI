@@ -129,12 +129,12 @@ const ManageCourses = () => {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
             <div>
               <h1 className={cn(
-                "text-2xl font-bold",
+                "text-2xl font-bold pl-11",
                 theme === 'dark' ? 'text-white' : 'text-foreground'
               )}>
                 Manage Courses
               </h1>
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="text-sm text-muted-foreground mt-1 pl-0">
                 Create, edit and manage your course content
               </p>
             </div>

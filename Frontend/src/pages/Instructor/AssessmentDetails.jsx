@@ -362,9 +362,7 @@ const AssessmentDetails = () => {
                 <h2 className="text-xl font-semibold mb-4">Top Skill Gaps</h2>
                 <SkillGapsPieChart />
               </div>
-              <div>
-                <LearningAnalyticsChart />
-              </div>
+              
             </div>
           </div>
         </div>
