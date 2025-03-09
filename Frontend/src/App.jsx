@@ -38,6 +38,8 @@ import CommunityLayout from './pages/CommunityLayout';
 
 import Certificate from "../src/pages/Instructor/Certificate"
 import CertificateVerify from './pages/Instructor/CertificateVerify';
+import PersonalizedCourses from './pages/PersonalizedCourses/PersonalizedCourses';
+import PersonalizedCourseLearning from './pages/PersonalizedCourses/PersonalizedCourseLearning';
 
 function App() {
   return (
@@ -216,6 +218,8 @@ function App() {
                   <Route path="/course" element={<ProtectedRoute element={<CourseOverview />} />} />
                   <Route path="/learning/:courseId" element={<ProtectedRoute element={<CourseLearning />} />} />
                   <Route path="/explore" element={<ProtectedRoute element={<ExploreCourses />} />} />
+                  <Route path="/personalized" element={<PersonalizedCourses />} />
+                  <Route path="/personalized/:courseId" element={<PersonalizedCourseLearning />} />
 
                   <Route path="*" element={<NotFound />} />
                 </Routes>

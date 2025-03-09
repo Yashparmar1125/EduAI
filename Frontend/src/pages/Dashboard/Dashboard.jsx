@@ -911,14 +911,14 @@ const Dashboard = () => {
                         ? 'bg-[#1A1425] border-[#6938EF]/10 hover:border-[#6938EF]/30' 
                         : 'bg-accent/50 border-border hover:border-[#6938EF]/30'
                     )}
-                    onClick={() => navigate('/community')}
+                    onClick={() => navigate('/personalized')}
                   >
                     <div className="flex flex-col items-center text-center">
                       <div className="p-3 rounded-lg bg-[#6938EF]/10 mb-3">
                         <MessageSquare className="h-6 w-6 text-[#6938EF]" />
                       </div>
-                      <h3 className="font-medium text-sm mb-1">Community</h3>
-                      <p className="text-xs text-muted-foreground">Connect with other learners</p>
+                      <h3 className="font-medium text-sm mb-1">Lerning Paths</h3>
+                      <p className="text-xs text-muted-foreground">Personalized learning paths for your goals</p>
                     </div>
                   </motion.div>
                 </div>

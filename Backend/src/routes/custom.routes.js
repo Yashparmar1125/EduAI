@@ -1,70 +1,28 @@
 import express from "express";
-import { authMiddleware, isInstructor } from "../middleware/auth.middleware.js";
+import { authMiddleware } from "../middleware/auth.middleware.js";
 import {
   createCustom,
-  updateCustom,
-  enrollCustom,
-  getCustomDetails,
-  getCustomStats,
-  deleteCustom,
-  getInstructorCustoms,
-  getAllCustoms,
+  getCustomById,
+  getUserCustomCourses,
+  updateModuleProgress,
+  getCourseProgress,
 } from "../controllers/custom.controller.js";
-import {
-  createCourseValidator,
-  updateCourseValidator,
-  enrollCourseValidator,
-} from "../validators/course.validator.js"; // Reusing course validators
-import { upload } from "../utils/cloudinary.js";
 
 const router = express.Router();
 
-// Get all custom courses with filters (must be before /:customId routes)
-router.get("/explore", getAllCustoms);
+// Protect all routes with authentication
+router.use(authMiddleware);
 
-// Get instructor's custom courses
-router.get(
-  "/instructor/customs",
-  authMiddleware,
-  isInstructor,
-  getInstructorCustoms
-);
+// Get all custom courses for the logged-in user
+router.get("/user", getUserCustomCourses);
 
-// Create custom course route with file upload
-router.post(
-  "/create",
-  authMiddleware,
-  isInstructor,
-  upload.single("poster"),
-  createCourseValidator, // Reusing course validator
-  createCustom
-);
+// Create a new custom course
+router.post("/create", createCustom);
 
-// Get custom course details
-router.get("/:customId", authMiddleware, getCustomDetails);
+// Get custom course by ID
+router.get("/:id", getCustomById);
 
-// Get custom course statistics
-router.get("/:customId/stats", authMiddleware, isInstructor, getCustomStats);
-
-// Update custom course route with optional file upload
-router.put(
-  "/update/:customId",
-  authMiddleware,
-  isInstructor,
-  upload.single("poster"),
-  updateCourseValidator, // Reusing course validator
-  updateCustom
-);
-
-// Delete custom course
-router.delete("/delete/:customId", authMiddleware, isInstructor, deleteCustom);
-
-// Enroll in custom course route
-router.post(
-  "/enroll/:customId",
-  authMiddleware,
-  enrollCourseValidator, // Reusing course validator
-  enrollCustom
-);
+router.get("/:courseId/progress", getCourseProgress);
+router.post("/:courseId/modules/:moduleId/progress", updateModuleProgress);
 
 export default router;
