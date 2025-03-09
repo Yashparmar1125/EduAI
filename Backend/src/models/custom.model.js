@@ -1,23 +1,48 @@
 import mongoose from "mongoose";
 
+// Define the custom module schema
 const custommoduleSchema = new mongoose.Schema({
-  title: String,
-  content: String,
-  videoUrl: String,
+  title: { type: String },
+  content: { type: String },
+  duration: { type: String },
+  videoUrl: { type: String },
+  resources: [{ name: String, link: String }],
+  questions: [{ question: String, options: [String], answer: String }],
 });
 
+// Define the custom schema
 const CustomSchema = new mongoose.Schema({
   title: { type: String, required: true },
-  poster: { type: String, required: false },
-  description: { type: String, required: true },
-  instructor: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  poster: { type: String },
+  user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   modules: [custommoduleSchema],
-  studentsEnrolled: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-  price: { type: Number, default: 0 },
-  category: { type: String },
-  level: { type: String, enum: ["beginner", "intermediate", "advanced"], default: "beginner" },
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: Date.now },
+  progress: [
+    {
+      moduleId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+      },
+      videoProgress: {
+        type: Number,
+        default: 0,
+      },
+      quizResults: {
+        score: Number,
+        total: Number,
+        percentage: Number,
+        answers: Object,
+      },
+      completed: {
+        type: Boolean,
+        default: false,
+      },
+      completedAt: Date,
+    },
+  ],
 });
 
+// Create the model
 const Custom = mongoose.model("Custom", CustomSchema);
+
 export default Custom;

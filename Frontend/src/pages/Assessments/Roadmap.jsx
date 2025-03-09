@@ -6,6 +6,9 @@ import { cn } from "@/lib/utils";
 import { Image, Loader2, Rocket, Database, Code2, Blocks, Trophy } from 'lucide-react';
 import { useTheme } from "../../components/theme-provider";
 import Recommends from './Recommends';
+import {createCustom} from "../../api/axios.api.js"
+import { toast } from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 const RoadmapPage = () => {
   const { theme } = useTheme();
@@ -14,59 +17,76 @@ const RoadmapPage = () => {
   const [completedSteps, setCompletedSteps] = useState(new Set());
   const [isDownloading, setIsDownloading] = useState(false);
   const [steps, setSteps] = useState([]);
+  const [roadmapData, setRoadmapData] = useState(null);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const storedResults = localStorage.getItem('assessmentResults');
     console.log('Raw localStorage data:', storedResults);
 
-    if (storedResults) {
-      try {
-        const resData = JSON.parse(storedResults);
-        console.log('Parsed assessment results:', resData.roadmap);
-        let roadmapData;
-        console.log("New", resData.roadmap.results.outputs?.[0]?.outputs?.[0]?.results?.message?.text);
-        const tempData = resData.roadmap.results.outputs?.[0]?.outputs?.[0]?.results?.message?.text;
+    if (!storedResults) {
+      setError('No assessment results found. Please complete an assessment first.');
+      return;
+    }
 
-        // if (resData.roadmap?.result?.outputs?.results?.message?.text) {
-        //   console.log('Extracting roadmap from message text');
-        //   const cleanText = resData.roadmap.results.outputs.results.message.text.replace(/```json\n|\n```/g, '');
-        //   roadmapData = JSON.parse(cleanText);
-        // } else if (typeof results.roadmap.result === 'string') {
-        //   console.log('Extracting roadmap from string');
-        //   const cleanText = resData.roadmap.result.replace(/```json\n|\n```/g, '');
-        //   roadmapData = JSON.parse(cleanText);
-        // } else {
-        //   console.log('Extracting roadmap directly');
-        //   const rawText = resData?.roadmap?.results?.outputs?.[0]?.outputs?.[0]?.results?.message?.text;
-        //   if (rawText) {
-        //     const cleanText = rawText.replace(/```json\n|\n```/g, '');
-        //     //roadmapData = JSON.parse(cleanText);
-        //   }
-        // }
+    try {
+      const resData = JSON.parse(storedResults);
+      console.log('Parsed assessment results:', resData);
+      console.log('Roadmap data structure:', resData.roadmap);
+      
+      let roadmapData;
+      const tempData = resData.roadmap.results.outputs?.[0]?.outputs?.[0]?.results?.message?.text;
+      console.log('Extracted tempData:', tempData);
 
-        const cleanText = tempData.replace(/```json\n|\n```/g, '');
-        roadmapData = JSON.parse(cleanText);
-        console.log(roadmapData);
-
-        console.log('Final roadmap data:', roadmapData);
-        if (roadmapData?.roadmap) {
-          const actualSteps = roadmapData.roadmap.slice(1);
-          setSteps(actualSteps.map((step, index) => ({
-            id: index + 1,
-            title: step.title,
-            description: step.description,
-            duration: step.duration,
-            resources: step.resources || [],
-            color: "#6938EF",
-            icon: getIconForStep(index)
-          })));
-        }
-      } catch (error) {
-        console.error('Error parsing roadmap data:', error);
+      if (!tempData) {
+        setError('No roadmap data found. Please try taking the assessment again.');
+        return;
       }
+
+      const cleanText = tempData.replace(/```json\n|\n```/g, '');
+      console.log('Cleaned JSON text:', cleanText);
+      
+      try {
+        roadmapData = JSON.parse(cleanText);
+        console.log('Parsed roadmap JSON:', roadmapData);
+      } catch (jsonError) {
+        console.error('Error parsing roadmap JSON:', jsonError);
+        setError('Invalid roadmap data format. Please try taking the assessment again.');
+        return;
+      }
+
+      if (!roadmapData?.roadmap || !Array.isArray(roadmapData.roadmap)) {
+        console.error('Invalid roadmap data structure:', roadmapData);
+        setError('Invalid roadmap structure. Please try taking the assessment again.');
+        return;
+      }
+
+      // Set the roadmap data for the custom course creation
+      setRoadmapData(roadmapData.roadmap);
+
+      // Process steps for display
+      const actualSteps = roadmapData.roadmap.slice(1);
+      setSteps(actualSteps.map((step, index) => {
+        const formattedStep = {
+          id: index + 1,
+          title: step.title || `Step ${index + 1}`,
+          description: step.description || "No description provided",
+          duration: step.duration || "4 weeks",
+          resources: step.resources || [],
+          video: step.video || null,
+          color: "#6938EF",
+          icon: getIconForStep(index),
+          stepNumber: index + 1
+        };
+        console.log(`Formatted step ${index + 1}:`, formattedStep);
+        return formattedStep;
+      }));
+    } catch (error) {
+      console.error('Error parsing roadmap data:', error);
+      setError('Error loading roadmap data. Please try taking the assessment again.');
     }
   }, []);
-
 
   const getIconForStep = (index) => {
     const icons = [
@@ -166,6 +186,27 @@ const RoadmapPage = () => {
       console.error('Download failed:', error);
     }
     setIsDownloading(false);
+  };
+
+  const handleCustomCourse = async () => {
+    try {
+      console.log("Creating custom course with roadmap data:", roadmapData);
+      
+      if (!roadmapData || !Array.isArray(roadmapData) || roadmapData.length < 2) {
+        throw new Error("Invalid roadmap data. Please complete the assessment first.");
+      }
+
+      const response = await createCustom(roadmapData);
+      console.log("Custom course created:", response);
+
+      toast.success("Custom course created successfully!");
+
+      // Navigate to the personalized courses page instead of individual course
+      navigate('/personalized');
+    } catch (error) {
+      console.error("Error creating custom course:", error);
+      toast.error(error.message || "Failed to create custom course");
+    }
   };
 
   return (
@@ -313,7 +354,7 @@ const RoadmapPage = () => {
           </button>
           
           <button
-            onClick={() => navigate('/explore')}
+            onClick={handleCustomCourse}
             className="group px-4 sm:px-6 py-2 sm:py-3 bg-transparent border border-[#6938EF] text-[#6938EF] text-sm sm:text-base rounded-xl hover:bg-[#6938EF]/10 transition-all flex items-center gap-2 sm:gap-3 shadow-lg hover:shadow-[#6938EF]/25"
           >
             <Trophy className="w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover:scale-110" />

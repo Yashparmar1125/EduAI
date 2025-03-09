@@ -223,16 +223,21 @@ export const startModule = async (courseId, moduleId) => {
   }
 };
 
-export const updateModuleProgress = async (courseId, moduleId, progress) => {
-  try {
-    const response = await api.patch(
-      `/api/progress/courses/${courseId}/modules/${moduleId}/progress`,
-      { progress }
-    );
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || error.message;
-  }
+export const updateModuleProgress = async (
+  courseId,
+  moduleId,
+  progressData
+) => {
+  return api.post(
+    `/api/roadmap/${courseId}/modules/${moduleId}/progress`,
+    progressData,
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      withCredentials: true,
+    }
+  );
 };
 
 export const completeModule = async (courseId, moduleId) => {
@@ -248,10 +253,12 @@ export const completeModule = async (courseId, moduleId) => {
 
 export const getCourseProgress = async (courseId) => {
   try {
-    const response = await api.get(
-      `/api/progress/courses/${courseId}/progress`
-    );
-    return response.data;
+    return api.get(`/api/roadmap/${courseId}/progress`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      withCredentials: true,
+    });
   } catch (error) {
     throw error.response?.data || error.message;
   }
@@ -363,14 +370,51 @@ export const getRecommendedCourses = async () => {
 
 export const issueCertificate = async (courseId) => {
   try {
-    return api.post(`/api/certificates/handle/issue`, {
+    const response = await api.post(`/api/certificates/handle/issue`, {
       courseId,
       metadata: {
         issuedThrough: "course_completion",
         completedAt: new Date().toISOString(),
       },
     });
-    return response.data;
+    return response;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+export const createCustom = async (roadmapData) => {
+  try {
+    return api.post(
+      "/api/roadmap/create",
+      { roadmapData },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      }
+    );
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+export const getCustomById = async (courseId) => {
+  try {
+    return api.get(`/api/roadmap/${courseId}`, {
+      withCredentials: true,
+    });
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+export const getAllCustomCourses = async () => {
+  try {
+    return api.get("/api/roadmap/user", {
+      withCredentials: true,
+    });
   } catch (error) {
     throw error.response?.data || error.message;
   }
