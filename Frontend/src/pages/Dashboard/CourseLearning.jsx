@@ -50,7 +50,8 @@ import {
   completeModule,
   getCourseProgress,
   getCourseCompletionStatus,
-  getCertificate
+  getCertificate,
+ 
 } from '../../api/axios.api';
 
 const CourseLearning = () => {
@@ -353,36 +354,53 @@ const CourseLearning = () => {
     if (!course || !currentModuleData || completedModules.includes(currentModuleData._id)) return;
     
     try {
-      const currentModuleId = currentModuleData._id;
-      await completeModule(courseId, currentModuleId);
-      
-      const newCompletedModules = [...completedModules, currentModuleId];
-      setCompletedModules(newCompletedModules);
+        const currentModuleId = currentModuleData._id;
+        await completeModule(courseId, currentModuleId);
+        
+        const newCompletedModules = [...completedModules, currentModuleId];
+        setCompletedModules(newCompletedModules);
 
-      const totalModules = course.modules.length;
-      const completedModulesCount = newCompletedModules.length;
-      const newProgress = Math.min((completedModulesCount / totalModules) * 100, 100);
-      setProgress(newProgress);
-      
-      setIsCourseCompleted(newProgress === 100);
-
-      toast({
-        title: "Module Completed! 🎉",
-        description: "Great job! You've completed this module.",
-        className: "bg-green-500 text-white",
-      });
-
-      if (newProgress === 100) {
-        const certificateResponse = await getCertificate(courseId);
-        setCertificate(certificateResponse.certificate);
-      }
+        const totalModules = course.modules.length;
+        const completedModulesCount = newCompletedModules.length;
+        const newProgress = Math.min((completedModulesCount / totalModules) * 100, 100);
+        setProgress(newProgress);
+        
+        // Check if this was the last module to complete the course
+        if (newProgress === 100) {
+            try {
+                // Issue the certificate
+                // const certificateResponse = await issueCertificate(courseId);
+                // setCertificate(certificateResponse.data);
+                setIsCourseCompleted(true);
+                
+                toast({
+                    title: "Congratulations! 🎉",
+                    description: "You've completed the course and earned a certificate!",
+                    className: "bg-green-500 text-white",
+                    duration: 5000
+                });
+            } catch (error) {
+                console.error("Error issuing certificate:", error);
+                toast({
+                    title: "Certificate Error",
+                    description: "There was an error issuing your certificate. Please contact support.",
+                    variant: "destructive"
+                });
+            }
+        } else {
+            toast({
+                title: "Module Completed! 🎉",
+                description: "Great job! You've completed this module.",
+                className: "bg-green-500 text-white"
+            });
+        }
     } catch (error) {
-      console.error("Error completing module:", error);
-      toast({
-        title: "Error",
-        description: "Failed to complete module. Please try again.",
-        variant: "destructive",
-      });
+        console.error("Error completing module:", error);
+        toast({
+            title: "Error",
+            description: "Failed to complete module. Please try again.",
+            variant: "destructive"
+        });
     }
   };
 

@@ -74,7 +74,7 @@ app.use("/api/progress", progressRoutes);
 app.use("/api/achievements", achievementRoutes);
 app.use("/api/gamification", gamificationRoutes);
 app.use("/api/recommendations", recommendationRoutes);
-
+// app.use("/api/certificates/handle", certificateRoutes);
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);
 });

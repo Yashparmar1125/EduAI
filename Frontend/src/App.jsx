@@ -36,6 +36,8 @@ import NotFound from './components/NotFound';
 import TopSection from './pages/Community/TopSection';
 import CommunityLayout from './pages/CommunityLayout';
 
+import Certificate from "../src/pages/Instructor/Certificate"
+import CertificateVerify from './pages/Instructor/CertificateVerify';
 
 function App() {
   return (
@@ -82,6 +84,7 @@ function App() {
                       />
                     }
                   />
+                  
                   <Route
                     path="/instructor/courses/create"
                     element={
@@ -130,6 +133,29 @@ function App() {
                       />
                     }
                   />
+                  <Route
+                    path="/instructor/certificate"
+                    element={
+                      <ProtectedRoute
+                        element={
+                         
+                            <Certificate/>
+                        }
+                      />
+                    }
+                  />
+                  <Route
+                    path="/instructor/certificate/verify"
+                    element={
+                      <ProtectedRoute
+                        element={
+                         
+                            <CertificateVerify/>
+                          
+                        }
+                      />
+                    }
+                    />
                   <Route
                     path="/instructor/assessments"
                     element={
