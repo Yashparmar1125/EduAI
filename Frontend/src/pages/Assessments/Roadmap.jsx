@@ -50,7 +50,8 @@ const RoadmapPage = () => {
 
         console.log('Final roadmap data:', roadmapData);
         if (roadmapData?.roadmap) {
-          setSteps(roadmapData.roadmap.map((step, index) => ({
+          const actualSteps = roadmapData.roadmap.slice(1);
+          setSteps(actualSteps.map((step, index) => ({
             id: index + 1,
             title: step.title,
             description: step.description,
@@ -81,7 +82,7 @@ const RoadmapPage = () => {
     try {
       // Ensure roadmapResult is an array
       const steps = Array.isArray(roadmapResult) ? roadmapResult : [];
-
+      
       return steps.map((step, index) => {
 
         const stepData = {
