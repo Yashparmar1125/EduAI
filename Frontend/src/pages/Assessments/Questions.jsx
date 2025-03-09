@@ -4,7 +4,7 @@ import { LoadingScreen } from "./LoadingScreen";
 import { useNavigate } from 'react-router-dom';
 import { Clock, BookOpen, Trophy } from 'lucide-react';
 import axios from 'axios';
-import { nextQuestions,updateXP,createRoadmap} from '../../api/axios.api';
+import { updateXP, getQuestions } from '../../api/axios.api';
 
 const Questions = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -15,10 +15,11 @@ const Questions = () => {
     const [showAssessment, setShowAssessment] = useState(false);
     const [showInstructions, setShowInstructions] = useState(false);
     
-    // Initial questions to determine user's level and interests
+    // Modified initial questions
     const initialQuestions = [
         {
             id: 1,
+            type: "multiple-choice",
             question: "What's your current expertise level?",
             options: [
                 { label: "Beginner", description: "Just starting in the field" },
@@ -28,12 +29,9 @@ const Questions = () => {
         },
         {
             id: 2,
+            type: "text-input",
             question: "Which area are you most interested in?",
-            options: [
-                { label: "Machine Learning", description: "Building systems that learn from data" },
-                { label: "Web Development", description: "Creating websites and web applications" },
-                { label: "Data Science", description: "Analyzing and visualizing complex data" }
-            ]
+            placeholder: "E.g., Machine Learning, Web Development, Data Science, etc."
         }
     ];
 
@@ -43,36 +41,66 @@ const Questions = () => {
     const [questions, setQuestions] = useState(initialQuestions);
     const [isInitialQuestionsCompleted, setIsInitialQuestionsCompleted] = useState(false);
 
+    
+    
     const fetchAssessment = async () => {
         try {
             setIsLoading(true);
-            const responses = questions.slice(0, 2).map((question, index) => ({
+            const initialResponses = questions.slice(0, 2).map((question, index) => ({
                 question: question.question,
-                answer: questions[index].options[selectedOptions[index]]?.label || ''
+                answer: question.type === "multiple-choice" 
+                    ? questions[index].options[selectedOptions[index]]?.label || ''
+                    : selectedOptions[index] || ''
             }));
 
-            const response = await axios.post('http://localhost:5000/api/assessment/next-questions', {
-                responses
-            }, {
-                withCredentials: true,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
-                }
-            });
+            let inputValue = `${initialResponses[0].answer} ${initialResponses[1].answer}`;
+            console.log("Sending input to API:", inputValue);
+            
+            const res = await getQuestions(inputValue);
+            
+            // Extract the message text from the nested response structure
+            const messageText = res.outputs?.[0]?.outputs?.[0]?.results?.message?.text || '';
+            const cleanText = messageText.replace(/```json\n|\n```/g, '').trim();
+            console.log("Cleaned text:", cleanText);
+            
+            let response;
+            try {
+                response = JSON.parse(cleanText);
+                console.log("Parsed response:", response);
+            } catch (e) {
+                console.error("Error parsing JSON:", e);
+                throw new Error("Failed to parse assessment data");
+            }
 
-            if (response.data.questions && response.data.questions.length > 0) {
+            if (response.questions && response.questions.length > 0) {
+                // The questions are already properly formatted, just add the type
+                const assessmentQuestions = response.questions.map(q => ({
+                    ...q,
+                    type: "multiple-choice",
+                    options: q.options.map(opt => ({
+                        ...opt,
+                        description: opt.description || ""  // Ensure description exists
+                    }))
+                }));
+
                 setAssessment({
-                    id: response.data.assessmentId,
-                    title: response.data.title,
-                    description: response.data.description,
-                    duration: response.data.duration,
-                    questions: response.data.questions
+                    id: 125658,
+                    title: response.title || "Assessment",
+                    description: response.description || "Test your knowledge in your chosen field",
+                    duration: response.duration || 15,
+                    questions: assessmentQuestions
                 });
-                // Set all questions but don't show them yet
-                setQuestions([...initialQuestions, ...response.data.questions]);
+                
+                // Initialize the selectedOptions array with the correct length
+                const totalQuestions = initialQuestions.length + assessmentQuestions.length;
+                const initialSelections = new Array(totalQuestions).fill(undefined);
+                initialSelections[0] = selectedOptions[0];
+                initialSelections[1] = selectedOptions[1];
+                
+                // Set the states in the correct order
+                setSelectedOptions(initialSelections);
+                setQuestions([...initialQuestions, ...assessmentQuestions]);
                 setIsInitialQuestionsCompleted(true);
-                // Show instructions instead of directly continuing to questions
                 setShowInstructions(true);
             } else {
                 setError('No assessment available for your profile. Please try a different combination.');
@@ -84,6 +112,7 @@ const Questions = () => {
             setIsLoading(false);
         }
     };
+    
 
     const handleNext = async () => {
         if (currentQuestion === 1 && !isInitialQuestionsCompleted) {
@@ -96,6 +125,7 @@ const Questions = () => {
             setCurrentQuestion(currentQuestion + 1);
         } else {
             setShowReview(true);
+            console.log(questions)
         }
     };
 
@@ -124,6 +154,12 @@ const Questions = () => {
         setSelectedOptions(newSelections);
     };
 
+    const handleTextInput = (value) => {
+        const newSelections = [...selectedOptions];
+        newSelections[currentQuestion] = value;
+        setSelectedOptions(newSelections);
+    };
+
     const handleSubmit = async () => {
         setMessage("Calculating Your Results...");
         setIsLoading(true);
@@ -131,7 +167,9 @@ const Questions = () => {
             // Separate initial questions and assessment questions
             const initialResponses = questions.slice(0, 2).map((question, index) => ({
                 question: question.question,
-                answer: questions[index].options[selectedOptions[index]]?.label || ''
+                answer: question.type === "multiple-choice" 
+                    ? questions[index].options[selectedOptions[index]]?.label || ''
+                    : selectedOptions[index] || ''
             }));
 
             // Get only assessment questions (excluding initial questions)
@@ -154,44 +192,35 @@ const Questions = () => {
 
             await updateXP(20);
 
-            
-
             setMessage("Creating Your Learning Roadmap");
             
             const langflowResponse = await axios.post(
                 'http://localhost:5000/api/assessment/langflow',
                 {
-
                     input_value: `Level: ${initialResponses[0].answer}, Interest: ${initialResponses[1].answer}, Score: ${averageScore}`,
                     assessmentScore: averageScore,
                     skillGaps: assessmentResponses.filter(r => !r.isCorrect).map(r => r.question),
-                    assessmentId: assessment.id  // Add assessment ID
-
+                    assessmentId: assessment.id
                 },
                 {
                     withCredentials: true,
                     headers: {
-                        'Content-Type': 'application/json',
-                       
+                        'Content-Type': 'application/json'
                     }
                 }
             );
+            
             const resultsData = {
                 averageScore,
                 totalQuestions,
                 correctAnswers,
                 initialResponses,
-                roadmap:{
-                    results:langflowResponse.data.roadmap || langflowResponse.data
-
+                roadmap: {
+                    results: langflowResponse.data.roadmap || langflowResponse.data
                 }
-                
             };
-            const name=initialResponses[1].answer;
-            const roadmap=JSON.stringify(resultsData);
+      
             localStorage.setItem('assessmentResults', JSON.stringify(resultsData));
-            await createRoadmap(roadmap,name);
-            // Add a small delay for better UX
             await new Promise(resolve => setTimeout(resolve, 1000));
             navigate('/roadmap');
             
@@ -203,6 +232,26 @@ const Questions = () => {
             setIsLoading(false);
         }
     };
+
+    const startAssessment = () => {
+        // Initialize selectedOptions array with undefined values for all questions
+        const totalQuestions = questions.length;
+        const initialSelections = new Array(totalQuestions).fill(undefined);
+        // Preserve the first two answers
+        initialSelections[0] = selectedOptions[0];
+        initialSelections[1] = selectedOptions[1];
+        setSelectedOptions(initialSelections);
+        setShowInstructions(false);
+        setShowAssessment(true);
+        setCurrentQuestion(2); // Start with first assessment question
+    };
+
+    // Add debug logging for current question
+    useEffect(() => {
+        console.log("Current question:", currentQuestion);
+        console.log("Current question data:", questions[currentQuestion]);
+        console.log("Selected options:", selectedOptions);
+    }, [currentQuestion, questions, selectedOptions]);
 
     if (error) {
         return (
@@ -279,11 +328,7 @@ const Questions = () => {
                                 Change Level/Interest
                             </button>
                             <button
-                                onClick={() => {
-                                    setShowInstructions(false);
-                                    setShowAssessment(true);
-                                    setCurrentQuestion(2); // Start with first assessment question
-                                }}
+                                onClick={startAssessment}
                                 className="px-6 py-2.5 bg-[#6938EF] text-white rounded-lg font-medium hover:bg-[#5B2FD1]"
                             >
                                 Start Assessment
@@ -322,7 +367,11 @@ const Questions = () => {
                                 <h3 className="text-base font-medium mb-2">{question.question}</h3>
                                 {selectedOptions[index] !== undefined && (
                                     <div className="text-sm text-muted-foreground">
-                                        Your answer: {question.options[selectedOptions[index]].label}
+                                        Your answer: {
+                                            question.type === "multiple-choice" 
+                                                ? question.options[selectedOptions[index]]?.label
+                                                : selectedOptions[index]
+                                        }
                                     </div>
                                 )}
                                 <button
@@ -363,11 +412,14 @@ const Questions = () => {
         );
     }
 
+    if (!questions[currentQuestion]) {
+        return <LoadingScreen message="Loading Questions..." />;
+    }
+
     return (
         <div className="flex items-center justify-center min-h-[calc(100vh-4rem)] bg-background p-4">
             <div className="w-full max-w-3xl bg-card rounded-xl shadow-lg dark:shadow-purple-900/10">
                 {!showAssessment && currentQuestion <= 1 ? (
-                    // Show initial questions UI
                     <>
                         <div className="w-full h-1 bg-muted rounded-t-xl overflow-hidden">
                             <div 
@@ -387,22 +439,41 @@ const Questions = () => {
                             </div>
 
                             <div className="space-y-4 mb-12">
-                                {questions[currentQuestion].options.map((option, index) => (
-                                    <div
-                                        key={index}
-                                        className={cn(
-                                            "p-5 rounded-xl cursor-pointer transition-all duration-200 border-2",
-                                            "hover:border-[#6938EF] dark:hover:border-[#9D7BFF]",
-                                            selectedOptions[currentQuestion] === index
-                                                ? "bg-[#6938EF]/10 dark:bg-[#9D7BFF]/10 border-[#6938EF] dark:border-[#9D7BFF]"
-                                                : "bg-card border-border hover:bg-accent"
-                                        )}
-                                        onClick={() => handleOptionSelect(index)}
-                                    >
-                                        <div className="font-medium text-foreground">{option.label}</div>
-                                        <div className="text-sm text-muted-foreground">{option.description}</div>
+                                {questions[currentQuestion].type === "multiple-choice" ? (
+                                    questions[currentQuestion].options.map((option, index) => (
+                                        <div
+                                            key={index}
+                                            className={cn(
+                                                "p-5 rounded-xl cursor-pointer transition-all duration-200 border-2",
+                                                "hover:border-[#6938EF] dark:hover:border-[#9D7BFF]",
+                                                selectedOptions[currentQuestion] === index
+                                                    ? "bg-[#6938EF]/10 dark:bg-[#9D7BFF]/10 border-[#6938EF] dark:border-[#9D7BFF]"
+                                                    : "bg-card border-border hover:bg-accent"
+                                            )}
+                                            onClick={() => handleOptionSelect(index)}
+                                        >
+                                            <div className="font-medium text-foreground">{option.label}</div>
+                                            <div className="text-sm text-muted-foreground">{option.description}</div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="space-y-2">
+                                        <input
+                                            type="text"
+                                            value={selectedOptions[currentQuestion] || ''}
+                                            onChange={(e) => handleTextInput(e.target.value)}
+                                            placeholder={questions[currentQuestion].placeholder}
+                                            className={cn(
+                                                "w-full p-4 rounded-lg border-2 bg-background",
+                                                "focus:outline-none focus:ring-2 focus:ring-[#6938EF] focus:border-transparent",
+                                                "placeholder:text-muted-foreground text-foreground"
+                                            )}
+                                        />
+                                        <p className="text-sm text-muted-foreground">
+                                            Enter your area of interest in technology or programming
+                                        </p>
                                     </div>
-                                ))}
+                                )}
                             </div>
 
                             <div className="flex items-center justify-between">
@@ -421,10 +492,16 @@ const Questions = () => {
 
                                 <button
                                     onClick={handleNext}
-                                    disabled={selectedOptions[currentQuestion] === undefined}
+                                    disabled={
+                                        questions[currentQuestion].type === "multiple-choice"
+                                            ? selectedOptions[currentQuestion] === undefined
+                                            : !selectedOptions[currentQuestion]?.trim()
+                                    }
                                     className={cn(
                                         "px-6 py-2.5 rounded-lg font-medium transition-colors",
-                                        selectedOptions[currentQuestion] === undefined
+                                        (questions[currentQuestion].type === "multiple-choice"
+                                            ? selectedOptions[currentQuestion] === undefined
+                                            : !selectedOptions[currentQuestion]?.trim())
                                             ? "bg-muted text-muted-foreground cursor-not-allowed"
                                             : "bg-[#6938EF] dark:bg-[#9D7BFF] text-white hover:bg-[#5B2FD1] dark:hover:bg-[#8B63FF]"
                                     )}
@@ -468,7 +545,7 @@ const Questions = () => {
                             </div>
 
                             <div className="space-y-4 mb-12">
-                                {questions[currentQuestion].options.map((option, index) => (
+                                {questions[currentQuestion]?.options?.map((option, index) => (
                                     <div
                                         key={index}
                                         className={cn(
@@ -480,8 +557,8 @@ const Questions = () => {
                                         )}
                                         onClick={() => handleOptionSelect(index)}
                                     >
-                                        <div className="font-medium text-foreground">{option.label}</div>
-                                        <div className="text-sm text-muted-foreground">{option.description}</div>
+                                        <div className="font-medium text-foreground">{option?.label}</div>
+                                        <div className="text-sm text-muted-foreground">{option?.description}</div>
                                     </div>
                                 ))}
                             </div>

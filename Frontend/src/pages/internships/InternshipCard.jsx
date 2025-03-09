@@ -1,4 +1,9 @@
 import React from 'react';
+import { motion } from 'framer-motion';
+import { cn } from "@/lib/utils";
+import { useTheme } from "../../components/theme-provider";
+import { MapPin, Clock, Code, IndianRupee, ArrowUpRight, Building2 } from 'lucide-react';
+import { Button } from "@/components/ui/button";
 
 const InternshipCard = ({
   title = "Machine Learning Intern",
@@ -6,166 +11,146 @@ const InternshipCard = ({
   location = "Mysuru, Shimoga, Gargoti, Colva, Chikmagalur",
   salary = "10,000 /month",
   duration = "6 Months",
-  skills = "Skills : Python, Open CV, Django, docker, kubernetes",
-  companyLogo = "https://dashboard.codeparrot.ai/api/image/Z8WX91j1kitRpYXf/rectangl.png",
-  locationIcon = "https://dashboard.codeparrot.ai/api/image/Z8WX91j1kitRpYXf/location.png",
-  skillsIcon = "https://dashboard.codeparrot.ai/api/image/Z8WX91j1kitRpYXf/xmlid-16.png"
+  skills = "Python, Open CV, Django, docker, kubernetes",
+  companyLogo = "https://dashboard.codeparrot.ai/api/image/Z8WX91j1kitRpYXf/rectangl.png"
 }) => {
+  const { theme } = useTheme();
+
   return (
-    <div style={styles.card}>
-      <div style={styles.companyDetails}>
-        <div style={styles.companyInfo}>
-          <h3 style={styles.title}>{title}</h3>
-          <p style={styles.companyName}>{company}</p>
-        </div>
-        <img src={companyLogo} alt="Company Logo" style={styles.logo} />
-      </div>
+    <motion.div
+      whileHover={{ y: -5, scale: 1.02 }}
+      transition={{ duration: 0.2 }}
+      className={cn(
+        "group relative w-full rounded-xl border p-5 transition-all duration-300",
+        theme === 'dark' 
+          ? 'bg-[#110C1D] border-[#6938EF]/20 hover:border-[#6938EF] hover:shadow-lg hover:shadow-[#6938EF]/10' 
+          : 'bg-card border-border hover:border-[#6938EF] hover:shadow-lg hover:shadow-[#6938EF]/5'
+      )}
+    >
+      {/* Background Gradient */}
+      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-[#6938EF]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-      <hr style={styles.divider} />
-
-      <div style={styles.details}>
-        <div style={styles.detailRow}>
-          <img src={locationIcon} alt="Location" style={styles.icon} />
-          <p style={styles.text}>{location}</p>
-        </div>
-
-        <div style={styles.moneySection}>
-          <div style={styles.detailRow}>
-            <span style={styles.rupeeIcon}>₹</span>
-            <p style={styles.text}>{salary}</p>
+      {/* Content */}
+      <div className="relative">
+        {/* Company Details */}
+        <div className="flex items-start justify-between mb-5">
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-2">
+              <div className={cn(
+                "w-8 h-8 rounded-lg overflow-hidden ring-2 transition-all duration-300",
+                theme === 'dark' 
+                  ? 'ring-[#6938EF]/20 group-hover:ring-[#6938EF]' 
+                  : 'ring-[#6938EF]/20 group-hover:ring-[#6938EF]'
+              )}>
+                <img 
+                  src={companyLogo} 
+                  alt={company} 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <span className="text-sm text-muted-foreground">
+                {company}
+              </span>
+            </div>
+            <h3 className={cn(
+              "text-lg font-semibold group-hover:text-[#6938EF] transition-colors duration-300",
+              theme === 'dark' ? 'text-white' : 'text-foreground'
+            )}>
+              {title}
+            </h3>
+          </div>
+          <div className={cn(
+            "w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 opacity-0 group-hover:opacity-100",
+            theme === 'dark' 
+              ? 'bg-[#6938EF] text-white' 
+              : 'bg-[#6938EF] text-white'
+          )}>
+            <ArrowUpRight className="w-4 h-4" />
           </div>
         </div>
 
-        <div style={styles.detailRow}>
-          <span style={styles.durationIcon}>⏱</span>
-          <p style={styles.text}>{duration}</p>
+        {/* Details Grid */}
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          <div className={cn(
+            "p-3 rounded-lg transition-all duration-300",
+            theme === 'dark' 
+              ? 'bg-white/5 group-hover:bg-[#6938EF]/10' 
+              : 'bg-[#6938EF]/5'
+          )}>
+            <div className="flex items-center gap-2 mb-1">
+              <MapPin className="w-4 h-4 text-[#6938EF]" />
+              <span className="text-xs font-medium text-[#6938EF]">Location</span>
+            </div>
+            <p className="text-xs text-muted-foreground line-clamp-1">{location}</p>
+          </div>
+
+          <div className={cn(
+            "p-3 rounded-lg transition-all duration-300",
+            theme === 'dark' 
+              ? 'bg-white/5 group-hover:bg-[#6938EF]/10' 
+              : 'bg-[#6938EF]/5'
+          )}>
+            <div className="flex items-center gap-2 mb-1">
+              <IndianRupee className="w-4 h-4 text-[#6938EF]" />
+              <span className="text-xs font-medium text-[#6938EF]">Stipend</span>
+            </div>
+            <p className="text-xs text-muted-foreground">₹ {salary}</p>
+          </div>
+
+          <div className={cn(
+            "p-3 rounded-lg transition-all duration-300",
+            theme === 'dark' 
+              ? 'bg-white/5 group-hover:bg-[#6938EF]/10' 
+              : 'bg-[#6938EF]/5'
+          )}>
+            <div className="flex items-center gap-2 mb-1">
+              <Clock className="w-4 h-4 text-[#6938EF]" />
+              <span className="text-xs font-medium text-[#6938EF]">Duration</span>
+            </div>
+            <p className="text-xs text-muted-foreground">{duration}</p>
+          </div>
+
+          <div className={cn(
+            "p-3 rounded-lg transition-all duration-300",
+            theme === 'dark' 
+              ? 'bg-white/5 group-hover:bg-[#6938EF]/10' 
+              : 'bg-[#6938EF]/5'
+          )}>
+            <div className="flex items-center gap-2 mb-1">
+              <Code className="w-4 h-4 text-[#6938EF]" />
+              <span className="text-xs font-medium text-[#6938EF]">Skills</span>
+            </div>
+            <p className="text-xs text-muted-foreground line-clamp-1">{skills}</p>
+          </div>
         </div>
 
-        <div style={styles.detailRow}>
-          <img src={skillsIcon} alt="Skills" style={styles.icon} />
-          <p style={styles.text}>{skills}</p>
-        </div>
-      </div>
+        {/* Actions */}
+        <div className="flex items-center justify-between">
+          <span className={cn(
+            "px-3 py-1 text-xs font-medium rounded-full transition-all duration-300",
+            theme === 'dark' 
+              ? 'bg-[#6938EF]/10 text-[#6938EF] group-hover:bg-[#6938EF] group-hover:text-white' 
+              : 'bg-[#6938EF]/10 text-[#6938EF] group-hover:bg-[#6938EF] group-hover:text-white'
+          )}>
+            Internship
+          </span>
+          <a
+  href="https://internshala.com/internship/detail/work-from-home-part-time-artificial-intelligence-and-machine-learning-content-writing-internship-at-earth5r1741423449"
+  target="_blank"
+  rel="noopener noreferrer"
+>
+  <Button
+    size="sm"
+    className="bg-gradient-to-r from-[#6938EF] to-[#9D7BFF] hover:from-[#5B2FD1] hover:to-[#8B6AE5] text-white shadow-lg shadow-[#6938EF]/25"
+  >
+    Apply Now
+  </Button>
+</a>
 
-      <div style={styles.buttons}>
-        <div style={styles.internshipBadge}>
-          <span style={styles.badgeText}>Internship</span>
         </div>
-        <button style={styles.applyButton}>Apply Now</button>
       </div>
-    </div>
+    </motion.div>
   );
-};
-
-const styles = {
-  card: {
-    width: '100%',
-    maxWidth: '256px',
-    height: 'auto',
-    backgroundColor: '#ffffff',
-    borderRadius: '9px',
-    padding: '20px',
-    display: 'flex',
-    flexDirection: 'column',
-    boxSizing: 'border-box',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-  },
-  companyDetails: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '20px',
-  },
-  companyInfo: {
-    flex: 1,
-  },
-  title: {
-    fontFamily: 'Urbanist',
-    fontSize: '12.71px',
-    fontWeight: 600,
-    color: '#000000',
-    margin: 0,
-    marginBottom: '5px',
-  },
-  companyName: {
-    fontFamily: 'Urbanist',
-    fontSize: '11.8px',
-    fontWeight: 600,
-    color: '#5a5a5a',
-    margin: 0,
-  },
-  logo: {
-    width: '41.76px',
-    height: '41.76px',
-    objectFit: 'cover',
-  },
-  divider: {
-    border: 'none',
-    borderTop: '0.91px solid #c8c4c4',
-    margin: '0 0 20px 0',
-  },
-  details: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '17.25px',
-    flex: 1,
-    marginBottom: 15,
-  },
-  detailRow: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '10.89px',
-  },
-  icon: {
-    width: '18.16px',
-    height: '18.16px',
-  },
-  text: {
-    fontFamily: 'Urbanist',
-    fontSize: '10.89px',
-    fontWeight: 600,
-    color: '#6f5f5f',
-    margin: 0,
-  },
-  moneySection: {
-    width: '100%',
-  },
-  rupeeIcon: {
-    color: '#b5abab',
-    fontSize: '10px',
-  },
-  durationIcon: {
-    color: '#838383',
-    fontSize: '16.34px',
-  },
-  buttons: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 'auto',
-  },
-  internshipBadge: {
-    backgroundColor: '#d9d9d9',
-    borderRadius: '1.82px',
-    padding: '0.91px 8.37px',
-  },
-  badgeText: {
-    fontFamily: 'Urbanist',
-    fontSize: '9.99px',
-    fontWeight: 700,
-    color: '#7d7676',
-  },
-  applyButton: {
-    backgroundColor: '#24bdff',
-    borderRadius: '6.35px',
-    padding: '3.63px 15.43px',
-    border: 'none',
-    fontFamily: 'Urbanist',
-    fontSize: '10.89px',
-    fontWeight: 600,
-    color: '#000000',
-    cursor: 'pointer',
-  },
 };
 
 export default InternshipCard;

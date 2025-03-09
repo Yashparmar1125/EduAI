@@ -149,14 +149,21 @@ export const getNextQuestions = async (req, res) => {
     const expertiseLevel = responses[0]?.answer || "Beginner";
     const interestArea = responses[1]?.answer || "Web Development";
 
-    // Find assessment matching the user's level and interest
-    var assessment = await Assessment.findOne({
-      level: expertiseLevel,
-      category: interestArea,
-      status: "published",
+    // Find assessments related to the interest area (use title, field, or skills)
+    const relatedAssessments = await Assessment.find({
+      $or: [
+        { title: { $regex: interestArea, $options: 'i' } },  // Case-insensitive partial match in title
+        { field: { $regex: interestArea, $options: 'i' } },  // Case-insensitive partial match in field
+        { skillsAssessed: { $in: [interestArea] } },  // Match if skillsAssessed contains the interestArea
+      ]
     });
 
-    if (!assessment) {
+    // If no related assessments are found, fall back to a default assessment
+    let assessment;
+    if (relatedAssessments.length > 0) {
+      // Choose the first related assessment or customize further
+      assessment = relatedAssessments[0];
+    } else {
       const defaultAssessment = await Assessment.find().limit(1);
       assessment = defaultAssessment[0];
     }
@@ -187,6 +194,7 @@ export const getNextQuestions = async (req, res) => {
     });
   }
 };
+
 
 // Submit an assessment
 export const submitAssessment = async (req, res) => {
@@ -362,6 +370,42 @@ export const getLangflowRoadmap = async (req, res) => {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${process.env.LANGFLOW_TOKEN}`,
+      },
+    });
+
+    res.json(response.data);
+  } catch (error) {
+    console.error(
+      "Error calling Langflow API:",
+      error.response?.data || error.message
+    );
+    res.status(500).json({
+      error: "Failed to generate roadmap",
+      details: error.response?.data || error.message,
+    });
+  }
+};
+
+export const getLangflowQuestions = async (req, res) => {
+  try {
+    const { input_value } = req.body;
+
+    const payload = {
+      input_value,
+      output_type: "chat",
+      input_type: "chat",
+      tweaks: {
+        "ChatInput-dOH3m": {},
+        "Prompt-cMcHL": {},
+        "GoogleGenerativeAIModel-3V8H5": {},
+        "ChatOutput-XCd37": {},
+      },
+    };
+
+    const response = await axios.post(process.env.LANGFLOW_API_URL_2, payload, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.LANGFLOW_TOKEN_2}`,
       },
     });
 
