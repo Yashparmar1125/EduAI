@@ -253,7 +253,7 @@ export const completeModule = async (courseId, moduleId) => {
 
 export const getCourseProgress = async (courseId) => {
   try {
-    return api.get(`/api/roadmap/${courseId}/progress`, {
+    return api.get(`/api/progress/courses/${courseId}/progress`, {
       headers: {
         "Content-Type": "application/json",
       },
