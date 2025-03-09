@@ -46,6 +46,7 @@ const RoadmapPage = () => {
 
         const cleanText = tempData.replace(/```json\n|\n```/g, '');
         roadmapData = JSON.parse(cleanText);
+        console.log(roadmapData);
 
         console.log('Final roadmap data:', roadmapData);
         if (roadmapData?.roadmap) {
@@ -307,7 +308,15 @@ const RoadmapPage = () => {
             ) : (
               <Image className="w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover:scale-110" />
             )}
-            <span className="font-medium">Save as Image</span>
+            <span className="font-medium">Download as PNG</span>
+          </button>
+          
+          <button
+            onClick={() => navigate('/explore')}
+            className="group px-4 sm:px-6 py-2 sm:py-3 bg-transparent border border-[#6938EF] text-[#6938EF] text-sm sm:text-base rounded-xl hover:bg-[#6938EF]/10 transition-all flex items-center gap-2 sm:gap-3 shadow-lg hover:shadow-[#6938EF]/25"
+          >
+            <Trophy className="w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover:scale-110" />
+            <span className="font-medium">Get Personalized Course</span>
           </button>
         </div>
       </div>

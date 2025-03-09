@@ -1,18 +1,17 @@
 import mongoose from "mongoose";
 
-const moduleSchema = new mongoose.Schema({
+const custommoduleSchema = new mongoose.Schema({
   title: String,
   content: String,
   videoUrl: String,
-  
 });
 
-const CourseSchema = new mongoose.Schema({
+const CustomSchema = new mongoose.Schema({
   title: { type: String, required: true },
-  poster: { type: String, required: true },
+  poster: { type: String, required: false },
   description: { type: String, required: true },
   instructor: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  modules: [moduleSchema],
+  modules: [custommoduleSchema],
   studentsEnrolled: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   price: { type: Number, default: 0 },
   category: { type: String },
@@ -20,5 +19,5 @@ const CourseSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
-const Course = mongoose.model("Course", CourseSchema);
-export default Course;
+const Custom = mongoose.model("Custom", CustomSchema);
+export default Custom;
