@@ -195,13 +195,28 @@ CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 
 This project is licensed under the ISC License - see the [LICENSE](LICENSE) file for details.
 
-## 👨‍💻 Author
+## 👨‍💻 Authors
 
 **Yash Parmar**
 - 🌐 [GitHub](https://github.com/Yashparmar1125)
 - 💼 [LinkedIn](https://linkedin.com/in/yashparmar1125)
 - 📧 [Email](mailto:yashparmar11y@gmail.com)
 
+**Nayan Pawar**
+- 🌐 [GitHub](https://github.com/Yashparmar1125)
+- 💼 [LinkedIn](https://linkedin.com/in/nayan-pawar03)
+- 📧 [Email](mailto:	nayanpawar136@gmail.com)
+
+**Siddhi Gawade**
+- 🌐 [GitHub](https://github.com/SiddhiGawade)
+- 💼 [LinkedIn](https://linkedin.com/in/siddhi-gawade)
+- 📧 [Email](mailto:siddhigawade.sbg25@gmail.com)
+
+  **Tanishq Kulkarni**
+- 🌐 [GitHub](https://github.com/TanishqMSD)
+- 💼 [LinkedIn](https://linkedin.com/in/tanishq-kulkarni-0148682b6)
+- 📧 [Email](mailto:tanishqkulkarni18@gmail.com)
+  
 ## 🙏 Acknowledgments
 
 - 🌟 All contributors who have helped shape this project
