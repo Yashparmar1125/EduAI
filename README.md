@@ -205,14 +205,14 @@ This project is licensed under the ISC License - see the [LICENSE](LICENSE) file
 **Nayan Pawar**
 - 🌐 [GitHub](https://github.com/Yashparmar1125)
 - 💼 [LinkedIn](https://linkedin.com/in/nayan-pawar03)
-- 📧 [Email](mailto:	nayanpawar136@gmail.com)
+- 📧 [Email](mailto:nayanpawar136@gmail.com)
 
 **Siddhi Gawade**
 - 🌐 [GitHub](https://github.com/SiddhiGawade)
 - 💼 [LinkedIn](https://linkedin.com/in/siddhi-gawade)
 - 📧 [Email](mailto:siddhigawade.sbg25@gmail.com)
 
-  **Tanishq Kulkarni**
+**Tanishq Kulkarni**
 - 🌐 [GitHub](https://github.com/TanishqMSD)
 - 💼 [LinkedIn](https://linkedin.com/in/tanishq-kulkarni-0148682b6)
 - 📧 [Email](mailto:tanishqkulkarni18@gmail.com)
