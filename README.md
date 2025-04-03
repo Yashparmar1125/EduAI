@@ -198,9 +198,9 @@ This project is licensed under the ISC License - see the [LICENSE](LICENSE) file
 ## 👨‍💻 Author
 
 **Yash Parmar**
-- 🌐 [GitHub](https://github.com/yourusername)
-- 💼 [LinkedIn](https://linkedin.com/in/yourusername)
-- 📧 [Email](mailto:your.email@example.com)
+- 🌐 [GitHub](https://github.com/Yashparmar1125)
+- 💼 [LinkedIn](https://linkedin.com/in/yashparmar1125)
+- 📧 [Email](mailto:yashparmar11y@gmail.com)
 
 ## 🙏 Acknowledgments
 
