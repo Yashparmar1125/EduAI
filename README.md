@@ -14,7 +14,7 @@
 
 ## 📚 Overview
 
-EduAI is a modern, AI-powered learning platform that provides personalized education experiences through interactive courses, assessments, and gamification features. Our platform combines cutting-edge technology with proven educational methodologies to create an engaging and effective learning environment.
+EduAI is a modern, AI-powered learning platform that provides personalized education experiences through interactive courses, assessments, and gamification features. Our platform combines cutting-edge technology with proven educational methodologies to create an engaging and effective learning environment..
 
 ## ✨ Key Features
 
