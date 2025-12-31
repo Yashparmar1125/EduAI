@@ -10,7 +10,7 @@
 
 </div>
 
-> 🌟 Transform your learning experience with AI-powered education
+> 🌟 Transform your learning experience with AI-powered education.
 
 ## 📚 Overview
 
